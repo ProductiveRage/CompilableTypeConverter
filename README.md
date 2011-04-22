@@ -8,7 +8,7 @@ which means we're not taking advantage of AutoMapper's name matching or type con
 
 ## An example
 
-I want to be able to translate from an instance of the "SourceType" class to a new "ConstructorDestType" instance, the constructor arguments match the properties of SourceType though with different casing and their types require translation; IEnumerable<SourceType.Sub1> to IEnumerable<ConstructorDestType.Sub1> and from the SourceType.Sub2 enum to ConstructorDestType.Sub2 enum.
+I want to be able to translate from an instance of the "SourceType" class to a new "ConstructorDestType" instance, the constructor arguments match the properties of SourceType though with different casing and their types require translation; IEnumerable&lt;SourceType.Sub1&gt; to IEnumerable&lt;ConstructorDestType.Sub1&gt; and from the SourceType.Sub2 enum to ConstructorDestType.Sub2 enum.
 
     // Get a no-frills, run-of-the-mill AutoMapper Configuration reference..
     var mapperConfig = new Configuration(
