@@ -107,13 +107,16 @@ namespace AutoMapperConstructor.TypeConverters
             return (TDest)_constructorInvoker.Invoke(args);
         }
 
-        // TODO: What's this for??
+        /// <summary>
+        /// Return a TypeParam'd ITypeConverterByConstructor instance - this will throw an exception if TSource does not equal SrcType or TDest does not
+        /// equal DestType
+        /// </summary>
         public ITypeConverterByConstructor<X, Y> AsGeneric<X, Y>()
         {
             if (!typeof(X).Equals(SrcType))
                 throw new ArgumentException("Typeparam X must match SrcType");
             if (!typeof(Y).Equals(DestType))
-                throw new ArgumentException("Typeparam X must match SrcType");
+                throw new ArgumentException("Typeparam X must match DestType");
             return (ITypeConverterByConstructor<X, Y>)this;
         }
     }

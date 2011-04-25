@@ -25,6 +25,9 @@ namespace AutoMapperConstructor.PropertyGetters.Factories
             _mappingConfig = mappingConfig;
         }
 
+        /// <summary>
+        /// This will return null if unable to return an IPropertyGetter for the named property that will return a value as the requested type
+        /// </summary>
         public IPropertyGetter Get(Type srcType, string propertyName, Type destPropertyType)
         {
             if (propertyName == null)
@@ -46,6 +49,9 @@ namespace AutoMapperConstructor.PropertyGetters.Factories
             );
         }
 
+        /// <summary>
+        /// This will return null if unable to return a PropertyInfo instance for the named property that will return a value as the requested type
+        /// </summary>
         private PropertyInfo getProperty(Type srcType, string name, INameMatcher nameMatcher, Type destPropertyType)
         {
             if (srcType == null)

@@ -41,7 +41,10 @@ namespace AutoMapperConstructor.TypeConverters
         /// </summary>
         object Convert(object src);
 
-        // TODO: What's this for??
+        /// <summary>
+        /// Return a TypeParam'd ITypeConverterByConstructor instance - this will throw an exception if TSource does not equal SrcType or TDest does not
+        /// equal DestType
+        /// </summary>
         ITypeConverterByConstructor<TSource, TDest> AsGeneric<TSource, TDest>();
     }
 }

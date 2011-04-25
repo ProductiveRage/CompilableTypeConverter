@@ -7,7 +7,8 @@ namespace AutoMapperConstructor.ConstructorPrioritisers
     public class ArgsLengthTypeConverterPrioritiser : ITypeConverterPrioritiser
     {
         /// <summary>
-        /// Return the TypeConverter reference with the most parameters
+        /// Return the TypeConverter reference with the most parameters - this will return null if no ITypeConverterByConstructors are specified, it will throw
+        /// an exception for null input or if the options data contains any null references
         /// </summary>
         public ITypeConverterByConstructor Get(IEnumerable<ITypeConverterByConstructor> options)
         {
