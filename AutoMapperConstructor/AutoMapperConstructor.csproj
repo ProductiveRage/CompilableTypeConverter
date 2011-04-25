@@ -63,12 +63,13 @@
     <Compile Include="ConstructorDestType.cs" />
     <Compile Include="StandardDestType.cs" />
     <Compile Include="NameMatchers\CaseInsensitiveSkipUnderscoreNameMatcher.cs" />
-    <Compile Include="PropertyGetters\AbstractGenericPropertyGetter.cs" />
     <Compile Include="PropertyGetters\AutoMapperEnabledPropertyGetter.cs" />
     <Compile Include="PropertyGetters\Factories\AutoMapperEnabledPropertyGetterFactory.cs" />
     <Compile Include="PropertyGetters\Factories\IPropertyGetterFactory.cs" />
     <Compile Include="SourceType.cs" />
     <Compile Include="TypeConverterPrioritisers\ArgsLengthTypeConverterPrioritiser.cs" />
+    <Compile Include="TypeConverterPrioritisers\Factories\ArgsLengthTypeConverterPrioritiserFactory.cs" />
+    <Compile Include="TypeConverterPrioritisers\Factories\ITypeConverterPrioritiserFactory.cs" />
     <Compile Include="TypeConverterPrioritisers\ITypeConverterPrioritiser.cs" />
     <Compile Include="NameMatchers\INameMatcher.cs" />
     <Compile Include="Program.cs" />

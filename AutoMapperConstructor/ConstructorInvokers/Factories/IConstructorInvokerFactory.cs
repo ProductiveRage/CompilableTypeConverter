@@ -8,7 +8,9 @@ namespace AutoMapperConstructor.ConstructorInvokers.Factories
     /// </summary>
     public interface IConstructorInvokerFactory
     {
-        IConstructorInvoker Get(ConstructorInfo constructor);
+        /// <summary>
+        /// This will throw an exception if unable to return an appropriate IConstructorInvoker, it should never return null
+        /// </summary>
         IConstructorInvoker<T> Get<T>(ConstructorInfo constructor);
     }
 }

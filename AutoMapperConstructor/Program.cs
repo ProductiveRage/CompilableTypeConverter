@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using AutoMapper;
 using AutoMapperConstructor.ConstructorInvokers.Factories;
-using AutoMapperConstructor.ConstructorPrioritisers;
+using AutoMapperConstructor.ConstructorPrioritisers.Factories;
 using AutoMapperConstructor.NameMatchers;
 using AutoMapperConstructor.PropertyGetters.Factories;
 using AutoMapperConstructor.TypeConverters.Factories;
@@ -50,7 +50,7 @@ namespace AutoMapperConstructor
             // If the translatorFactory is unable to find any constructors it can use for the conversion, the translatorFactory.Get
             // method will return null
             var translatorFactory = new SimpleTypeConverterByConstructorFactory(
-                new ArgsLengthTypeConverterPrioritiser(),
+                new ArgsLengthTypeConverterPrioritiserFactory(),
                 new SimpleConstructorInvokerFactory(),
                 new AutoMapperEnabledPropertyGetterFactory(
                     new CaseInsensitiveSkipUnderscoreNameMatcher(),

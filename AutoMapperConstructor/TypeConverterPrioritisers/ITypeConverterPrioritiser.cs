@@ -4,12 +4,12 @@ using AutoMapperConstructor.TypeConverters;
 
 namespace AutoMapperConstructor.ConstructorPrioritisers
 {
-    public interface ITypeConverterPrioritiser
+    public interface ITypeConverterPrioritiser<TSource, TDest>
     {
         /// <summary>
         /// Return the best matching ITypeConverterByConstructor reference with the most parameters - this will return null if no ITypeConverterByConstructors are
         /// specified, it will throw an exception for null input or if the options data contains any null references
         /// </summary>
-        ITypeConverterByConstructor Get(IEnumerable<ITypeConverterByConstructor> options);
+        ITypeConverterByConstructor<TSource, TDest> Get(IEnumerable<ITypeConverterByConstructor<TSource, TDest>> options);
     }
 }

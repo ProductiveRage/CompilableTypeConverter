@@ -2,18 +2,12 @@
 
 namespace AutoMapperConstructor.ConstructorInvokers
 {
-    public interface IConstructorInvoker<TDest> : IConstructorInvoker
+    public interface IConstructorInvoker<TDest>
     {
         /// <summary>
-        /// This returns a new instance of the target type - intended to be implemented by a specified constructor being called for the target (with
-        /// provided arguments being passed)
+        /// This returns a new instance of TDest - intended to be implemented by a specified constructor being called for the target (with
+        /// arguments being passed) - it will throw an exception if unable to invoke the constructor, it should never return null
         /// </summary>
-        new TDest Invoke(object[] args);
-    }
-
-    public interface IConstructorInvoker
-    {
-        Type TargetType { get; }
-        object Invoke(object[] args);
+        TDest Invoke(object[] args);
     }
 }

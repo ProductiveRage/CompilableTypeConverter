@@ -4,18 +4,18 @@ using AutoMapperConstructor.TypeConverters;
 
 namespace AutoMapperConstructor.ConstructorPrioritisers
 {
-    public class ArgsLengthTypeConverterPrioritiser : ITypeConverterPrioritiser
+    public class ArgsLengthTypeConverterPrioritiser<TSource, TDest> : ITypeConverterPrioritiser<TSource, TDest>
     {
         /// <summary>
         /// Return the TypeConverter reference with the most parameters - this will return null if no ITypeConverterByConstructors are specified, it will throw
         /// an exception for null input or if the options data contains any null references
         /// </summary>
-        public ITypeConverterByConstructor Get(IEnumerable<ITypeConverterByConstructor> options)
+        public ITypeConverterByConstructor<TSource, TDest> Get(IEnumerable<ITypeConverterByConstructor<TSource, TDest>> options)
         {
             if (options == null)
                 throw new ArgumentNullException("options");
 
-            var optionsList = new List<ITypeConverterByConstructor>();
+            var optionsList = new List<ITypeConverterByConstructor<TSource, TDest>>();
             foreach (var option in options)
             {
                 if (option == null)
@@ -28,7 +28,7 @@ namespace AutoMapperConstructor.ConstructorPrioritisers
             if (optionsList.Count > 1)
             {
                 optionsList.Sort(
-                    delegate(ITypeConverterByConstructor x, ITypeConverterByConstructor y)
+                    delegate(ITypeConverterByConstructor<TSource, TDest> x, ITypeConverterByConstructor<TSource, TDest> y)
                     {
                         return x.Constructor.GetParameters().Length.CompareTo(y.Constructor.GetParameters().Length);
                     }

@@ -16,19 +16,13 @@ namespace AutoMapperConstructor.ConstructorInvokers
             _constructor = constructor;
         }
 
-        public Type TargetType
-        {
-            get { return typeof(TDest); }
-        }
-
+        /// <summary>
+        /// This returns a new instance of TDest - intended to be implemented by a specified constructor being called for the target (with
+        /// arguments being passed) - it will throw an exception if unable to invoke the constructor, it should never return null
+        /// </summary>
         public TDest Invoke(object[] args)
         {
             return (TDest)_constructor.Invoke(args);
-        }
-
-        object IConstructorInvoker.Invoke(object[] args)
-        {
-            return Invoke(args);
         }
     }
 }
