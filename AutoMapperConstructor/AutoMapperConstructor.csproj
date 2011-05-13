@@ -6,7 +6,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{3D937713-35FE-4324-B0F6-E0DB413C9128}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AutoMapperConstructor</RootNamespace>
     <AssemblyName>a</AssemblyName>
@@ -49,6 +49,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AutoMapper">
       <HintPath>..\External Dependencies\AutoMapper.dll</HintPath>
@@ -60,28 +63,31 @@
     <Compile Include="ConstructorInvokers\Factories\SimpleConstructorInvokerFactory.cs" />
     <Compile Include="ConstructorInvokers\IConstructorInvoker.cs" />
     <Compile Include="ConstructorInvokers\SimpleConstructorInvoker.cs" />
-    <Compile Include="ConstructorDestType.cs" />
-    <Compile Include="StandardDestType.cs" />
+    <Compile Include="PropertyGetters\AbstractGenericCompilablePropertyGetter.cs" />
+    <Compile Include="PropertyGetters\CompilableEnumConversionPropertyGetter.cs" />
+    <Compile Include="PropertyGetters\Factories\CompilableAssignableTypesPropertyGetterFactory.cs" />
+    <Compile Include="PropertyGetters\Factories\CompilableEnumConversionPropertyGetterFactory.cs" />
+    <Compile Include="PropertyGetters\Factories\CombinedCompilablePropertyGetterFactory.cs" />
+    <Compile Include="PropertyGetters\Factories\ICompilablePropertyGetterFactory.cs" />
+    <Compile Include="PropertyGetters\ICompilablePropertyGetter.cs" />
+    <Compile Include="PropertyGetters\CompilableAssignableTypesPropertyGetter.cs" />
     <Compile Include="NameMatchers\CaseInsensitiveSkipUnderscoreNameMatcher.cs" />
     <Compile Include="PropertyGetters\AutoMapperEnabledPropertyGetter.cs" />
     <Compile Include="PropertyGetters\Factories\AutoMapperEnabledPropertyGetterFactory.cs" />
     <Compile Include="PropertyGetters\Factories\IPropertyGetterFactory.cs" />
-    <Compile Include="SourceType.cs" />
     <Compile Include="TypeConverterPrioritisers\ArgsLengthTypeConverterPrioritiser.cs" />
     <Compile Include="TypeConverterPrioritisers\Factories\ArgsLengthTypeConverterPrioritiserFactory.cs" />
     <Compile Include="TypeConverterPrioritisers\Factories\ITypeConverterPrioritiserFactory.cs" />
     <Compile Include="TypeConverterPrioritisers\ITypeConverterPrioritiser.cs" />
     <Compile Include="NameMatchers\INameMatcher.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyGetters\IPropertyGetter.cs" />
+    <Compile Include="TypeConverters\CompilableTypeConverterByConstructor.cs" />
+    <Compile Include="TypeConverters\Factories\CompilableTypeConverterByConstructorFactory.cs" />
     <Compile Include="TypeConverters\Factories\ITypeConverterByConstructorFactory.cs" />
     <Compile Include="TypeConverters\Factories\SimpleTypeConverterByConstructorFactory.cs" />
     <Compile Include="TypeConverters\SimpleTypeConverterByConstructor.cs" />
     <Compile Include="TypeConverters\ITypeConverter.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">

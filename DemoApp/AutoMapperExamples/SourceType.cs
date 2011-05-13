@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AutoMapperConstructor
+namespace DemoApp.AutoMapperExamples
 {
     public class SourceType
     {

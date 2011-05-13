@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿﻿using System;
 using AutoMapper;
 using AutoMapperConstructor.ConstructorInvokers.Factories;
 using AutoMapperConstructor.ConstructorPrioritisers.Factories;
@@ -7,11 +6,11 @@ using AutoMapperConstructor.NameMatchers;
 using AutoMapperConstructor.PropertyGetters.Factories;
 using AutoMapperConstructor.TypeConverters.Factories;
 
-namespace AutoMapperConstructor
+namespace DemoApp.AutoMapperExamples
 {
-    class Program
+    public class Examples
     {
-        static void Main(string[] args)
+        public static void Test()
         {
             var destStandard = getStandardAutoMapperTranslation(getExampleSourceType());
             var destConstructor = getStandardAutoMapperConstructor(getExampleSourceType());

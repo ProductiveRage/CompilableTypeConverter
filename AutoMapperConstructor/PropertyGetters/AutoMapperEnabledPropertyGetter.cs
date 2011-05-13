@@ -51,6 +51,18 @@ namespace AutoMapperConstructor.PropertyGetters
             get { return typeof(TPropertyAsRetrieved); }
         }
 
+        /// <summary>
+        /// Try to retrieve the value of the specified Property from the specified object (which must be of type SrcType)
+        /// </summary>
+        object IPropertyGetter.GetValue(object src)
+        {
+            if (src == null)
+                throw new ArgumentNullException("src");
+            if (!src.GetType().Equals(typeof(TSourceObject)))
+                throw new ArgumentException("The type of src must match typeparam TSourceObject");
+            return GetValue((TSourceObject)src);
+        }
+
         public TPropertyAsRetrieved GetValue(TSourceObject src)
         {
             if (src == null)
@@ -65,18 +77,6 @@ namespace AutoMapperConstructor.PropertyGetters
                 value.GetType(),
                 typeof(TPropertyAsRetrieved)
             );
-        }
-
-        /// <summary>
-        /// Try to retrieve the value of the specified Property from the specified object (which must be of type SrcType)
-        /// </summary>
-        object IPropertyGetter.GetValue(object src)
-        {
-            if (src == null)
-                throw new ArgumentNullException("src");
-            if (!src.GetType().Equals(typeof(TSourceObject)))
-                throw new ArgumentException("The type of src must match typeparam U");
-            return GetValue((TSourceObject)src);
         }
     }
 }

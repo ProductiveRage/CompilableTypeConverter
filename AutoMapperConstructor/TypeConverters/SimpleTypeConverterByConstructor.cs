@@ -1,36 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using AutoMapperConstructor.ConstructorInvokers;
-using AutoMapperConstructor.ConstructorInvokers.Factories;
 using AutoMapperConstructor.PropertyGetters;
 
 namespace AutoMapperConstructor.TypeConverters
 {
     /// <summary>
     /// A class capable of converting an instance of one type into another by calling a constructor on the target type - the manner in which the
-    /// data is retrieved (and converted, if required) from the source type is determined by the provided IConstructorInvokerFactory instances
-    /// (the way in which the target constructor is executed is determined by the specified IConstructorInvokerFactory; eg. the constructor
-    /// may have its Invoke method called or IL code may be generated to call it)
+    /// data is retrieved (and converted, if required) from the source type is determined by the provided IPropertyGetter instances, the way in
+    /// which the target constructor is executed is determined by the specified IConstructorInvoker; eg. the constructor may have its Invoke
+    /// method called or IL code may be generated to call it)
     /// </summary>
     public class SimpleTypeConverterByConstructor<TSource, TDest> : ITypeConverterByConstructor<TSource, TDest>
     {
-        private ConstructorInfo _constructor;
         private IConstructorInvoker<TDest> _constructorInvoker;
         private List<IPropertyGetter> _propertyGetters;
-        public SimpleTypeConverterByConstructor(
-            ConstructorInfo constructor,
-            IEnumerable<IPropertyGetter> propertyGetters,
-            IConstructorInvokerFactory constructorInvokerFactory)
+        public SimpleTypeConverterByConstructor(IEnumerable<IPropertyGetter> propertyGetters, IConstructorInvoker<TDest> constructorInvoker)
         {
-            if (constructor == null)
-                throw new ArgumentNullException("constructor");
             if (propertyGetters == null)
                 throw new ArgumentNullException("propertyGetters");
-            if (constructorInvokerFactory == null)
-                throw new ArgumentNullException("constructorInvokerFactory");
+            if (constructorInvoker == null)
+                throw new ArgumentNullException("constructorInvoker");
 
+            // Ensure there are no null references in the property getter content
             var propertyGettersList = new List<IPropertyGetter>();
             foreach (var propertyGetter in propertyGetters)
             {
@@ -40,57 +33,28 @@ namespace AutoMapperConstructor.TypeConverters
                     throw new ArgumentException("Encountered invalid SrcType in propertyGetters list, must match type param U");
                 propertyGettersList.Add(propertyGetter);
             }
-            if (propertyGettersList.Count != constructor.GetParameters().Length)
-                throw new ArgumentException("Number of propertyGetters.Count must match constructor.GetParameters().Length");
 
-            _constructor = constructor;
-            _constructorInvoker = constructorInvokerFactory.Get<TDest>(constructor);
+            // Ensure that the property getters correspond to the constructor that's being targetted
+            var constructorParameters = constructorInvoker.Constructor.GetParameters();
+            if (propertyGettersList.Count != constructorParameters.Length)
+                throw new ArgumentException("Number of propertyGetters.Count must match constructor.GetParameters().Length");
+            for (var index = 0; index < propertyGettersList.Count; index++)
+            {
+                if (!constructorParameters[index].ParameterType.IsAssignableFrom(propertyGettersList[index].TargetType))
+                    throw new ArgumentException("propertyGetter[" + index + "].TargetType is not assignable to corresponding constructor parameter type");
+            }
+
+            _constructorInvoker = constructorInvoker;
             _propertyGetters = propertyGettersList;
         }
 
         /// <summary>
-        /// The constructor method on the target type that will be used by the Convert method, this will never be null
+        /// The destination Constructor must be exposed by ITypeConverterByConstructor so that ITypeConverterPrioritiser implementations have something to work
+        /// with - this value will never be null
         /// </summary>
-        public ConstructorInfo Constructor { get { return _constructor; } }
-
-        /// <summary>
-        /// This will never be null nor contain any null enties, its number of entries will match the number of arguments the constructor has
-        /// </summary>
-        public IEnumerable<PropertyInfo> SrcProperties
+        public ConstructorInfo Constructor
         {
-            get
-            {
-                return _propertyGetters.Select<IPropertyGetter, PropertyInfo>(p => p.Property);
-            }
-        }
-
-        /// <summary>
-        /// The type of the object that will be translated from - calls to the Convert method must specify objects of this type
-        /// </summary>
-        public Type SrcType
-        {
-            get { return typeof(TSource); }
-        }
-
-        /// <summary>
-        /// The type of object to be translated into
-        /// </summary>
-        public Type DestType
-        {
-            get { return typeof(TDest); }
-        }
-
-        /// <summary>
-        /// Create a new target type instance from a source value - this will never return null, it will throw an exception for null input, for a src object
-        /// whose type does not match SrcType or if the conversion fails
-        /// </summary>
-        public object Convert(object src)
-        {
-            if (src == null)
-                throw new ArgumentNullException("src");
-            if (!src.GetType().Equals(SrcType))
-                throw new ArgumentException("The type of src value must match SrcType");
-            return Convert((TSource)src);
+            get { return _constructorInvoker.Constructor; }
         }
 
         /// <summary>

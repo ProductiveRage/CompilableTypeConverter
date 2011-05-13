@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AutoMapperConstructor
+namespace DemoApp.AutoMapperExamples
 {
     public class ConstructorDestType
     {
@@ -16,6 +16,7 @@ namespace AutoMapperConstructor
                 throw new ArgumentNullException("valueList");
             if (!Enum.IsDefined(typeof(Sub2), enumValue))
                 throw new ArgumentOutOfRangeException("enumValue");
+
             _value = value;
             _valueList = valueList;
             _enumValue = enumValue;

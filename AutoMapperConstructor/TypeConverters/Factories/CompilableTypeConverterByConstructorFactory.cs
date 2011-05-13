@@ -7,25 +7,20 @@ using AutoMapperConstructor.PropertyGetters.Factories;
 
 namespace AutoMapperConstructor.TypeConverters.Factories
 {
-    public class SimpleTypeConverterByConstructorFactory : ITypeConverterByConstructorFactory
+    public class CompilableTypeConverterByConstructorFactory : ITypeConverterByConstructorFactory
     {
         private ITypeConverterPrioritiserFactory _constructorPrioritiserFactory;
-		private IConstructorInvokerFactory _constructorInvokerFactory;
-		private IPropertyGetterFactory _propertyGetterFactory;
-        public SimpleTypeConverterByConstructorFactory(
+        private ICompilablePropertyGetterFactory _propertyGetterFactory;
+        public CompilableTypeConverterByConstructorFactory(
             ITypeConverterPrioritiserFactory constructorPrioritiserFactory,
-			IConstructorInvokerFactory constructorInvokerFactory,
-			IPropertyGetterFactory propertyGetterFactory)
+			ICompilablePropertyGetterFactory propertyGetterFactory)
 		{
             if (constructorPrioritiserFactory == null)
                 throw new ArgumentNullException("constructorPrioritiserFactory");
-			if (constructorInvokerFactory == null)
-				throw new ArgumentNullException("constructorInvokerFactory");
             if (propertyGetterFactory == null)
                 throw new ArgumentNullException("propertyGetterFactory");
 
             _constructorPrioritiserFactory = constructorPrioritiserFactory;
-			_constructorInvokerFactory = constructorInvokerFactory;
 			_propertyGetterFactory = propertyGetterFactory;
 		}
 
@@ -39,7 +34,7 @@ namespace AutoMapperConstructor.TypeConverters.Factories
 			foreach (var constructor in constructors)
 			{
 				var args = constructor.GetParameters();
-				var propertyGetters = new List<IPropertyGetter>();
+                var propertyGetters = new List<ICompilablePropertyGetter>();
 				var candidate = true;
 				foreach (var arg in args)
 				{
@@ -55,12 +50,12 @@ namespace AutoMapperConstructor.TypeConverters.Factories
 				if (candidate)
 			    {
                     var constructorCandidate = (ITypeConverterByConstructor<TSource, TDest>)Activator.CreateInstance(
-                        typeof(SimpleTypeConverterByConstructor<,>).MakeGenericType(
+                        typeof(CompilableTypeConverterByConstructor<,>).MakeGenericType(
                             typeof(TSource),
                             typeof(TDest)
                         ),
                         propertyGetters,
-					    _constructorInvokerFactory.Get<TDest>(constructor)
+					    constructor
                     );
                     constructorCandidates.Add(constructorCandidate);
 				}
