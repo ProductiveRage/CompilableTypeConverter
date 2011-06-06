@@ -1,4 +1,5 @@
 ﻿using System;
+using AutoMapperConstructor.PropertyGetters.Compilable;
 
 namespace AutoMapperConstructor.PropertyGetters.Factories
 {

@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using AutoMapperConstructor.NameMatchers;
 
-namespace AutoMapperConstructor.PropertyGetters
+namespace AutoMapperConstructor.PropertyGetters.Compilable
 {
     /// <summary>
     /// Retrieves property values for class, converting from the property type on the source object to that of a destination - this property getter only supports enums
@@ -44,7 +44,7 @@ namespace AutoMapperConstructor.PropertyGetters
 
         /// <summary>
         /// This must return a Linq Expression that retrieves the value from SrcType.Property as TargetType - the specified "param" Expression must have a type that
-        /// is assignable to SrcType. The resulting Expression will be assignable to a Lambda Expression typed as a TSourceObject to TPropertyAsRetrieved Func.
+        /// is assignable to SrcType. The resulting Expression will be assigned to a Lambda Expression typed as a TSourceObject to TPropertyAsRetrieved Func.
         /// </summary>
         public override Expression GetPropertyGetterExpression(Expression param)
         {

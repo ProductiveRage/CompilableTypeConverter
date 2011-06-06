@@ -5,16 +5,16 @@ namespace DemoApp.CompiledExamples
 {
     public class ConstructorDestType
     {
-        private string _value;
-        private IEnumerable<string> _valueList;
-        private EnumSub _valueEnum;
-        public ConstructorDestType(string value, IEnumerable<string> valueList, EnumSub valueEnum)
+        private Sub1 _value;
+        private IEnumerable<Sub1> _valueList;
+        private Sub2 _valueEnum;
+        public ConstructorDestType(Sub1 value, IEnumerable<Sub1> valueList, Sub2 valueEnum)
         {
             if (value == null)
                 throw new ArgumentNullException("value");
             if (valueList == null)
                 throw new ArgumentNullException("valueList");
-            if (!Enum.IsDefined(typeof(EnumSub), valueEnum))
+            if (!Enum.IsDefined(typeof(Sub2), valueEnum))
                 throw new ArgumentOutOfRangeException("valueEnum");
 
             _value = value;
@@ -22,11 +22,24 @@ namespace DemoApp.CompiledExamples
             _valueEnum = valueEnum;
         }
 
-        public string Value { get { return _value; } }
-        public IEnumerable<string > ValueList { get { return _valueList; } }
-        public EnumSub ValueEnum { get { return _valueEnum; } }
+        public Sub1 Value { get { return _value; } }
+        public IEnumerable<Sub1> ValueList { get { return _valueList; } }
+        public Sub2 ValueEnum { get { return _valueEnum; } }
 
-        public enum EnumSub : uint
+        public class Sub1
+        {
+            private string _name;
+            public Sub1(string name)
+            {
+                name = (name ?? "").Trim();
+                if (name == "")
+                    throw new ArgumentException("Null/empty name specified");
+                _name = name;
+            }
+            public string Name { get { return _name; } }
+        }
+
+        public enum Sub2 : uint
         {
             EnumValue1 = 99,
             EnumValue2 = 100,

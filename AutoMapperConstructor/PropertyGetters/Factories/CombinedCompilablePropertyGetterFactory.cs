@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using AutoMapperConstructor.PropertyGetters.Compilable;
 
 namespace AutoMapperConstructor.PropertyGetters.Factories
 {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using AutoMapperConstructor.ConstructorInvokers;
-using AutoMapperConstructor.PropertyGetters;
+using AutoMapperConstructor.PropertyGetters.Compilable;
 
 namespace AutoMapperConstructor.TypeConverters
 {
@@ -12,7 +12,7 @@ namespace AutoMapperConstructor.TypeConverters
     /// LINQ Expressions with the aim of the resulting code being comparable in speed to a hand-crafted version. Unlike the SimpleTypeConverterByConstructor,
     /// this does not use an IConstructorInvoker as the constructor calling code is tied to the implementation.
     /// </summary>
-    public class CompilableTypeConverterByConstructor<TSource, TDest> : ITypeConverterByConstructor<TSource, TDest>
+    public class CompilableTypeConverterByConstructor<TSource, TDest> : ICompilableTypeConverterByConstructor<TSource, TDest>
     {
         private ConstructorInfo _constructor;
         private List<ICompilablePropertyGetter> _propertyGetters;
@@ -75,24 +75,39 @@ namespace AutoMapperConstructor.TypeConverters
             // Declare an expression to represent the src parameter
             var srcParameter = Expression.Parameter(typeof(TSource), "src");
 
+            // Return compiled expression that instantiates a new object by retrieving properties from the source and passing as constructor arguments
+            return Expression.Lambda<Func<TSource, TDest>>(
+                GetTypeConverterExpression(srcParameter),
+                srcParameter
+            ).Compile();
+        }
+
+        /// <summary>
+        /// This must return a Linq Expression that returns a new TDest instance - the specified "param" Expression must have a type that is assignable to TSource.
+        /// The resulting Expression will be assigned to a Lambda Expression typed as a TSource to TDest Func.
+        /// </summary>
+        public Expression GetTypeConverterExpression(Expression param)
+        {
+            if (param == null)
+                throw new ArgumentNullException("param");
+            if (!typeof(TSource).IsAssignableFrom(param.Type))
+                throw new ArgumentException("param.Type must be assignable to typeparam TSource");
+
             // Instantiate expressions for each constructor parameter by using each of the property getters against the source value
             var constructorParameterExpressions = new List<Expression>();
             foreach (var constructorParameter in _constructor.GetParameters())
             {
                 var index = constructorParameterExpressions.Count;
                 constructorParameterExpressions.Add(
-                    _propertyGetters[index].GetPropertyGetterExpression(srcParameter)
+                    _propertyGetters[index].GetPropertyGetterExpression(param)
                 );
             }
 
-            // Return compiled expression that instantiates a new object by retrieving properties from the source and passing as constructor arguments
-            return Expression.Lambda<Func<TSource, TDest>>(
-                Expression.New(
-                    _constructor,
-                    constructorParameterExpressions.ToArray()
-                ),
-                srcParameter
-            ).Compile();
+            // Return an expression that to instantiate a new TDest by using property getters as constructor arguments
+            return Expression.New(
+                _constructor,
+                constructorParameterExpressions.ToArray()
+            );
         }
     }
 }

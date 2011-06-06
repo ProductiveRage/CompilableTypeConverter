@@ -5,11 +5,16 @@ namespace DemoApp.CompiledExamples
 {
     public class SourceType
     {
-        public string Value { get; set; }
-        public IEnumerable<string> ValueList { get; set; }
-        public EnumSub ValueEnum { get; set; }
-        
-        public enum EnumSub
+        public Sub1 Value { get; set; }
+        public IEnumerable<Sub1> ValueList { get; set; }
+        public Sub2 ValueEnum { get; set; }
+
+        public class Sub1
+        {
+            public string Name { get; set; }
+        }
+
+        public enum Sub2
         {
             EnumValue1,
             EnumValue2,

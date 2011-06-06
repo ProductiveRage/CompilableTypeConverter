@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using AutoMapperConstructor.NameMatchers;
+using AutoMapperConstructor.PropertyGetters.Compilable;
 
 namespace AutoMapperConstructor.PropertyGetters.Factories
 {

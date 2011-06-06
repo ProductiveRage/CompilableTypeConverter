@@ -63,14 +63,18 @@
     <Compile Include="ConstructorInvokers\Factories\SimpleConstructorInvokerFactory.cs" />
     <Compile Include="ConstructorInvokers\IConstructorInvoker.cs" />
     <Compile Include="ConstructorInvokers\SimpleConstructorInvoker.cs" />
-    <Compile Include="PropertyGetters\AbstractGenericCompilablePropertyGetter.cs" />
-    <Compile Include="PropertyGetters\CompilableEnumConversionPropertyGetter.cs" />
+    <Compile Include="PropertyGetters\Compilable\AbstractGenericCompilablePropertyGetter.cs" />
+    <Compile Include="PropertyGetters\Compilable\CompilableEnumConversionPropertyGetter.cs" />
+    <Compile Include="PropertyGetters\Compilable\CompilableTypeConverterPropertyGetter.cs" />
+    <Compile Include="PropertyGetters\Compilable\ListCompilablePropertyGetter.cs" />
     <Compile Include="PropertyGetters\Factories\CompilableAssignableTypesPropertyGetterFactory.cs" />
     <Compile Include="PropertyGetters\Factories\CompilableEnumConversionPropertyGetterFactory.cs" />
     <Compile Include="PropertyGetters\Factories\CombinedCompilablePropertyGetterFactory.cs" />
+    <Compile Include="PropertyGetters\Factories\CompilableTypeConverterPropertyGetterFactory.cs" />
+    <Compile Include="PropertyGetters\Factories\ListCompilablePropertyGetterFactory.cs" />
     <Compile Include="PropertyGetters\Factories\ICompilablePropertyGetterFactory.cs" />
-    <Compile Include="PropertyGetters\ICompilablePropertyGetter.cs" />
-    <Compile Include="PropertyGetters\CompilableAssignableTypesPropertyGetter.cs" />
+    <Compile Include="PropertyGetters\Compilable\ICompilablePropertyGetter.cs" />
+    <Compile Include="PropertyGetters\Compilable\CompilableAssignableTypesPropertyGetter.cs" />
     <Compile Include="NameMatchers\CaseInsensitiveSkipUnderscoreNameMatcher.cs" />
     <Compile Include="PropertyGetters\AutoMapperEnabledPropertyGetter.cs" />
     <Compile Include="PropertyGetters\Factories\AutoMapperEnabledPropertyGetterFactory.cs" />
@@ -83,11 +87,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyGetters\IPropertyGetter.cs" />
     <Compile Include="TypeConverters\CompilableTypeConverterByConstructor.cs" />
+    <Compile Include="TypeConverters\ICompilableTypeConverter.cs" />
+    <Compile Include="TypeConverters\ITypeConverter.cs" />
+    <Compile Include="TypeConverters\Factories\ICompilableTypeConverterFactory.cs" />
+    <Compile Include="TypeConverters\ICompilableTypeConverterByConstructor.cs" />
     <Compile Include="TypeConverters\Factories\CompilableTypeConverterByConstructorFactory.cs" />
-    <Compile Include="TypeConverters\Factories\ITypeConverterByConstructorFactory.cs" />
+    <Compile Include="TypeConverters\Factories\ITypeConverterFactory.cs" />
     <Compile Include="TypeConverters\Factories\SimpleTypeConverterByConstructorFactory.cs" />
     <Compile Include="TypeConverters\SimpleTypeConverterByConstructor.cs" />
-    <Compile Include="TypeConverters\ITypeConverter.cs" />
+    <Compile Include="TypeConverters\ITypeConverterByConstructor.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">

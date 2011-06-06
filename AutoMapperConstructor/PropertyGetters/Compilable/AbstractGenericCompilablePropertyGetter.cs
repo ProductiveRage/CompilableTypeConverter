@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using AutoMapperConstructor.PropertyGetters;
 
-namespace AutoMapperConstructor.PropertyGetters
+namespace AutoMapperConstructor.PropertyGetters.Compilable
 {
     /// <summary>
     /// This provides a lot of the plumbing for an ICompilablePropertyGetter implementation - the derived class only declare the Property value and override the
@@ -65,7 +66,7 @@ namespace AutoMapperConstructor.PropertyGetters
 
         /// <summary>
         /// This must return a Linq Expression that retrieves the value from SrcType.Property as TargetType - the specified "param" Expression must have a type that
-        /// is assignable to SrcType. The resulting Expression will be assignable to a Lambda Expression typed as a TSourceObject to TPropertyAsRetrieved Func.
+        /// is assignable to SrcType. The resulting Expression must be assignable to a Lambda Expression typed as a TSourceObject to TPropertyAsRetrieved Func.
         /// </summary>
         public abstract Expression GetPropertyGetterExpression(Expression param);
 

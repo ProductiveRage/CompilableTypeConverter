@@ -7,7 +7,7 @@ using AutoMapperConstructor.PropertyGetters.Factories;
 
 namespace AutoMapperConstructor.TypeConverters.Factories
 {
-    public class SimpleTypeConverterByConstructorFactory : ITypeConverterByConstructorFactory
+    public class SimpleTypeConverterByConstructorFactory : ITypeConverterFactory
     {
         private ITypeConverterPrioritiserFactory _constructorPrioritiserFactory;
 		private IConstructorInvokerFactory _constructorInvokerFactory;
@@ -32,7 +32,7 @@ namespace AutoMapperConstructor.TypeConverters.Factories
         /// <summary>
 		/// This will return null if no suitable constructors were retrieved
 		/// </summary>
-        public ITypeConverterByConstructor<TSource, TDest> Get<TSource, TDest>()
+        public ITypeConverter<TSource, TDest> Get<TSource, TDest>()
         {
             var constructorCandidates = new List<ITypeConverterByConstructor<TSource, TDest>>();
             var constructors = typeof(TDest).GetConstructors();
