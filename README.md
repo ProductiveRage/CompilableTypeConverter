@@ -108,6 +108,34 @@ Each of these items is straight-forward and could be easily swapped out for alte
 
 They're all passed into the SimpleTypeConverterByConstructorFactory which ties it all up and looks for constructors on the destination type whose arguments can all be fulfilled with data from source type, returning an ITypeConverterByConstructor for the most best one. This ITypeConverterByConstructor can be passed to an AutoMapper ConstructUsing method call without any arguments being specified manually, which is right where I wanted to be!
 
+## Extending with LINQ Expressions - July 2011
+
+While using AutoMapper is certainly convenient, there is an overhead which may be an issue if translating large numbers of items. As an alternative, interfaces for "compilable" property getters and type converters are available that perform the translation using LINQ Expressions and so can perform conversions comparably fast as hand-rolled alternatives. To replicate the above example, the following could be used:
+
+    // Prepare a converter factory using the base types (AssignableType and EnumConversion property getter factories)
+    var nameMatcher = new CaseInsensitiveSkipUnderscoreNameMatcher();
+    var converterFactory = new ExtendableCompilableTypeConverterFactory(
+        nameMatcher,
+        new ArgsLengthTypeConverterPrioritiserFactory(),
+        new List<ICompilablePropertyGetterFactory>
+        {
+            new CompilableAssignableTypesPropertyGetterFactory(nameMatcher),
+            new CompilableEnumConversionPropertyGetterFactory(nameMatcher)
+        }
+    );
+
+    // Extend the converter to handle SourceType.Sub1 to ConstructorDestType.Sub1 and IEnumerable<SourceType.Sub1> to IEnumerable<ConstructorDestType.Sub1>
+    // - This will raise an exception if unable to create the mapping
+    converterFactory = converterFactory.CreateMap<SourceType.Sub1, ConstructorDestType.Sub1>();
+
+    // This will enable the creation of a converter for SourceType to ConstructorDestType
+    // - This will return null if unable to generate an appropriate converter
+    var converter = converterFactory.Get<SourceType, ConstructorDestType>();
+    if (converter == null)
+        throw new Exception("Unable to obtain a converter");
+            
+    var result = converter.Convert(getExampleSourceType());
+
 ## Notes
 
 It would be nice if we could use AutoMapper INamingConvention classes somehow as INameMatcher in this project. Not something I've looked at yet.

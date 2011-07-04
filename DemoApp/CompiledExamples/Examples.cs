@@ -26,10 +26,15 @@ namespace DemoApp.CompiledExamples
             );
 
             // Extend the converter to handle SourceType.Sub1 to ConstructorDestType.Sub1 and IEnumerable<SourceType.Sub1> to IEnumerable<ConstructorDestType.Sub1>
+            // - This will raise an exception if unable to create the mapping
             converterFactory = converterFactory.CreateMap<SourceType.Sub1, ConstructorDestType.Sub1>();
 
             // This will enable the creation of a converter for SourceType to ConstructorDestType
+            // - This will return null if unable to generate an appropriate converter
             var converter = converterFactory.Get<SourceType, ConstructorDestType>();
+            if (converter == null)
+                throw new Exception("Unable to obtain a converter");
+            
             var result = converter.Convert(getExampleSourceType());
         }
 
@@ -38,15 +43,12 @@ namespace DemoApp.CompiledExamples
             return new SourceType()
             {
                 Value = new SourceType.Sub1() { Name = "Bo1" },
-                //ValueList = null,
                 ValueList = new[]
                 {
                     new SourceType.Sub1() { Name = "Bo2" },
                     null,
                     new SourceType.Sub1() { Name = "Bo3" }
                 },
-                /*
-                 */
                 ValueEnum = SourceType.Sub2.EnumValue2
             };
         }
