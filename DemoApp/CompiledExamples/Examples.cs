@@ -18,7 +18,7 @@ namespace DemoApp.CompiledExamples
             var converterFactory = new ExtendableCompilableTypeConverterFactory(
                 nameMatcher,
                 new ArgsLengthTypeConverterPrioritiserFactory(),
-                new List<ICompilablePropertyGetterFactory>
+                new ICompilablePropertyGetterFactory[]
                 {
                     new CompilableAssignableTypesPropertyGetterFactory(nameMatcher),
                     new CompilableEnumConversionPropertyGetterFactory(nameMatcher)

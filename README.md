@@ -117,7 +117,7 @@ While using AutoMapper is certainly convenient, there is an overhead which may b
     var converterFactory = new ExtendableCompilableTypeConverterFactory(
         nameMatcher,
         new ArgsLengthTypeConverterPrioritiserFactory(),
-        new List<ICompilablePropertyGetterFactory>
+        new ICompilablePropertyGetterFactory[]
         {
             new CompilableAssignableTypesPropertyGetterFactory(nameMatcher),
             new CompilableEnumConversionPropertyGetterFactory(nameMatcher)
@@ -135,6 +135,8 @@ While using AutoMapper is certainly convenient, there is an overhead which may b
         throw new Exception("Unable to obtain a converter");
             
     var result = converter.Convert(getExampleSourceType());
+
+This uses the ICompilablePropertyGetter, ICompilablePropertyGetterFactory, ICompilableTypeConverterByConstructor and ICompilableTypeConverterFactory interfaces. Note that AutoMapper is not used at all in this scenario.
 
 ## Notes
 

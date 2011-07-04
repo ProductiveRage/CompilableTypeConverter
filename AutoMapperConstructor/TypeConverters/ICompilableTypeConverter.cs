@@ -2,6 +2,9 @@
 
 namespace AutoMapperConstructor.TypeConverters
 {
+    /// <summary>
+    /// This is a generic compilable type converter that will translate from TSource to TDest, given an instance of TSource
+    /// </summary>
     public interface ICompilableTypeConverter<TSource, TDest> : ITypeConverter<TSource, TDest>
     {
         /// <summary>
