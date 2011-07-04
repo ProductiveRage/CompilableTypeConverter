@@ -1,7 +1,10 @@
+﻿using System;
 ﻿using System.Collections.Generic;
+﻿using System.Linq.Expressions;
 ﻿using AutoMapperConstructor.ConstructorPrioritisers.Factories;
 using AutoMapperConstructor.NameMatchers;
 using AutoMapperConstructor.PropertyGetters.Factories;
+using AutoMapperConstructor.TypeConverters;
 using AutoMapperConstructor.TypeConverters.Factories;
 
 namespace DemoApp.CompiledExamples
@@ -10,40 +13,20 @@ namespace DemoApp.CompiledExamples
     {
         public static void Test()
         {
-            // Prepare a basic type converter factory using AssignableTypes as Enums
+            // Prepare a converter factory using the base types (AssignableType and EnumConversion property getter factories)
             var nameMatcher = new CaseInsensitiveSkipUnderscoreNameMatcher();
-            var prioritiserFactory = new ArgsLengthTypeConverterPrioritiserFactory();
-            var propertyGetterFactories = new List<ICompilablePropertyGetterFactory>
-            {
-                new CompilableAssignableTypesPropertyGetterFactory(nameMatcher),
-                new CompilableEnumConversionPropertyGetterFactory(nameMatcher)
-            };
-            var converterFactory = new CompilableTypeConverterByConstructorFactory(
-                prioritiserFactory,
-                new CombinedCompilablePropertyGetterFactory(propertyGetterFactories)
+            var converterFactory = new ExtendableCompilableTypeConverterFactory(
+                nameMatcher,
+                new ArgsLengthTypeConverterPrioritiserFactory(),
+                new List<ICompilablePropertyGetterFactory>
+                {
+                    new CompilableAssignableTypesPropertyGetterFactory(nameMatcher),
+                    new CompilableEnumConversionPropertyGetterFactory(nameMatcher)
+                }
             );
 
-            // Generate a converter for SourceType.Sub1 to ConstructorDestType.Sub1 and use it to create property getter factories which will be able to handle property
-            // retrieval of both SourceType.Sub1 to ConstructorDestType.Sub1 and IEnumerable<SourceType.Sub1> to IEnumerable<ConstructorDestType.Sub1>
-            var converterSub1 = converterFactory.Get<SourceType.Sub1, ConstructorDestType.Sub1>();
-            propertyGetterFactories.Add(
-                new CompilableTypeConverterPropertyGetterFactory<SourceType.Sub1, ConstructorDestType.Sub1>(
-                    nameMatcher,
-                    converterSub1
-                )
-            );
-            propertyGetterFactories.Add(
-                new ListCompilablePropertyGetterFactory<SourceType.Sub1, ConstructorDestType.Sub1>(
-                    nameMatcher,
-                    converterSub1
-                )
-            );
-
-            // Get new converter factory reference that incorporates the new property getters
-            converterFactory = new CompilableTypeConverterByConstructorFactory(
-                prioritiserFactory,
-                new CombinedCompilablePropertyGetterFactory(propertyGetterFactories)
-            );
+            // Extend the converter to handle SourceType.Sub1 to ConstructorDestType.Sub1 and IEnumerable<SourceType.Sub1> to IEnumerable<ConstructorDestType.Sub1>
+            converterFactory = converterFactory.CreateMap<SourceType.Sub1, ConstructorDestType.Sub1>();
 
             // This will enable the creation of a converter for SourceType to ConstructorDestType
             var converter = converterFactory.Get<SourceType, ConstructorDestType>();
@@ -55,11 +38,15 @@ namespace DemoApp.CompiledExamples
             return new SourceType()
             {
                 Value = new SourceType.Sub1() { Name = "Bo1" },
+                //ValueList = null,
                 ValueList = new[]
                 {
                     new SourceType.Sub1() { Name = "Bo2" },
+                    null,
                     new SourceType.Sub1() { Name = "Bo3" }
                 },
+                /*
+                 */
                 ValueEnum = SourceType.Sub2.EnumValue2
             };
         }

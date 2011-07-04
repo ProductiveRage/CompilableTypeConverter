@@ -2,21 +2,18 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{703D3BD0-4504-45C5-ACC4-216AECE560FF}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{5CF60504-C3F6-4F58-9EAD-74763DC49405}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DemoApp</RootNamespace>
-    <AssemblyName>DemoApp</AssemblyName>
+    <RootNamespace>UnitTesting</RootNamespace>
+    <AssemblyName>UnitTesting</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -25,8 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -38,34 +34,29 @@
     <Reference Include="AutoMapper">
       <HintPath>..\External Dependencies\AutoMapper.dll</HintPath>
     </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\External Dependencies\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AutoMapperExamples\ConstructorDestType.cs" />
-    <Compile Include="AutoMapperExamples\Examples.cs" />
-    <Compile Include="AutoMapperExamples\SourceType.cs" />
-    <Compile Include="AutoMapperExamples\StandardDestType.cs" />
-    <Compile Include="CompiledExamples\ConstructorDestType.cs" />
-    <Compile Include="CompiledExamples\Examples.cs" />
-    <Compile Include="CompiledExamples\SourceType.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Common.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyGetters\Compilable\AutoMapperEnabledPropertyGetterTests.cs" />
+    <Compile Include="PropertyGetters\CompilableTypeConverterPropertyGetterTests.cs" />
+    <Compile Include="PropertyGetters\Factories\AutoMapperEnabledPropertyGetterFactoryTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AutoMapperConstructor\AutoMapperConstructor.csproj">
       <Project>{3D937713-35FE-4324-B0F6-E0DB413C9128}</Project>
       <Name>AutoMapperConstructor</Name>
     </ProjectReference>
-    <ProjectReference Include="..\UnitTesting\UnitTesting.csproj">
-      <Project>{5CF60504-C3F6-4F58-9EAD-74763DC49405}</Project>
-      <Name>UnitTesting</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

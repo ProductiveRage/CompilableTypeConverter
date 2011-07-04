@@ -41,9 +41,10 @@ namespace AutoMapperConstructor.PropertyGetters.Factories
             if (destPropertyType == null)
                 throw new ArgumentNullException("destPropertyType");
 
-            // Determine whether the destPropertyType implements IEnumerable<> and get the element type if so
+            // Determine whether the destPropertyType implements IEnumerable<> and get the element type if so, if it doesn't match the destination
+            // type of the converter then we'll not be able to work with it
             var destPropertyTypeAsEnumerableElement = tryToGetEnumerableElementTypeOf(destPropertyType);
-            if (destPropertyTypeAsEnumerableElement == null)
+            if (destPropertyTypeAsEnumerableElement != typeof(TPropertyAsRetrievedElement))
                 return null;
 
             var possibleProperties = srcType.GetProperties().Where(p =>

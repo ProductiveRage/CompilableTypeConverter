@@ -87,6 +87,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyGetters\IPropertyGetter.cs" />
     <Compile Include="TypeConverters\CompilableTypeConverterByConstructor.cs" />
+    <Compile Include="TypeConverters\Factories\ExtendableCompilableTypeConverterFactory.cs" />
     <Compile Include="TypeConverters\ICompilableTypeConverter.cs" />
     <Compile Include="TypeConverters\ITypeConverter.cs" />
     <Compile Include="TypeConverters\Factories\ICompilableTypeConverterFactory.cs" />

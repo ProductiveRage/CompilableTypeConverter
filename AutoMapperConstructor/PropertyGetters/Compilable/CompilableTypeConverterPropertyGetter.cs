@@ -48,16 +48,19 @@ namespace AutoMapperConstructor.PropertyGetters.Compilable
                 throw new ArgumentException("param.NodeType must match typeparam TSourceObject");
 
             // Get property value (from object of type TSourceObject) without conversion (this will be as type TPropertyOnSource)
-            // - If value is null, return default TPropertyAsRetrieved
+            // - If value is null, return default TPropertyAsRetrieved (not applicable if a value type)
             // - Otherwise, pass through type converter (to translate from TPropertyOnSource to TPropertyAsRetrieved)
             var propertyValue = Expression.Property(param, _propertyInfo);
+            var conversionExpression = _compilableTypeConverter.GetTypeConverterExpression(propertyValue);
+            if (typeof(TPropertyOnSource).IsValueType)
+                return conversionExpression;
             return Expression.Condition(
                 Expression.Equal(
                     propertyValue,
                     Expression.Constant(null)
                 ),
                 Expression.Constant(default(TPropertyAsRetrieved), typeof(TPropertyAsRetrieved)),
-                _compilableTypeConverter.GetTypeConverterExpression(propertyValue)
+                conversionExpression
             );
         }
     }

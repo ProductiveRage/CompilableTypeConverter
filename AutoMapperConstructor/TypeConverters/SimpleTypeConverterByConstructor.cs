@@ -58,13 +58,11 @@ namespace AutoMapperConstructor.TypeConverters
         }
 
         /// <summary>
-        /// Create a new target type instance from a source value - this will never return null, it will throw an exception for null input or if conversion fails
+        /// Try to retrieve the value of the specified Property from the specified object (which must be of type SrcType) - this will throw an exception for null input
+        /// or if retrieval fails
         /// </summary>
         public TDest Convert(TSource src)
         {
-            if (src == null)
-                throw new ArgumentNullException("src");
-
             var args = new object[_propertyGetters.Count];
             for (var index = 0; index < _propertyGetters.Count; index++)
                 args[index] = _propertyGetters[index].GetValue(src);

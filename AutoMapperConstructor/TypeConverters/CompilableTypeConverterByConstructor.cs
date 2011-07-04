@@ -60,13 +60,10 @@ namespace AutoMapperConstructor.TypeConverters
         }
 
         /// <summary>
-        /// Create a new target type instance from a source value - this will never return null, it will throw an exception for null input or if conversion fails
+        /// Create a new target type instance from a source value - this will throw an exception if conversion fails
         /// </summary>
         public TDest Convert(TSource src)
         {
-            if (src == null)
-                throw new ArgumentNullException("src");
-
             return _converter.Value(src);
         }
 
@@ -104,9 +101,16 @@ namespace AutoMapperConstructor.TypeConverters
             }
 
             // Return an expression that to instantiate a new TDest by using property getters as constructor arguments
-            return Expression.New(
-                _constructor,
-                constructorParameterExpressions.ToArray()
+            return Expression.Condition(
+                Expression.Equal(
+                    param,
+                    Expression.Constant(null)
+                ),
+                Expression.Constant(default(TDest), typeof(TDest)),
+                Expression.New(
+                    _constructor,
+                    constructorParameterExpressions.ToArray()
+                )
             );
         }
     }

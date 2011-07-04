@@ -52,7 +52,8 @@ namespace AutoMapperConstructor.PropertyGetters
         }
 
         /// <summary>
-        /// Try to retrieve the value of the specified Property from the specified object (which must be of type SrcType)
+        /// Try to retrieve the value of the specified Property from the specified object (which must be of type SrcType) - this will throw an exception for null input
+        /// or if retrieval fails
         /// </summary>
         object IPropertyGetter.GetValue(object src)
         {
