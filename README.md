@@ -134,7 +134,17 @@ While using AutoMapper is certainly convenient, there is an overhead which may b
     if (converter == null)
         throw new Exception("Unable to obtain a converter");
             
-    var result = converter.Convert(getExampleSourceType());
+    var result = converter.Convert(new SourceType()
+    {
+        Value = new SourceType.Sub1() { Name = "Sub1 Value1" },
+        ValueList = new[]
+        {
+            new SourceType.Sub1() { Name = "Sub1 Value2" },
+            null,
+            new SourceType.Sub1() { Name = "Sub1 Value3" }
+        },
+        ValueEnum = SourceType.Sub2.EnumValue2
+    }
 
 This uses the ICompilablePropertyGetter, ICompilablePropertyGetterFactory, ICompilableTypeConverterByConstructor and ICompilableTypeConverterFactory interfaces. Note that AutoMapper is not used at all in this scenario.
 
