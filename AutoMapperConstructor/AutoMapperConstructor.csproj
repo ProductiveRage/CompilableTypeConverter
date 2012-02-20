@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AutoMapperConstructor</RootNamespace>
-    <AssemblyName>a</AssemblyName>
+    <AssemblyName>AutoMapperConstructor</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
@@ -87,6 +87,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyGetters\IPropertyGetter.cs" />
     <Compile Include="TypeConverters\CompilableTypeConverterByConstructor.cs" />
+    <Compile Include="TypeConverters\CompilableTypeConverterByPropertySetting.cs" />
+    <Compile Include="TypeConverters\Factories\CompilableTypeConverterByPropertySettingFactory.cs" />
     <Compile Include="TypeConverters\Factories\ExtendableCompilableTypeConverterFactory.cs" />
     <Compile Include="TypeConverters\ICompilableTypeConverter.cs" />
     <Compile Include="TypeConverters\ITypeConverter.cs" />

@@ -54,15 +54,12 @@ namespace AutoMapperConstructor.TypeConverters.Factories
 				}
 				if (candidate)
 			    {
-                    var constructorCandidate = (ITypeConverterByConstructor<TSource, TDest>)Activator.CreateInstance(
-                        typeof(SimpleTypeConverterByConstructor<,>).MakeGenericType(
-                            typeof(TSource),
-                            typeof(TDest)
-                        ),
-                        propertyGetters,
-					    _constructorInvokerFactory.Get<TDest>(constructor)
+                    constructorCandidates.Add(
+                        new SimpleTypeConverterByConstructor<TSource, TDest>(
+                            propertyGetters,
+	    				    _constructorInvokerFactory.Get<TDest>(constructor)
+                        )
                     );
-                    constructorCandidates.Add(constructorCandidate);
 				}
 			}
 			if (constructorCandidates.Count == 0)

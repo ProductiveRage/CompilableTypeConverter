@@ -54,7 +54,7 @@ namespace AutoMapperConstructor.TypeConverters.Factories
         /// <summary>
         /// This will return null if a converter could not be generated
         /// </summary>
-        public ICompilableTypeConverterByConstructor<TSource, TDest> Get<TSource, TDest>()
+        public ICompilableTypeConverter<TSource, TDest> Get<TSource, TDest>()
         {
             return _typeConverterFactory.Value.Get<TSource, TDest>();
         }

@@ -29,7 +29,7 @@ namespace AutoMapperConstructor.TypeConverters.Factories
         /// <summary>
 		/// This will return null if no suitable constructors were retrieved
 		/// </summary>
-        public ICompilableTypeConverterByConstructor<TSource, TDest> Get<TSource, TDest>()
+        public ICompilableTypeConverter<TSource, TDest> Get<TSource, TDest>()
         {
             var constructorCandidates = new List<ICompilableTypeConverterByConstructor<TSource, TDest>>();
             var constructors = typeof(TDest).GetConstructors();
@@ -51,15 +51,12 @@ namespace AutoMapperConstructor.TypeConverters.Factories
 				}
 				if (candidate)
 			    {
-                    var constructorCandidate = (ICompilableTypeConverterByConstructor<TSource, TDest>)Activator.CreateInstance(
-                        typeof(CompilableTypeConverterByConstructor<,>).MakeGenericType(
-                            typeof(TSource),
-                            typeof(TDest)
-                        ),
-                        propertyGetters,
-					    constructor
+                    constructorCandidates.Add(
+                        new CompilableTypeConverterByConstructor<TSource, TDest>(
+                            propertyGetters,
+                            constructor
+                        )
                     );
-                    constructorCandidates.Add(constructorCandidate);
 				}
 			}
 			if (constructorCandidates.Count == 0)
