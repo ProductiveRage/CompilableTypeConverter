@@ -112,9 +112,18 @@ namespace AutoMapperConstructor.TypeConverters
                 dest
             );
 
-            return Expression.Block(
-                new[] { dest },
-                newInstanceGenerationExpressions
+            // Return an expression that to instantiate a new TDest by using property getters as constructor arguments
+            // - If source is null, return default(TDest)
+            return Expression.Condition(
+                Expression.Equal(
+                    param,
+                    Expression.Constant(null)
+                ),
+                Expression.Constant(default(TDest), typeof(TDest)),
+                Expression.Block(
+                    new[] { dest },
+                    newInstanceGenerationExpressions
+                )
             );
         }
     }
