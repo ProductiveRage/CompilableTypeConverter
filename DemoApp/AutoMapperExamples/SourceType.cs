@@ -7,7 +7,7 @@ namespace DemoApp.AutoMapperExamples
     {
         public Sub1 Value { get; set; }
         public IEnumerable<Sub1> ValueList { get; set; }
-        public Sub2 EnumValue { get; set; }
+        public Sub2 ValueEnum { get; set; }
 
         public class Sub1
         {

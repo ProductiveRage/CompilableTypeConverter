@@ -78,7 +78,7 @@ namespace DemoApp.AutoMapperExamples
                 {
                     Name = "Bo1"
                 },
-                EnumValue = SourceType.Sub2.EnumValue3,
+                ValueEnum = SourceType.Sub2.EnumValue3,
                 ValueList = new[]
                 {
                     new SourceType.Sub1()

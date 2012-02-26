@@ -5,7 +5,8 @@
         static void Main(string[] args)
         {
             AutoMapperExamples.Examples.Test();
-            CompiledExamples.Examples.Test();
+            CompiledExamples.Examples.TestConstructor();
+            CompiledExamples.Examples.TestPropertySetting();
         }
     }
 }

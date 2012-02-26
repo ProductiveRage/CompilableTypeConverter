@@ -51,6 +51,7 @@
     <Compile Include="CompiledExamples\ConstructorDestType.cs" />
     <Compile Include="CompiledExamples\Examples.cs" />
     <Compile Include="CompiledExamples\SourceType.cs" />
+    <Compile Include="CompiledExamples\StandardDestType.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace DemoApp.AutoMapperExamples
+namespace DemoApp.CompiledExamples
 {
     public class StandardDestType
     {
