@@ -41,7 +41,7 @@ I want to be able to translate from an instance of the "SourceType" class to a n
     {
         public Sub1 Value { get; set; }
         public IEnumerable<Sub1> ValueList { get; set; }
-        public Sub2 EnumValue { get; set; }
+        public Sub2 ValueEnum { get; set; }
 
         public class Sub1
         {
@@ -64,24 +64,24 @@ I want to be able to translate from an instance of the "SourceType" class to a n
     {
         private Sub1 _value;
         private IEnumerable<Sub1> _valueList;
-        private Sub2 _enumValue;
-        public ConstructorDestType(Sub1 value, IEnumerable<Sub1> valueList, Sub2 enumValue)
+        private Sub2 _valueEnum;
+        public ConstructorDestType(Sub1 value, IEnumerable<Sub1> valueList, Sub2 valueEnum)
         {
             if (value == null)
                 throw new ArgumentNullException("value");
             if (valueList == null)
                 throw new ArgumentNullException("valueList");
-            if (!Enum.IsDefined(typeof(Sub2), enumValue))
-                throw new ArgumentOutOfRangeException("enumValue");
+            if (!Enum.IsDefined(typeof(Sub2), valueEnum))
+                throw new ArgumentOutOfRangeException("valueEnum");
             _value = value;
             _valueList = valueList;
-            _enumValue = enumValue;
+            _valueEnum = valueEnum;
         }
         public ConstructorDestType(Sub1 value, IEnumerable<Sub1> valueList) : this(value, valueList, Sub2.EnumValue1) { }
 
         public Sub1 Value { get { return _value; } }
         public IEnumerable<Sub1> ValueList { get { return _valueList; } }
-        public Sub2 EnumValue { get { return _enumValue; } }
+        public Sub2 ValueEnum { get { return _valueEnum; } }
 
         public class Sub1
         {
@@ -114,7 +114,7 @@ While using AutoMapper is certainly convenient, there is an overhead which may b
 
     // Prepare a converter factory using the base types (AssignableType and EnumConversion property getter factories)
     var nameMatcher = new CaseInsensitiveSkipUnderscoreNameMatcher();
-    var converterFactory = new ExtendableCompilableTypeConverterFactory(
+    var converterFactory = ExtendableCompilableTypeConverterFactoryHelpers.GenerateConstructorBasedFactory(
         nameMatcher,
         new ArgsLengthTypeConverterPrioritiserFactory(),
         new ICompilablePropertyGetterFactory[]
@@ -148,6 +148,40 @@ While using AutoMapper is certainly convenient, there is an overhead which may b
 
 This uses the ICompilablePropertyGetter, ICompilablePropertyGetterFactory, ICompilableTypeConverterByConstructor and ICompilableTypeConverterFactory interfaces. Note that AutoMapper is not used at all in this scenario.
 
-## Notes
+## Property setters instead of constructors - February 2012
 
-It would be nice if we could use AutoMapper INamingConvention classes somehow as INameMatcher in this project. Not something I've looked at yet.
+This project can now be used to translate back from DestType to SourceType by instantiating with a parameter-less constructor and then setting properties. The CompilableTypeConverterByPropertySettingFactory can be configured to return null to Get&lt;TSource, TDest&gt; requests unless _all_ properties can be set from the source type or it can return a converter that will set as many properties as possible (potentially zero).
+
+There is an ExtendableCompilableTypeConverterFactoryHelpers method such that an example very similar to the previous one can be constructed:
+
+    var nameMatcher = new CaseInsensitiveSkipUnderscoreNameMatcher();
+    var converterFactory = ExtendableCompilableTypeConverterFactoryHelpers.GeneratePropertySetterBasedFactory(
+        nameMatcher,
+        CompilableTypeConverterByPropertySettingFactory.PropertySettingTypeOptions.MatchAll,
+        new ICompilablePropertyGetterFactory[]
+        {
+            new CompilableAssignableTypesPropertyGetterFactory(nameMatcher),
+            new CompilableEnumConversionPropertyGetterFactory(nameMatcher)
+        }
+    );
+
+    converterFactory = converterFactory.CreateMap<ConstructorDestType.Sub1, SourceType.Sub1>();
+
+    var converter = converterFactory.Get<ConstructorDestType, SourceType>();
+    if (converter == null)
+        throw new Exception("Unable to obtain a converter");
+
+    var result = converter.Convert(
+        new ConstructorDestType(
+            new ConstructorDestType.Sub1("Sub1 Value1"),
+            new[]
+            {
+                new ConstructorDestType.Sub1("Sub1 Value2"),
+                null,
+                new ConstructorDestType.Sub1("Sub1 Value3")
+            },
+            ConstructorDestType.Sub2.EnumValue2
+        )
+    );
+
+It may seem like this has come back full circle now since AutoMapper is very capable of these sorts of conversions - in fact _more_ capable in some cases due to a larger set of conversions available out of the box - but it was bugging me that the project here could only translate one way (TO constructor-based types). This also has the benefit of making use of LINQ Expressions and so should be significantly quicker than AutoMapper when converting many instances of the same types.
