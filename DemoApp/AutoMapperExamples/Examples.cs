@@ -1,9 +1,9 @@
 ﻿﻿using System;
 using AutoMapper;
+using AutoMapperIntegration.PropertyGetters.Factories;
 using CompilableTypeConverter.ConstructorInvokers.Factories;
 using CompilableTypeConverter.ConstructorPrioritisers.Factories;
 using CompilableTypeConverter.NameMatchers;
-using CompilableTypeConverter.PropertyGetters.Factories;
 using CompilableTypeConverter.TypeConverters.Factories;
 
 namespace DemoApp.AutoMapperExamples

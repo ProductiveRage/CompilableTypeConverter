@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Reflection;
 using AutoMapper;
+using CompilableTypeConverter.PropertyGetters;
 
-namespace CompilableTypeConverter.PropertyGetters
+namespace AutoMapperIntegration.PropertyGetters
 {
     /// <summary>
     /// AbstractGenericPropertyGetter implementation using reflection to retrieve the specified property value from the source type and AutoMapper to translate the

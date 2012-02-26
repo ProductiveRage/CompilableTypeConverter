@@ -3,8 +3,10 @@ using System.Linq;
 using System.Reflection;
 using AutoMapper;
 using CompilableTypeConverter.NameMatchers;
+using CompilableTypeConverter.PropertyGetters;
+using CompilableTypeConverter.PropertyGetters.Factories;
 
-namespace CompilableTypeConverter.PropertyGetters.Factories
+namespace AutoMapperIntegration.PropertyGetters.Factories
 {
     /// <summary>
     /// This IPropertyGetterFactory implementation looks for properties on a source type whose name matches a specified value (in the context of an INameMatcher)

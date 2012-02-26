@@ -57,6 +57,10 @@
       <Project>{3D937713-35FE-4324-B0F6-E0DB413C9128}</Project>
       <Name>CompilableTypeConverter</Name>
     </ProjectReference>
+    <ProjectReference Include="..\AutoMapperIntegration\AutoMapperIntegration.csproj">
+      <Project>{CC3627EE-ECFB-47C2-9BEF-C623A2103F85}</Project>
+      <Name>AutoMapperIntegration</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

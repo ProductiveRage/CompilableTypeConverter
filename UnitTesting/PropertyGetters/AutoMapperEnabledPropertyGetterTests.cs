@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using AutoMapper;
-using CompilableTypeConverter.PropertyGetters;
+using AutoMapperIntegration.PropertyGetters;
 using NUnit.Framework;
 
 namespace UnitTesting.PropertyGetters.Compilable
