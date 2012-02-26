@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using AutoMapperConstructor.PropertyGetters.Compilable;
+using CompilableTypeConverter.PropertyGetters.Compilable;
 
-namespace AutoMapperConstructor.PropertyGetters.Factories
+namespace CompilableTypeConverter.PropertyGetters.Factories
 {
     /// <summary>
     /// This considers multiple ICompilablePropertyGetterFactory implementations when trying to find a match - each will be tried in turn when the Get method is called

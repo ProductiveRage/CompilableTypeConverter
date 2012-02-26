@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace AutoMapperConstructor.ConstructorInvokers
+namespace CompilableTypeConverter.ConstructorInvokers
 {
     /// <summary>
     /// Returns a new instance of the target type by calling Invoke on the type constructor specified (with the provided arguments)

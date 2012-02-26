@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace AutoMapperConstructor.ConstructorInvokers
+namespace CompilableTypeConverter.ConstructorInvokers
 {
     public interface IConstructorInvoker<TDest>
     {

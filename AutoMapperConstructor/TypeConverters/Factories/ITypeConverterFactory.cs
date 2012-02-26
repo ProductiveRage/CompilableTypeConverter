@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AutoMapperConstructor.TypeConverters.Factories
+namespace CompilableTypeConverter.TypeConverters.Factories
 {
     public interface ITypeConverterFactory
     {

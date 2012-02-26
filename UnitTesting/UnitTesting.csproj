@@ -53,9 +53,9 @@
     <Compile Include="PropertyGetters\Factories\AutoMapperEnabledPropertyGetterFactoryTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AutoMapperConstructor\AutoMapperConstructor.csproj">
+    <ProjectReference Include="..\AutoMapperConstructor\CompilableTypeConverter.csproj">
       <Project>{3D937713-35FE-4324-B0F6-E0DB413C9128}</Project>
-      <Name>AutoMapperConstructor</Name>
+      <Name>CompilableTypeConverter</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

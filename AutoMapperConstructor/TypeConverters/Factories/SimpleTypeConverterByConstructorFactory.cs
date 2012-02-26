@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using AutoMapperConstructor.ConstructorInvokers.Factories;
-using AutoMapperConstructor.ConstructorPrioritisers.Factories;
-using AutoMapperConstructor.PropertyGetters;
-using AutoMapperConstructor.PropertyGetters.Factories;
+using CompilableTypeConverter.ConstructorInvokers.Factories;
+using CompilableTypeConverter.ConstructorPrioritisers.Factories;
+using CompilableTypeConverter.PropertyGetters;
+using CompilableTypeConverter.PropertyGetters.Factories;
 
-namespace AutoMapperConstructor.TypeConverters.Factories
+namespace CompilableTypeConverter.TypeConverters.Factories
 {
     public class SimpleTypeConverterByConstructorFactory : ITypeConverterFactory
     {

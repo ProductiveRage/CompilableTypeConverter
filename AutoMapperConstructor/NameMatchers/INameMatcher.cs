@@ -1,4 +1,4 @@
-﻿namespace AutoMapperConstructor.NameMatchers
+﻿namespace CompilableTypeConverter.NameMatchers
 {
     public interface INameMatcher
     {

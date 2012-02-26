@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using AutoMapperConstructor.PropertyGetters.Compilable;
-using AutoMapperConstructor.PropertyGetters.Factories;
+using CompilableTypeConverter.PropertyGetters.Compilable;
+using CompilableTypeConverter.PropertyGetters.Factories;
 
-namespace AutoMapperConstructor.TypeConverters.Factories
+namespace CompilableTypeConverter.TypeConverters.Factories
 {
     public class CompilableTypeConverterByPropertySettingFactory : ICompilableTypeConverterFactory
     {

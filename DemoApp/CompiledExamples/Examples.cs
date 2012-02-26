@@ -1,8 +1,8 @@
 ﻿using System;
-﻿using AutoMapperConstructor.ConstructorPrioritisers.Factories;
-using AutoMapperConstructor.NameMatchers;
-using AutoMapperConstructor.PropertyGetters.Factories;
-using AutoMapperConstructor.TypeConverters.Factories;
+﻿using CompilableTypeConverter.ConstructorPrioritisers.Factories;
+using CompilableTypeConverter.NameMatchers;
+using CompilableTypeConverter.PropertyGetters.Factories;
+using CompilableTypeConverter.TypeConverters.Factories;
 
 namespace DemoApp.CompiledExamples
 {

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using AutoMapperConstructor.PropertyGetters.Compilable;
+using CompilableTypeConverter.PropertyGetters.Compilable;
 using NUnit.Framework;
-using AutoMapperConstructor.TypeConverters;
+using CompilableTypeConverter.TypeConverters;
 using System.Linq.Expressions;
 
 namespace UnitTesting.PropertyGetters

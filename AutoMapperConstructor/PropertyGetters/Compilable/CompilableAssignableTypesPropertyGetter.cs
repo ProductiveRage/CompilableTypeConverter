@@ -2,7 +2,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace AutoMapperConstructor.PropertyGetters.Compilable
+namespace CompilableTypeConverter.PropertyGetters.Compilable
 {
     /// <summary>
     /// Retrieves property values for class, attempting conversion to typeparam TPropertyAsRetrieved by calling Convert.ChangeType - compilable using Linq Expressions

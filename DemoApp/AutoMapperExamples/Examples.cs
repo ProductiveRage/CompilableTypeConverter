@@ -1,10 +1,10 @@
 ﻿﻿using System;
 using AutoMapper;
-using AutoMapperConstructor.ConstructorInvokers.Factories;
-using AutoMapperConstructor.ConstructorPrioritisers.Factories;
-using AutoMapperConstructor.NameMatchers;
-using AutoMapperConstructor.PropertyGetters.Factories;
-using AutoMapperConstructor.TypeConverters.Factories;
+using CompilableTypeConverter.ConstructorInvokers.Factories;
+using CompilableTypeConverter.ConstructorPrioritisers.Factories;
+using CompilableTypeConverter.NameMatchers;
+using CompilableTypeConverter.PropertyGetters.Factories;
+using CompilableTypeConverter.TypeConverters.Factories;
 
 namespace DemoApp.AutoMapperExamples
 {
@@ -13,7 +13,7 @@ namespace DemoApp.AutoMapperExamples
         public static void Test()
         {
             var destStandard = getStandardAutoMapperTranslation(getExampleSourceType());
-            var destConstructor = getStandardAutoMapperConstructor(getExampleSourceType());
+            var destConstructor = getStandardCompilableTypeConverter(getExampleSourceType());
         }
 
         private static StandardDestType getStandardAutoMapperTranslation(SourceType source)
@@ -34,7 +34,7 @@ namespace DemoApp.AutoMapperExamples
             return (new MappingEngine(mapperConfig)).Map<SourceType, StandardDestType>(getExampleSourceType());
         }
 
-        private static ConstructorDestType getStandardAutoMapperConstructor(SourceType source)
+        private static ConstructorDestType getStandardCompilableTypeConverter(SourceType source)
         {
             if (source == null)
                 throw new ArgumentNullException("source");

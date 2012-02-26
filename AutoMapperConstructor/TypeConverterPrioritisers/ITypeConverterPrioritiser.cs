@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using AutoMapperConstructor.TypeConverters;
+using CompilableTypeConverter.TypeConverters;
 
-namespace AutoMapperConstructor.ConstructorPrioritisers
+namespace CompilableTypeConverter.ConstructorPrioritisers
 {
     public interface ITypeConverterPrioritiser<TSource, TDest>
     {

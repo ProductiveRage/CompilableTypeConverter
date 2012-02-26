@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using AutoMapper;
-using AutoMapperConstructor.PropertyGetters;
+using CompilableTypeConverter.PropertyGetters;
 using NUnit.Framework;
 
 namespace UnitTesting.PropertyGetters.Compilable

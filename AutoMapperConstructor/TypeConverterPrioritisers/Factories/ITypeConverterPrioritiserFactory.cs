@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using AutoMapperConstructor.TypeConverters;
+using CompilableTypeConverter.TypeConverters;
 
-namespace AutoMapperConstructor.ConstructorPrioritisers.Factories
+namespace CompilableTypeConverter.ConstructorPrioritisers.Factories
 {
     /// <summary>
     /// We require the ITypeConverterPrioritiserFactory as it may be used by an ITypeConverterByConstructorFactory implementation, and neither of these

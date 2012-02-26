@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual C# Express 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMapperConstructor", "AutoMapperConstructor\AutoMapperConstructor.csproj", "{3D937713-35FE-4324-B0F6-E0DB413C9128}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompilableTypeConverter", "AutoMapperConstructor\CompilableTypeConverter.csproj", "{3D937713-35FE-4324-B0F6-E0DB413C9128}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoApp", "DemoApp\DemoApp.csproj", "{703D3BD0-4504-45C5-ACC4-216AECE560FF}"
 EndProject

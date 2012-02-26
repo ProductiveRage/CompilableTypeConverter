@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace AutoMapperConstructor.TypeConverters
+namespace CompilableTypeConverter.TypeConverters
 {
     public interface ITypeConverter<TSource, TDest>
     {

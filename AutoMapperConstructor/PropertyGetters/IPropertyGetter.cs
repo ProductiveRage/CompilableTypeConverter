@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace AutoMapperConstructor.PropertyGetters
+namespace CompilableTypeConverter.PropertyGetters
 {
     /// <summary>
     /// Note: IPropertyGetter can not specify typeparams as we're likely to need to maintain a list of these (eg. see SimpleTypeConverterByConstructor) before

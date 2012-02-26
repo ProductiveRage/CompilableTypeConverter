@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AutoMapperConstructor.PropertyGetters.Factories
+namespace CompilableTypeConverter.PropertyGetters.Factories
 {
     public interface IPropertyGetterFactory
     {

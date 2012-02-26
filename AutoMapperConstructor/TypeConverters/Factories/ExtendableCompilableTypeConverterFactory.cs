@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AutoMapperConstructor.NameMatchers;
-using AutoMapperConstructor.PropertyGetters.Factories;
+using CompilableTypeConverter.NameMatchers;
+using CompilableTypeConverter.PropertyGetters.Factories;
 
-namespace AutoMapperConstructor.TypeConverters.Factories
+namespace CompilableTypeConverter.TypeConverters.Factories
 {
     /// <summary>
     /// This forms the basis to construct an extendable compilable type converter factory - it will start with a small set of property getter factories that are sufficient

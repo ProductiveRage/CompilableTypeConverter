@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace AutoMapperConstructor.PropertyGetters.Compilable
+namespace CompilableTypeConverter.PropertyGetters.Compilable
 {
     /// <summary>
     /// Note: ICompilablePropertyGetter can not specify typeparams as we're likely to need to maintain a list of these (eg. see CompilableTypeConverterByConstructor)

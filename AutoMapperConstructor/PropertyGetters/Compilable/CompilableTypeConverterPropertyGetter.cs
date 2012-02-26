@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Reflection;
-using AutoMapperConstructor.TypeConverters;
+using CompilableTypeConverter.TypeConverters;
 
-namespace AutoMapperConstructor.PropertyGetters.Compilable
+namespace CompilableTypeConverter.PropertyGetters.Compilable
 {
     /// <summary>
     /// Retrieve the property value of a specified object, converting the property value to another type using a particular compilable type converter

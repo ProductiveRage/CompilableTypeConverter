@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using AutoMapperConstructor.ConstructorPrioritisers.Factories;
-using AutoMapperConstructor.NameMatchers;
-using AutoMapperConstructor.PropertyGetters.Factories;
+using CompilableTypeConverter.ConstructorPrioritisers.Factories;
+using CompilableTypeConverter.NameMatchers;
+using CompilableTypeConverter.PropertyGetters.Factories;
 
-namespace AutoMapperConstructor.TypeConverters.Factories
+namespace CompilableTypeConverter.TypeConverters.Factories
 {
     /// <summary>
     /// These are methods to try to remove one level of abstraction from ExtendableCompilableTypeConverterFactory for some common cases

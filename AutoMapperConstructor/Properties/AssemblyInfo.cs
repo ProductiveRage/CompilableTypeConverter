@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("AutoMapperConstructor 1")]
+[assembly: AssemblyTitle("CompilableTypeConverter")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ProductiveRage")]
-[assembly: AssemblyProduct("AutoMapperConstructor 1")]
-[assembly: AssemblyCopyright("Copyright © ProductiveRage 2011")]
+[assembly: AssemblyProduct("CompilableTypeConverter")]
+[assembly: AssemblyCopyright("Copyright © ProductiveRage 2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

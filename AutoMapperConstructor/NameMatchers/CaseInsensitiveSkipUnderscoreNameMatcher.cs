@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AutoMapperConstructor.NameMatchers
+namespace CompilableTypeConverter.NameMatchers
 {
     /// <summary>
     /// Determine whether two property names can be considered equal for mappings (this ignores case by allows no other transformations)

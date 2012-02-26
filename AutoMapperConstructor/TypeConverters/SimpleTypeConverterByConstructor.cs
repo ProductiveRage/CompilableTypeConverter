@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using AutoMapperConstructor.ConstructorInvokers;
-using AutoMapperConstructor.PropertyGetters;
+using CompilableTypeConverter.ConstructorInvokers;
+using CompilableTypeConverter.PropertyGetters;
 
-namespace AutoMapperConstructor.TypeConverters
+namespace CompilableTypeConverter.TypeConverters
 {
     /// <summary>
     /// A class capable of converting an instance of one type into another by calling a constructor on the target type - the manner in which the

@@ -1,4 +1,4 @@
-﻿namespace AutoMapperConstructor.TypeConverters.Factories
+﻿namespace CompilableTypeConverter.TypeConverters.Factories
 {
     public interface ICompilableTypeConverterFactory : ITypeConverterFactory
     {

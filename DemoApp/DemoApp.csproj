@@ -56,9 +56,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AutoMapperConstructor\AutoMapperConstructor.csproj">
+    <ProjectReference Include="..\AutoMapperConstructor\CompilableTypeConverter.csproj">
       <Project>{3D937713-35FE-4324-B0F6-E0DB413C9128}</Project>
-      <Name>AutoMapperConstructor</Name>
+      <Name>CompilableTypeConverter</Name>
     </ProjectReference>
     <ProjectReference Include="..\UnitTesting\UnitTesting.csproj">
       <Project>{5CF60504-C3F6-4F58-9EAD-74763DC49405}</Project>

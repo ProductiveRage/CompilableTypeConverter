@@ -1,9 +1,9 @@
 ﻿using System;
 using NUnit.Framework;
-using AutoMapperConstructor.PropertyGetters.Factories;
+using CompilableTypeConverter.PropertyGetters.Factories;
 using AutoMapper;
 using System.Collections.Generic;
-using AutoMapperConstructor.NameMatchers;
+using CompilableTypeConverter.NameMatchers;
 
 namespace UnitTesting.PropertyGetters.Factories
 {

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Reflection;
-using AutoMapperConstructor.PropertyGetters;
+using CompilableTypeConverter.PropertyGetters;
 
-namespace AutoMapperConstructor.PropertyGetters.Compilable
+namespace CompilableTypeConverter.PropertyGetters.Compilable
 {
     /// <summary>
     /// This provides a lot of the plumbing for an ICompilablePropertyGetter implementation - the derived class only declare the Property value and override the

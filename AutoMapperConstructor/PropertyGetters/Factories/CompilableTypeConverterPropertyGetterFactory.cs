@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
-using AutoMapperConstructor.NameMatchers;
-using AutoMapperConstructor.PropertyGetters.Compilable;
-using AutoMapperConstructor.TypeConverters;
+using CompilableTypeConverter.NameMatchers;
+using CompilableTypeConverter.PropertyGetters.Compilable;
+using CompilableTypeConverter.TypeConverters;
 
-namespace AutoMapperConstructor.PropertyGetters.Factories
+namespace CompilableTypeConverter.PropertyGetters.Factories
 {
     /// <summary>
     /// This ICompilablePropertyGetterFactory implementation looks for properties on a source type whose name matches a specified value (in the context of

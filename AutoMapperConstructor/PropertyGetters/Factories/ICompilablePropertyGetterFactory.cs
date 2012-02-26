@@ -1,7 +1,7 @@
 ﻿using System;
-using AutoMapperConstructor.PropertyGetters.Compilable;
+using CompilableTypeConverter.PropertyGetters.Compilable;
 
-namespace AutoMapperConstructor.PropertyGetters.Factories
+namespace CompilableTypeConverter.PropertyGetters.Factories
 {
     public interface ICompilablePropertyGetterFactory : IPropertyGetterFactory
     {

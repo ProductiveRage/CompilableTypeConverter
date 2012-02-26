@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace AutoMapperConstructor.ConstructorInvokers.Factories
+namespace CompilableTypeConverter.ConstructorInvokers.Factories
 {
     public class SimpleConstructorInvokerFactory : IConstructorInvokerFactory
     {

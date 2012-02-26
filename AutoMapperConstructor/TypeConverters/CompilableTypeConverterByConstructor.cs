@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
-using AutoMapperConstructor.ConstructorInvokers;
-using AutoMapperConstructor.PropertyGetters.Compilable;
+using CompilableTypeConverter.ConstructorInvokers;
+using CompilableTypeConverter.PropertyGetters.Compilable;
 
-namespace AutoMapperConstructor.TypeConverters
+namespace CompilableTypeConverter.TypeConverters
 {
     /// <summary>
     /// This will convert from one class to another using a constructor on the target type to pass in the data. The conversion process will be compiled using

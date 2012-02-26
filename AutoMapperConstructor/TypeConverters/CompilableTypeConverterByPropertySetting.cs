@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
-using AutoMapperConstructor.PropertyGetters.Compilable;
+using CompilableTypeConverter.PropertyGetters.Compilable;
 
-namespace AutoMapperConstructor.TypeConverters
+namespace CompilableTypeConverter.TypeConverters
 {
     /// <summary>
     /// This will convert from one class to another by instantiating the target through a parameterless constructor and then setting individual properties. The

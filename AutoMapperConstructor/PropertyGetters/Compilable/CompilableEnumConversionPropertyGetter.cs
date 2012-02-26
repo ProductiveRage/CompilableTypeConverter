@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using AutoMapperConstructor.NameMatchers;
+using CompilableTypeConverter.NameMatchers;
 
-namespace AutoMapperConstructor.PropertyGetters.Compilable
+namespace CompilableTypeConverter.PropertyGetters.Compilable
 {
     /// <summary>
     /// Retrieves property values for class, converting from the property type on the source object to that of a destination - this property getter only supports enums
