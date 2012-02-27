@@ -53,7 +53,7 @@
     <Compile Include="PropertyGetters\Factories\AutoMapperEnabledPropertyGetterFactoryTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AutoMapperConstructor\CompilableTypeConverter.csproj">
+    <ProjectReference Include="..\CompilableTypeConverter\CompilableTypeConverter.csproj">
       <Project>{3D937713-35FE-4324-B0F6-E0DB413C9128}</Project>
       <Name>CompilableTypeConverter</Name>
     </ProjectReference>
