@@ -8,7 +8,7 @@ which means we're not taking advantage of AutoMapper's name matching or type con
 
 ## An example
 
-I want to be able to translate from an instance of the "SourceType" class to a new "ConstructorDestType" instance, the constructor arguments match the properties of SourceType though with different casing and their types require translation; IEnumerable&lt;SourceType.Sub1&gt; to IEnumerable&lt;ConstructorDestType.Sub1&gt; and from the SourceType.Sub2 enum to ConstructorDestType.Sub2 enum.
+I want to be able to translate from an instance of the "SourceType" class to a new "ConstructorDestType" instance, the constructor arguments match the properties of SourceType though with different casing and their types require translation; IEnumerable<SourceType.Sub1> to IEnumerable<ConstructorDestType.Sub1> and from the SourceType.Sub2 enum to ConstructorDestType.Sub2 enum.
 
     // Get a no-frills, run-of-the-mill AutoMapper Configuration reference..
     var mapperConfig = new Configuration(
@@ -150,7 +150,7 @@ This uses the ICompilablePropertyGetter, ICompilablePropertyGetterFactory, IComp
 
 ## Property setters instead of constructors - February 2012
 
-This project can now be used to translate back from DestType to SourceType by instantiating with a parameter-less constructor and then setting properties. The CompilableTypeConverterByPropertySettingFactory can be configured to return null to Get&lt;TSource, TDest&gt; requests unless _all_ properties can be set from the source type or it can return a converter that will set as many properties as possible (potentially zero).
+This project can now be used to translate back from DestType to SourceType by instantiating with a parameter-less constructor and then setting properties. The CompilableTypeConverterByPropertySettingFactory can be configured to return null to Get<TSource, TDest> requests unless _all_ properties can be set from the source type or it can return a converter that will set as many properties as possible (potentially zero).
 
 There is an ExtendableCompilableTypeConverterFactoryHelpers method such that an example very similar to the previous one can be constructed:
 
