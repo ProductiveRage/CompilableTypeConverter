@@ -23,7 +23,7 @@ I want to be able to translate from an instance of the "SourceType" class to a n
     // If the translatorFactory is unable to find any constructors it can use for the conversion, the translatorFactory.Get
     // method will return null
     var translatorFactory = new SimpleTypeConverterByConstructorFactory(
-        new ArgsLengthTypeConverterPrioritiser(),
+        new ArgsLengthTypeConverterPrioritiserFactory(),
         new SimpleConstructorInvokerFactory(),
         new AutoMapperEnabledPropertyGetterFactory(
             new CaseInsensitiveSkipUnderscoreNameMatcher(),
