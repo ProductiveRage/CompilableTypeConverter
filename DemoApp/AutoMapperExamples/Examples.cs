@@ -1,6 +1,6 @@
 ﻿﻿using System;
 using AutoMapper;
-using AutoMapperIntegration.PropertyGetters.Factories;
+using CompilableTypeConverter.AutoMapperIntegration.PropertyGetters.Factories;
 using CompilableTypeConverter.ConstructorInvokers.Factories;
 using CompilableTypeConverter.ConstructorPrioritisers.Factories;
 using CompilableTypeConverter.NameMatchers;

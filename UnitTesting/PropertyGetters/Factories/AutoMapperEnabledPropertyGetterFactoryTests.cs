@@ -1,6 +1,6 @@
 ﻿using System;
 using AutoMapper;
-using AutoMapperIntegration.PropertyGetters.Factories;
+using CompilableTypeConverter.AutoMapperIntegration.PropertyGetters.Factories;
 using CompilableTypeConverter.NameMatchers;
 using NUnit.Framework;
 

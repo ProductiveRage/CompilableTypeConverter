@@ -6,7 +6,7 @@ using CompilableTypeConverter.NameMatchers;
 using CompilableTypeConverter.PropertyGetters;
 using CompilableTypeConverter.PropertyGetters.Factories;
 
-namespace AutoMapperIntegration.PropertyGetters.Factories
+namespace CompilableTypeConverter.AutoMapperIntegration.PropertyGetters.Factories
 {
     /// <summary>
     /// This IPropertyGetterFactory implementation looks for properties on a source type whose name matches a specified value (in the context of an INameMatcher)
