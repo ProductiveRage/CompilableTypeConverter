@@ -37,6 +37,20 @@ I want to be able to translate from an instance of the "SourceType" class to a n
     // Make our translation available to the AutoMapper configuration
     mapperConfig.CreateMap<SourceType, ConstructorDestType>().ConstructUsing(translator.Convert);
 
+    // Let AutoMapper do its thing!
+    var dest = (new MappingEngine(mapperConfig)).Map<SourceType, ConstructorDestType>(
+        new SourceType()
+        {
+            Value = new SourceType.Sub1() { Name = "Test1" },
+            ValueList = new[]
+            {
+                new SourceType.Sub1() { Name = "Test2" },
+                new SourceType.Sub1() { Name = "Test3" }
+            },
+            ValueEnum = SourceType.Sub2.EnumValue2
+        }
+    );
+
     public class SourceType
     {
         public Sub1 Value { get; set; }
