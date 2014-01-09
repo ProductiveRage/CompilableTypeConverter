@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using CompilableTypeConverter.ConstructorInvokers;
@@ -17,37 +18,74 @@ namespace CompilableTypeConverter.TypeConverters
         private ConstructorInfo _constructor;
         private List<ICompilablePropertyGetter> _propertyGetters;
         private Lazy<Func<TSource, TDest>> _converter;
-        public CompilableTypeConverterByConstructor(IEnumerable<ICompilablePropertyGetter> propertyGetters, ConstructorInfo constructor)
+        public CompilableTypeConverterByConstructor(
+			IEnumerable<ICompilablePropertyGetter> propertyGetters,
+			IEnumerable<ICompilableConstructorDefaultValuePropertyGetter> defaultValuePropertyGetters,
+			ConstructorInfo constructor)
         {
             if (propertyGetters == null)
                 throw new ArgumentNullException("propertyGetters");
+			if (defaultValuePropertyGetters == null)
+				throw new ArgumentNullException("defaultValuePropertyGetters");
             if (constructor == null)
                 throw new ArgumentNullException("constructor");
 
             // Ensure there are no null references in the property getter content
-            var propertyGettersList = new List<ICompilablePropertyGetter>();
-            foreach (var propertyGetter in propertyGetters)
-            {
-                if (propertyGetter == null)
-                    throw new ArgumentException("Null reference encountered in propertyGetters list");
-                if (!propertyGetter.SrcType.Equals(typeof(TSource)))
-                    throw new ArgumentException("Encountered invalid SrcType in propertyGetters list, must match type param TSource");
-                propertyGettersList.Add(propertyGetter);
-            }
+			var propertyGettersList = new List<ICompilablePropertyGetter>();
+			foreach (var propertyGetter in propertyGetters)
+			{
+				if (propertyGetter == null)
+					throw new ArgumentException("Null reference encountered in propertyGetters list");
+				if (!propertyGetter.SrcType.Equals(typeof(TSource)))
+					throw new ArgumentException("Encountered invalid SrcType in propertyGetters list, must match type param TSource");
+				propertyGettersList.Add(propertyGetter);
+			}
+			var defaultValuePropertyGettersList = new List<ICompilablePropertyGetter>();
+			foreach (var defaultValuePropertyGetter in defaultValuePropertyGetters)
+			{
+				if (defaultValuePropertyGetter == null)
+					throw new ArgumentException("Null reference encountered in defaultValuePropertyGetters list");
+				if (defaultValuePropertyGetter.Constructor != constructor)
+					throw new ArgumentException("Invalid reference encountered in defaultValuePropertyGetters set, does not match specified constructor");
+				defaultValuePropertyGettersList.Add(defaultValuePropertyGetter);
+			}
 
-            // Ensure that the property getters correspond to the constructor that's being targetted
+			// Combine the propertyGetters and defaultValuePropertyGetters into a single list that correspond to the constructor arguments
+			// (ensuring that the property getters correspond to the constructor that's being targetted and that the numbers of property
+			// getters is correct)
             var constructorParameters = constructor.GetParameters();
-            if (propertyGettersList.Count != constructorParameters.Length)
+            if ((propertyGettersList.Count + defaultValuePropertyGettersList.Count) != constructorParameters.Length)
                 throw new ArgumentException("Number of propertyGetters.Count must match constructor.GetParameters().Length");
-            for (var index = 0; index < propertyGettersList.Count; index++)
+			var combinedPropertyGetters = new List<ICompilablePropertyGetter>();
+            for (var index = 0; index < constructorParameters.Length; index++)
             {
-                if (!constructorParameters[index].ParameterType.IsAssignableFrom(propertyGettersList[index].TargetType))
-                    throw new ArgumentException("propertyGetter[" + index + "].TargetType is not assignable to corresponding constructor parameter type");
+				var constructorParameter = constructorParameters[index];
+				var defaultValuePropertyGetter = defaultValuePropertyGetters.FirstOrDefault(p => p.ArgumentName == constructorParameter.Name);
+				if (defaultValuePropertyGetter != null)
+				{
+					// There's no validation to perform here, the IConstructorDefaultValuePropertyGetter interface states that the TargetType
+					// will match the named constructor argument that it relates to
+					combinedPropertyGetters.Add(defaultValuePropertyGetter);
+					continue;
+				}
+
+				// If there was no default value property getter, then the first entry in the propertyGetters set should correspond to the
+				// current constructor argument (since we keep removing the first item in that set when a match is found, this remains true
+				// as we process multiple arguments)
+				if (propertyGettersList.Count == 0)
+					throw new ArgumentException("Unable to match a property getter to constructor argument \"" + constructorParameter.Name + "\"");
+				var propertyGetter = propertyGettersList[0];
+				if (!constructorParameter.ParameterType.IsAssignableFrom(propertyGetter.TargetType))
+					throw new ArgumentException("propertyGetter[" + index + "].TargetType is not assignable to corresponding constructor parameter type");
+				combinedPropertyGetters.Add(propertyGetter);
+				propertyGettersList.RemoveAt(0);
             }
 
             _constructor = constructor;
-            _propertyGetters = propertyGettersList;
+			_propertyGetters = combinedPropertyGetters;
             _converter = new Lazy<Func<TSource, TDest>>(generateCompiledConverter, true);
+
+			NumberOfConstructorArgumentsMatchedWithNonDefaultValues = defaultValuePropertyGettersList.Count;
         }
 
         /// <summary>
@@ -58,6 +96,11 @@ namespace CompilableTypeConverter.TypeConverters
         {
             get { return _constructor; }
         }
+
+		/// <summary>
+		/// This will always be zero or greater and less than or equal to the number of parameters that the Constructor reference has
+		/// </summary>
+		public int NumberOfConstructorArgumentsMatchedWithNonDefaultValues { get; private set; }
 
         /// <summary>
         /// Create a new target type instance from a source value - this will throw an exception if conversion fails

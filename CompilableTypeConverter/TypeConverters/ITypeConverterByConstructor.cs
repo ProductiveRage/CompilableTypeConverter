@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace CompilableTypeConverter.TypeConverters
 {
@@ -10,5 +9,10 @@ namespace CompilableTypeConverter.TypeConverters
         /// with - this value will never be null
         /// </summary>
         ConstructorInfo Constructor { get; }
+
+		/// <summary>
+		/// This will always be zero or greater and less than or equal to the number of parameters that the Constructor reference has
+		/// </summary>
+		int NumberOfConstructorArgumentsMatchedWithNonDefaultValues { get; }
     }
 }

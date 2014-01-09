@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 using CompilableTypeConverter.ConstructorPrioritisers.Factories;
 using CompilableTypeConverter.PropertyGetters.Compilable;
 using CompilableTypeConverter.PropertyGetters.Factories;
@@ -36,36 +34,42 @@ namespace CompilableTypeConverter.TypeConverters.Factories
 			foreach (var constructor in constructors)
 			{
 				var args = constructor.GetParameters();
-                var propertyGetters = new List<ICompilablePropertyGetter>();
+				var defaultValuePropertyGetters = new List<ICompilableConstructorDefaultValuePropertyGetter>();
+				var otherPropertyGetters = new List<ICompilablePropertyGetter>();
 				var candidate = true;
 				foreach (var arg in args)
 				{
                     var propertyGetter = _propertyGetterFactory.Get(typeof(TSource), arg.Name, arg.ParameterType);
-                    if (propertyGetter == null)
-                    {
-						if (arg.IsOptional)
-						{
-							propertyGetter = (ICompilablePropertyGetter)Activator.CreateInstance(
-								typeof(DefaultValuePropertyGetter<,>).MakeGenericType(
+					if (propertyGetter != null)
+					{
+						otherPropertyGetters.Add(propertyGetter);
+						continue;
+					}
+
+					if (arg.IsOptional)
+					{
+						defaultValuePropertyGetters.Add(
+							(ICompilableConstructorDefaultValuePropertyGetter)Activator.CreateInstance(
+								typeof(CompilableConstructorDefaultValuePropertyGetter<,>).MakeGenericType(
 									typeof(TSource),
 									arg.ParameterType
 								),
-								arg.DefaultValue
-							);
-						}
-						else
-						{
-							candidate = false;
-							break;
-						}
-                    }
-                    propertyGetters.Add(propertyGetter);
+								constructor,
+								arg.Name
+							)
+						);
+						continue;
+					}
+					
+					candidate = false;
+					break;
 				}
 				if (candidate)
 			    {
                     constructorCandidates.Add(
                         new CompilableTypeConverterByConstructor<TSource, TDest>(
-                            propertyGetters,
+							otherPropertyGetters,
+							defaultValuePropertyGetters,
                             constructor
                         )
                     );
@@ -91,44 +95,5 @@ namespace CompilableTypeConverter.TypeConverters.Factories
         {
             return Get<TSource, TDest>();
         }
-
-		private class DefaultValuePropertyGetter<TSourceObject, TPropertyAsRetrieved> : ICompilablePropertyGetter
-		{
-			private readonly TPropertyAsRetrieved _value;
-			public DefaultValuePropertyGetter(TPropertyAsRetrieved value)
-			{
-				_value = value;
-			}
-
-			public Type SrcType { get { return typeof(TSourceObject); } }
-
-			/// <summary>
-			/// Since this implementation isn't retrieving the value from a property (it's using a default constructor argument value) this
-			/// will have to return null
-			/// </summary>
-			public PropertyInfo Property { get { return null; } }
-
-			public Type TargetType { get { return typeof(TPropertyAsRetrieved); } }
-
-			public object GetValue(object src)
-			{
-				if (src == null)
-					throw new ArgumentNullException("src");
-				if (!src.GetType().Equals(typeof(TSourceObject)))
-					throw new ArgumentException("The type of src must match typeparam TSourceObject");
-
-				return _value;
-			}
-
-			public Expression GetPropertyGetterExpression(Expression param)
-			{
-				if (param == null)
-					throw new ArgumentNullException("param");
-				if (!typeof(TSourceObject).IsAssignableFrom(param.Type))
-					throw new ArgumentException("param.Type must be assignable to typeparam TSourceObject");
-
-				return Expression.Constant(_value, typeof(TPropertyAsRetrieved));
-			}
-		}
 	}
 }

@@ -88,7 +88,7 @@ namespace CompilableTypeConverter.TypeConverters.Factories
         }
 
         /// <summary>
-        /// This will throw an exception if unable to generate the requested mapping - it will never return null. If the successful, the returned converter
+        /// This will throw an exception if unable to generate the requested mapping - it will never return null. If successful, the returned converter
         /// factory will be able to convert instances of TSourceNew as well as IEnumerable / Lists of them.
         /// </summary>
         public ExtendableCompilableTypeConverterFactory CreateMap<TSource, TDest>()

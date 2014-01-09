@@ -4,6 +4,7 @@ using CompilableTypeConverter.ConstructorInvokers.Factories;
 using CompilableTypeConverter.ConstructorPrioritisers.Factories;
 using CompilableTypeConverter.PropertyGetters;
 using CompilableTypeConverter.PropertyGetters.Factories;
+using CompilableTypeConverter.PropertyGetters.Compilable;
 
 namespace CompilableTypeConverter.TypeConverters.Factories
 {
@@ -39,24 +40,42 @@ namespace CompilableTypeConverter.TypeConverters.Factories
 			foreach (var constructor in constructors)
 			{
 				var args = constructor.GetParameters();
-				var propertyGetters = new List<IPropertyGetter>();
+				var defaultValuePropertyGetters = new List<IConstructorDefaultValuePropertyGetter>();
+				var otherPropertyGetters = new List<IPropertyGetter>();
 				var candidate = true;
 				foreach (var arg in args)
 				{
                     var propertyGetter = _propertyGetterFactory.Get(typeof(TSource), arg.Name, arg.ParameterType);
-                    if (propertyGetter == null)
-                    {
-                        candidate = false;
-                        break;
-                    }
-                    else
-                        propertyGetters.Add(propertyGetter);
+					if (propertyGetter != null)
+					{
+						otherPropertyGetters.Add(propertyGetter);
+						continue;
+					}
+
+					if (arg.IsOptional)
+					{
+						defaultValuePropertyGetters.Add(
+							(IConstructorDefaultValuePropertyGetter)Activator.CreateInstance(
+								typeof(CompilableConstructorDefaultValuePropertyGetter<,>).MakeGenericType(
+									typeof(TSource),
+									arg.ParameterType
+								),
+								constructor,
+								arg.Name
+							)
+						);
+						continue;
+					}
+
+					candidate = false;
+					break;
 				}
 				if (candidate)
 			    {
                     constructorCandidates.Add(
                         new SimpleTypeConverterByConstructor<TSource, TDest>(
-                            propertyGetters,
+							otherPropertyGetters,
+							defaultValuePropertyGetters,
 	    				    _constructorInvokerFactory.Get<TDest>(constructor)
                         )
                     );
