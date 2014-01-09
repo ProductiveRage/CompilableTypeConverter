@@ -9,19 +9,24 @@ namespace CompilableTypeConverter.TypeConverters.Factories
 {
     public class CompilableTypeConverterByConstructorFactory : ICompilableTypeConverterFactory
     {
-        private ITypeConverterPrioritiserFactory _constructorPrioritiserFactory;
-        private ICompilablePropertyGetterFactory _propertyGetterFactory;
+        private readonly ITypeConverterPrioritiserFactory _constructorPrioritiserFactory;
+        private readonly ICompilablePropertyGetterFactory _propertyGetterFactory;
+		private readonly ParameterLessConstructorBehaviourOptions _parameterLessConstructorBehaviour;
         public CompilableTypeConverterByConstructorFactory(
             ITypeConverterPrioritiserFactory constructorPrioritiserFactory,
-			ICompilablePropertyGetterFactory propertyGetterFactory)
+			ICompilablePropertyGetterFactory propertyGetterFactory,
+			ParameterLessConstructorBehaviourOptions parameterLessConstructorBehaviour)
 		{
             if (constructorPrioritiserFactory == null)
                 throw new ArgumentNullException("constructorPrioritiserFactory");
             if (propertyGetterFactory == null)
                 throw new ArgumentNullException("propertyGetterFactory");
+			if (!Enum.IsDefined(typeof(ParameterLessConstructorBehaviourOptions), parameterLessConstructorBehaviour))
+				throw new ArgumentOutOfRangeException("parameterLessConstructorBehaviour");
 
             _constructorPrioritiserFactory = constructorPrioritiserFactory;
 			_propertyGetterFactory = propertyGetterFactory;
+			_parameterLessConstructorBehaviour = parameterLessConstructorBehaviour;
 		}
 
         /// <summary>
@@ -34,6 +39,9 @@ namespace CompilableTypeConverter.TypeConverters.Factories
 			foreach (var constructor in constructors)
 			{
 				var args = constructor.GetParameters();
+				if ((args.Length == 0) && (_parameterLessConstructorBehaviour == ParameterLessConstructorBehaviourOptions.Ignore))
+					continue;
+
 				var defaultValuePropertyGetters = new List<ICompilableConstructorDefaultValuePropertyGetter>();
 				var otherPropertyGetters = new List<ICompilablePropertyGetter>();
 				var candidate = true;

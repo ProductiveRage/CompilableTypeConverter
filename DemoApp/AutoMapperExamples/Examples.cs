@@ -54,7 +54,8 @@ namespace DemoApp.AutoMapperExamples
                 new AutoMapperEnabledPropertyGetterFactory(
                     new CaseInsensitiveSkipUnderscoreNameMatcher(),
                     mapperConfig
-                )
+                ),
+				ParameterLessConstructorBehaviourOptions.Ignore
             );
             var translator = translatorFactory.Get<SourceType, ConstructorDestType>();
             if (translator == null)

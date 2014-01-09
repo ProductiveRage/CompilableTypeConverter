@@ -10,13 +10,15 @@ namespace CompilableTypeConverter.TypeConverters.Factories
 {
     public class SimpleTypeConverterByConstructorFactory : ITypeConverterFactory
     {
-        private ITypeConverterPrioritiserFactory _constructorPrioritiserFactory;
-		private IConstructorInvokerFactory _constructorInvokerFactory;
-		private IPropertyGetterFactory _propertyGetterFactory;
-        public SimpleTypeConverterByConstructorFactory(
+		private readonly ITypeConverterPrioritiserFactory _constructorPrioritiserFactory;
+		private readonly IConstructorInvokerFactory _constructorInvokerFactory;
+		private readonly IPropertyGetterFactory _propertyGetterFactory;
+		private readonly ParameterLessConstructorBehaviourOptions _parameterLessConstructorBehaviour;
+		public SimpleTypeConverterByConstructorFactory(
             ITypeConverterPrioritiserFactory constructorPrioritiserFactory,
 			IConstructorInvokerFactory constructorInvokerFactory,
-			IPropertyGetterFactory propertyGetterFactory)
+			IPropertyGetterFactory propertyGetterFactory,
+			ParameterLessConstructorBehaviourOptions parameterLessConstructorBehaviour)
 		{
             if (constructorPrioritiserFactory == null)
                 throw new ArgumentNullException("constructorPrioritiserFactory");
@@ -24,10 +26,13 @@ namespace CompilableTypeConverter.TypeConverters.Factories
 				throw new ArgumentNullException("constructorInvokerFactory");
             if (propertyGetterFactory == null)
                 throw new ArgumentNullException("propertyGetterFactory");
+			if (!Enum.IsDefined(typeof(ParameterLessConstructorBehaviourOptions), parameterLessConstructorBehaviour))
+				throw new ArgumentOutOfRangeException("parameterLessConstructorBehaviour");
 
             _constructorPrioritiserFactory = constructorPrioritiserFactory;
 			_constructorInvokerFactory = constructorInvokerFactory;
 			_propertyGetterFactory = propertyGetterFactory;
+			_parameterLessConstructorBehaviour = parameterLessConstructorBehaviour;
 		}
 
         /// <summary>
@@ -40,6 +45,9 @@ namespace CompilableTypeConverter.TypeConverters.Factories
 			foreach (var constructor in constructors)
 			{
 				var args = constructor.GetParameters();
+				if ((args.Length == 0) && (_parameterLessConstructorBehaviour == ParameterLessConstructorBehaviourOptions.Ignore))
+					continue;
+
 				var defaultValuePropertyGetters = new List<IConstructorDefaultValuePropertyGetter>();
 				var otherPropertyGetters = new List<IPropertyGetter>();
 				var candidate = true;

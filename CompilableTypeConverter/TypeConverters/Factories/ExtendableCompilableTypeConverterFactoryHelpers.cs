@@ -32,7 +32,8 @@ namespace CompilableTypeConverter.TypeConverters.Factories
                 propertyGetterFactories => new CompilableTypeConverterByConstructorFactory(
                     // Define a ConverterFactoryGenerator to return a CompilableTypeConverterByConstructorFactory when new conversions are registered
                     converterPrioritiser,
-                    new CombinedCompilablePropertyGetterFactory(propertyGetterFactories)
+                    new CombinedCompilablePropertyGetterFactory(propertyGetterFactories),
+					ParameterLessConstructorBehaviourOptions.Ignore
                 ),
                 new CompilableTypeConverterPropertyGetterFactoryExtrapolator(nameMatcher)
             );
