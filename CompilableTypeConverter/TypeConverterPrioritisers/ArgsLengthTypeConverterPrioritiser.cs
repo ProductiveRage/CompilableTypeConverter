@@ -7,8 +7,8 @@ namespace CompilableTypeConverter.ConstructorPrioritisers
     public class ArgsLengthTypeConverterPrioritiser<TSource, TDest> : ITypeConverterPrioritiser<TSource, TDest>
     {
         /// <summary>
-        /// Return the TypeConverter reference with the most parameters - this will return null if no ITypeConverterByConstructors are specified, it will throw
-        /// an exception for null input or if the options data contains any null references
+        /// Return the TypeConverter reference with the most non-default constructor parameters - this will return null if no ITypeConverterByConstructors
+		/// are specified, it will throw an exception for null input or if the options data contains any null references
         /// </summary>
         public ITypeConverterByConstructor<TSource, TDest> Get(IEnumerable<ITypeConverterByConstructor<TSource, TDest>> options)
         {
@@ -30,7 +30,8 @@ namespace CompilableTypeConverter.ConstructorPrioritisers
                 optionsList.Sort(
                     delegate(ITypeConverterByConstructor<TSource, TDest> x, ITypeConverterByConstructor<TSource, TDest> y)
                     {
-                        return x.Constructor.GetParameters().Length.CompareTo(y.Constructor.GetParameters().Length);
+                        return (x.Constructor.GetParameters().Length - x.NumberOfConstructorArgumentsMatchedWithNonDefaultValues)
+							.CompareTo(y.Constructor.GetParameters().Length - y.NumberOfConstructorArgumentsMatchedWithNonDefaultValues);
                     }
                 );
             }
