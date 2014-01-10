@@ -87,20 +87,30 @@ namespace CompilableTypeConverter.TypeConverters.Factories
             return Get<TSource, TDest>();
         }
 
-        /// <summary>
-        /// This will throw an exception if unable to generate the requested mapping - it will never return null. If successful, the returned converter
-        /// factory will be able to convert instances of TSourceNew as well as IEnumerable / Lists of them.
-        /// </summary>
-        public ExtendableCompilableTypeConverterFactory CreateMap<TSource, TDest>()
-        {
-            // Try to generate a converter for the requested mapping
-            var converterNew = _typeConverterFactory.Value.Get<TSource, TDest>();
-            if (converterNew == null)
-                throw new Exception("Unable to create mapping");
-            return AddNewConverter<TSource, TDest>(converterNew);
-        }
+		/// <summary>
+		/// This will throw an exception if unable to generate the requested mapping - it will never return null. If successful, the returned converter
+		/// factory will be able to convert instances of TSourceNew as well as IEnumerable / Lists of them.
+		/// </summary>
+		public ExtendableCompilableTypeConverterFactory CreateMap<TSource, TDest>()
+		{
+			// Try to generate a converter for the requested mapping
+			var converterNew = _typeConverterFactory.Value.Get<TSource, TDest>();
+			if (converterNew == null)
+				throw new Exception("Unable to create mapping");
+			return AddNewConverter<TSource, TDest>(converterNew);
+		}
 
-        /// <summary>
+		/// <summary>
+		/// This will return null if unable to generate the requested converter. If successful, the returned converter must be passed back into the
+		/// AddNewConverter method in order to generate a new instance of this class that is away of the converter (unlike the CreateMap method
+		/// which will return a new instance of this class if it is successful).
+		/// </summary>
+		public ICompilableTypeConverter<TSource, TDest> TryToGenerateConverter<TSource, TDest>()
+		{
+			return _typeConverterFactory.Value.Get<TSource, TDest>();
+		}
+
+		/// <summary>
         /// Generate a further extended converter factory that will be able to handle conversion of instances of TSourceNew as well as IEnumerable / Lists
         /// of them. This will never return null.
         /// </summary>
