@@ -2,7 +2,9 @@
 
 While AutoMapper has support for translating from one type to another by passing data into the destination type's constructor, the constructor call has to be explicitly specified in the code - eg.
 
-    Mapper.CreateMap<SourceType, DestType>().ConstructUsing(s => new DestType(s.Value1, s.Value2, s.Value3));
+    Mapper.CreateMap<SourceType, DestType>().ConstructUsing(
+      s => new DestType(s.Value1, s.Value2, s.Value3)
+    );
 
 which means we're not taking advantage of AutoMapper's name matching or type conversions for the values we're passing into the constructor. This isn't good enough for the code I want to use AutoMapper with!
 
@@ -17,11 +19,13 @@ I want to be able to translate from an instance of the "SourceType" class to a n
     );
     mapperConfig.SourceMemberNamingConvention = new LowerUnderscoreNamingConvention();
 
-    // .. teach it the SourceType.Sub1 to DestType.Sub1 mapping (unfortunately AutoMapper can't magically handle nested types)
+    // .. teach it the SourceType.Sub1 to DestType.Sub1 mapping (unfortunately
+    // AutoMapper can't magically handle nested types)
     mapperConfig.CreateMap<SourceType.Sub1, ConstructorDestType.Sub1>();
 
-    // If the translatorFactory is unable to find any constructors it can use for the conversion, the translatorFactory.Get
-    // method will return null
+    // If the translatorFactory is unable to find any constructors it can use for the
+    // conversion, the translatorFactory.Get method will throw an exception
+    // with details of precisely what couldn't be mapped
     var translatorFactory = new SimpleTypeConverterByConstructorFactory(
         new ArgsLengthTypeConverterPrioritiserFactory(),
         new SimpleConstructorInvokerFactory(),
@@ -31,11 +35,11 @@ I want to be able to translate from an instance of the "SourceType" class to a n
         )
     );
     var translator = translatorFactory.Get<SourceType, ConstructorDestType>();
-    if (translator == null)
-        throw new Exception("Unable to obtain a mapping");
 
     // Make our translation available to the AutoMapper configuration
-    mapperConfig.CreateMap<SourceType, ConstructorDestType>().ConstructUsing(translator.Convert);
+    mapperConfig.CreateMap<SourceType, ConstructorDestType>().ConstructUsing(
+      translator.Convert
+    );
 
     // Let AutoMapper do its thing!
     var dest = (new MappingEngine(mapperConfig)).Map<SourceType, ConstructorDestType>(
@@ -79,7 +83,10 @@ I want to be able to translate from an instance of the "SourceType" class to a n
         private Sub1 _value;
         private IEnumerable<Sub1> _valueList;
         private Sub2 _valueEnum;
-        public ConstructorDestType(Sub1 value, IEnumerable<Sub1> valueList, Sub2 valueEnum)
+        public ConstructorDestType(
+          Sub1 value,
+          IEnumerable<Sub1> valueList,
+          Sub2 valueEnum)
         {
             if (value == null)
                 throw new ArgumentNullException("value");
@@ -91,7 +98,10 @@ I want to be able to translate from an instance of the "SourceType" class to a n
             _valueList = valueList;
             _valueEnum = valueEnum;
         }
-        public ConstructorDestType(Sub1 value, IEnumerable<Sub1> valueList) : this(value, valueList, Sub2.EnumValue1) { }
+        public ConstructorDestType(
+          Sub1 value,
+          IEnumerable<Sub1> valueList)
+            : this(value, valueList, Sub2.EnumValue1) { }
 
         public Sub1 Value { get { return _value; } }
         public IEnumerable<Sub1> ValueList { get { return _valueList; } }
@@ -116,7 +126,7 @@ I want to be able to translate from an instance of the "SourceType" class to a n
 
 ## Overview
 
-We've had to specify an IPropertyGetterFactory (AutoMapperEnabledPropertyGetterFactory) which looks for properties on the source type that can be used for the constructor arguments on the destination type, an IConstructorInvoker (SimpleConstructorInvokerFactory) which can generate a new destination type instance given a ConstructorInfo reference and set of argument values and an ITypeConverterPrioritiser (ArgsLengthTypeConverterPrioritiser) which defines what to do in cases where multiple elligible constructors are found on the destination type.
+We've had to specify an IPropertyGetterFactory (AutoMapperEnabledPropertyGetterFactory) which looks for properties on the source type that can be used for the constructor arguments on the destination type, an IConstructorInvoker (SimpleConstructorInvokerFactoryt) which can generate a new destination type instance given a ConstructorInfo reference and set of argument values and an ITypeConverterPrioritiser (ArgsLengthTypeConverterPrioritiser) which defines what to do in cases where multiple elligible constructors are found on the destination type.
 
 Each of these items is straight-forward and could be easily swapped out for alternate implementation if desired. I have some thoughts about using LINQ Expressions to see how far the performance can be improved over the use of reflection.
 
@@ -164,7 +174,7 @@ This uses the ICompilablePropertyGetter, ICompilablePropertyGetterFactory, IComp
 
 ## Property setters instead of constructors - February 2012
 
-This project can now be used to translate back from DestType to SourceType by instantiating with a parameter-less constructor and then setting properties. The CompilableTypeConverterByPropertySettingFactory can be configured to return null to Get<TSource, TDest> requests unless _all_ properties can be set from the source type or it can return a converter that will set as many properties as possible (potentially zero).
+This project can now be used to translate back from DestType to SourceType by instantiating with a parameter-less constructor and then setting properties. The CompilableTypeConverterByPropertySettingFactory can be configured to consider it a failure (and so raise an exception) unless _all_ properties can be set from the source type or it be configured to return a converter that will set as many properties as possible (potentially zero).
 
 There is an ExtendableCompilableTypeConverterFactoryHelpers method such that an example very similar to the previous one can be constructed:
 
@@ -182,9 +192,6 @@ There is an ExtendableCompilableTypeConverterFactoryHelpers method such that an 
     converterFactory = converterFactory.CreateMap<ConstructorDestType.Sub1, SourceType.Sub1>();
 
     var converter = converterFactory.Get<ConstructorDestType, SourceType>();
-    if (converter == null)
-        throw new Exception("Unable to obtain a converter");
-
     var result = converter.Convert(
         new ConstructorDestType(
             new ConstructorDestType.Sub1("Sub1 Value1"),
