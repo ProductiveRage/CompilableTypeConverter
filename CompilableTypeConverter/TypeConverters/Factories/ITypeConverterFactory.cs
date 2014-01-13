@@ -5,7 +5,7 @@ namespace CompilableTypeConverter.TypeConverters.Factories
     public interface ITypeConverterFactory
     {
         /// <summary>
-        /// This will return null if a converter could not be generated
+        /// This will throw an exception if a converter could not be generated, it will never return null
         /// </summary>
         ITypeConverter<TSource, TDest> Get<TSource, TDest>();
     }

@@ -44,7 +44,7 @@ namespace CompilableTypeConverter
 
 		/// <summary>
         /// This will throw an exception if unable to generate the requested mapping. If successful, the returned converter
-        /// factory will be able to convert instances of TSourceNew as well as IEnumerable / Lists of them. For most cases,
+		/// factory will be able to convert instances of TSource as well as IEnumerable / Lists of them. For most cases,
 		/// this method is only necessary for sub types - to convert from one type to another where all of the properties
 		/// are primitives, the Convert and TryToGetConverter methods may be called without any prior CreateMap calls. If
 		/// nested types are in the source or destination types then CreateMap needs  to be called for them. Where there
@@ -55,27 +55,23 @@ namespace CompilableTypeConverter
 		{
 			// This will clear the converter cache since any new mappings may open up the possibility for improved conversions
 			// so any subsequent converter requests should try to perform the work to generate the converter again
+			Exception mappingException;
 			lock (_lock)
 			{
-				var newConstructorBasedConverter = _constructorBasedConverterFactory.TryToGenerateConverter<TSource, TDest>();
-				if (newConstructorBasedConverter != null)
+				try
 				{
-					_constructorBasedConverterFactory = _constructorBasedConverterFactory.AddNewConverter(newConstructorBasedConverter);
-					_propertySetterBasedConverterFactory = _propertySetterBasedConverterFactory.AddNewConverter(newConstructorBasedConverter);
+					var converter = GenerateConverter<TSource, TDest>();
+					_constructorBasedConverterFactory = _constructorBasedConverterFactory.AddNewConverter(converter);
+					_propertySetterBasedConverterFactory = _propertySetterBasedConverterFactory.AddNewConverter(converter);
+					_converterCache = new ImmutableConverterCache();
+					return;
 				}
-				else
+				catch (Exception e)
 				{
-					var newPropertySetterBasedConverter = _propertySetterBasedConverterFactory.TryToGenerateConverter<TSource, TDest>();
-					if (newPropertySetterBasedConverter != null)
-					{
-						_constructorBasedConverterFactory = _constructorBasedConverterFactory.AddNewConverter(newPropertySetterBasedConverter);
-						_propertySetterBasedConverterFactory = _propertySetterBasedConverterFactory.AddNewConverter(newPropertySetterBasedConverter);
-					}
-					else
-						throw new Exception("Unable to create mapping");
+					mappingException = e;
 				}
-				_converterCache = new ImmutableConverterCache();
 			}
+			throw mappingException;
 		}
 
 		/// <summary>
@@ -83,28 +79,66 @@ namespace CompilableTypeConverter
 		/// </summary>
 		public static TDest Convert<TSource, TDest>(TSource source)
 		{
-			var converter = TryToGetConverter<TSource, TDest>();
-			if (converter == null)
-				throw new ArgumentException("Unable to perform this mapping");
-			
-			return converter.Convert(source);
+			return GetConverter<TSource, TDest>().Convert(source);
 		}
 
 		/// <summary>
-		/// This will return null if a converter could not be generated
+		/// This will throw an exception if unable to generate a converter for request TSource and TDest pair, it will never return null
 		/// </summary>
-		public static ICompilableTypeConverter<TSource, TDest> TryToGetConverter<TSource, TDest>()
+		public static ICompilableTypeConverter<TSource, TDest> GetConverter<TSource, TDest>()
 		{
+			ICompilableTypeConverter<TSource, TDest> converter;
+			Exception mappingException;
 			lock (_lock)
 			{
 				var cachedResult = _converterCache.TryToGet<TSource, TDest>();
 				if (cachedResult != null)
 					return cachedResult.Converter;
 
-				var converter = _constructorBasedConverterFactory.Get<TSource, TDest>() ?? _propertySetterBasedConverterFactory.Get<TSource, TDest>();
-				_converterCache = _converterCache.AddOrReplace<TSource, TDest>(converter);
-				return converter;
+				try
+				{
+					converter = GenerateConverter<TSource, TDest>();
+					_converterCache = _converterCache.AddOrReplace<TSource, TDest>(converter);
+					return converter;
+				}
+				catch (Exception e)
+				{
+					mappingException = e;
+				}
 			}
+			throw mappingException;
+		}
+
+		/// <summary>
+		/// This will throw an exception if unable to generate the requested converter
+		/// </summary>
+		private static ICompilableTypeConverter<TSource, TDest> GenerateConverter<TSource, TDest>()
+		{
+			// Attempt to generate a converter using the _constructorBasedConverterFactory and then the _propertySetterBasedConverterFactory.
+			// If both fail then it's difficult to know for sure which exception is most useful to allow through. If the destination type has
+			// a parameter-less constructor then allow the by-property-setter exception to be raised (if there was no parameter-less constructor
+			// then the by-property-setter factory wouldn't have been able to do anything and we'll assume that the by-constructor factory
+			// exception is more useful).
+			Exception mappingException;
+			try
+			{
+				return _constructorBasedConverterFactory.Get<TSource, TDest>();
+			}
+			catch (Exception byConstructorException)
+			{
+				try
+				{
+					return _propertySetterBasedConverterFactory.Get<TSource, TDest>();
+				}
+				catch (Exception byPropertySettingException)
+				{
+					if (typeof(TDest).GetConstructor(new Type[0]) != null)
+						mappingException = byPropertySettingException;
+					else
+						mappingException = byConstructorException;
+				}
+			}
+			throw mappingException;
 		}
 	}
 }

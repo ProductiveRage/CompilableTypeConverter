@@ -27,10 +27,8 @@ namespace DemoApp.CompiledExamples
             converterFactory = converterFactory.CreateMap<SourceType.Sub1, ConstructorDestType.Sub1>();
 
             // This will enable the creation of a converter for SourceType to ConstructorDestType
-            // - This will return null if unable to generate an appropriate converter
+            // - This will throw an exception if unable to generate an appropriate converter
             var converter = converterFactory.Get<SourceType, ConstructorDestType>();
-            if (converter == null)
-                throw new Exception("Unable to obtain a converter");
 
             var result = converter.Convert(getExampleSourceType());
         }
@@ -54,10 +52,8 @@ namespace DemoApp.CompiledExamples
             converterFactory = converterFactory.CreateMap<SourceType.Sub1, StandardDestType.Sub1>();
 
             // This will enable the creation of a converter for SourceType to ConstructorDestType
-            // - This will return null if unable to generate an appropriate converter
-            var converter = converterFactory.Get<SourceType, StandardDestType>();
-            if (converter == null)
-                throw new Exception("Unable to obtain a converter");
+            // - This will throw an exception if unable to generate an appropriate converter
+			var converter = converterFactory.Get<SourceType, StandardDestType>();
 
             var result = converter.Convert(getExampleSourceType());
         }

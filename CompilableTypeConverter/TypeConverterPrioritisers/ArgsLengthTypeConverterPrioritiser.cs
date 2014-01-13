@@ -7,9 +7,10 @@ namespace CompilableTypeConverter.ConstructorPrioritisers
     public class ArgsLengthTypeConverterPrioritiser<TSource, TDest> : ITypeConverterPrioritiser<TSource, TDest>
     {
         /// <summary>
-        /// Return the TypeConverter reference with the most non-default constructor parameters - this will return null if no ITypeConverterByConstructors
-		/// are specified, it will throw an exception for null input or if the options data contains any null references
-        /// </summary>
+		/// Return the best matching ITypeConverterByConstructor reference with the most parameters - this will return null if no ITypeConverterByConstructors are
+		/// specified or if none of the options are acceptable (allowing this to also effectively act as a type converter filter). It will throw an exception for
+		/// null input or if the options data contains any null references.
+		/// </summary>
         public ITypeConverterByConstructor<TSource, TDest> Get(IEnumerable<ITypeConverterByConstructor<TSource, TDest>> options)
         {
             if (options == null)

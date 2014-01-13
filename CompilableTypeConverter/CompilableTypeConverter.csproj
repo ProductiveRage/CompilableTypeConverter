@@ -89,8 +89,11 @@
     <Compile Include="TypeConverters\CompilableTypeConverterByConstructor.cs" />
     <Compile Include="TypeConverters\CompilableTypeConverterByPropertySetting.cs" />
     <Compile Include="TypeConverters\Factories\CompilableTypeConverterByPropertySettingFactory.cs" />
+    <Compile Include="TypeConverters\Factories\ByPropertyMappingFailureException.cs" />
+    <Compile Include="TypeConverters\Factories\ByConstructorMappingFailureException.cs" />
     <Compile Include="TypeConverters\Factories\ExtendableCompilableTypeConverterFactoryHelpers.cs" />
     <Compile Include="TypeConverters\Factories\ExtendableCompilableTypeConverterFactory.cs" />
+    <Compile Include="TypeConverters\Factories\MappingFailureException.cs" />
     <Compile Include="TypeConverters\Factories\ParameterLessConstructorBehaviourOptions.cs" />
     <Compile Include="TypeConverters\ICompilableTypeConverter.cs" />
     <Compile Include="TypeConverters\ITypeConverter.cs" />

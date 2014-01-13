@@ -30,15 +30,15 @@ namespace CompilableTypeConverter.TypeConverters.Factories
         }
 
         /// <summary>
-        /// This will return null if no suitable conversion could be prepared. This will be the case if there is no public parameterless constructor. It will also
-        /// be the case if the MatchAll propertySettingType was specified at instantiation and there is at least one publicly-settable, non-indexed property that
-        /// could not be dealt with.
+		/// This will throw an exception if no suitable constructors were retrieved, it will never return null. Cases where a converter may not be generated include
+		/// that where no public parameterless constructor exists on the destination type. It also includes the case where the MatchAll propertySettingType was
+		/// specified at instantiation and there is at least one publicly-settable, non-indexed property that could not be dealt with.
 		/// </summary>
         public ICompilableTypeConverter<TSource, TDest> Get<TSource, TDest>()
         {
             var constructor = typeof(TDest).GetConstructor(new Type[0]);
-            if (constructor == null)
-                return null;
+			if (constructor == null)
+				throw new ByPropertyMappingFailureException(typeof(TSource), typeof(TDest), ByPropertyMappingFailureException.FailureReasonOptions.NoParameterLessConstructor, null);
 
             var propertyGetters = new List<ICompilablePropertyGetter>();
             var propertiesToSet = new List<PropertyInfo>();
@@ -53,7 +53,7 @@ namespace CompilableTypeConverter.TypeConverters.Factories
                 if (propertyGetter == null)
                 {
                     if (_propertySettingType == PropertySettingTypeOptions.MatchAll)
-                        return null;
+						throw new ByPropertyMappingFailureException(typeof(TSource), typeof(TDest), ByPropertyMappingFailureException.FailureReasonOptions.UnableToMapProperty, property);
                     else
                         continue;
                 }
@@ -75,7 +75,12 @@ namespace CompilableTypeConverter.TypeConverters.Factories
             );
 		}
 
-        ITypeConverter<TSource, TDest> ITypeConverterFactory.Get<TSource, TDest>()
+		/// <summary>
+		/// This will throw an exception if no suitable constructors were retrieved, it will never return null. Cases where a converter may not be generated include
+		/// that where no public parameterless constructor exists on the destination type. It also includes the case where the MatchAll propertySettingType was
+		/// specified at instantiation and there is at least one publicly-settable, non-indexed property that could not be dealt with.
+		/// </summary>
+		ITypeConverter<TSource, TDest> ITypeConverterFactory.Get<TSource, TDest>()
         {
             return Get<TSource, TDest>();
         }

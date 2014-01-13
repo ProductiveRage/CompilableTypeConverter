@@ -30,17 +30,25 @@ namespace CompilableTypeConverter.TypeConverters.Factories
 		}
 
         /// <summary>
-		/// This will return null if no suitable constructors were retrieved
+		/// This will throw an exception if no suitable constructors were retrieved, it will never return null
 		/// </summary>
         public ICompilableTypeConverter<TSource, TDest> Get<TSource, TDest>()
         {
+			var failedCandidates = new List<ByConstructorMappingFailureException.ConstructorOptionFailureDetails>();
             var constructorCandidates = new List<ICompilableTypeConverterByConstructor<TSource, TDest>>();
             var constructors = typeof(TDest).GetConstructors();
 			foreach (var constructor in constructors)
 			{
 				var args = constructor.GetParameters();
 				if ((args.Length == 0) && (_parameterLessConstructorBehaviour == ParameterLessConstructorBehaviourOptions.Ignore))
+				{
+					failedCandidates.Add(new ByConstructorMappingFailureException.ConstructorOptionFailureDetails(
+						constructor,
+						ByConstructorMappingFailureException.ConstructorOptionFailureDetails.FailureReasonOptions.ParameterLessConstructorNotAllowed,
+						null
+					));
 					continue;
+				}
 
 				var defaultValuePropertyGetters = new List<ICompilableConstructorDefaultValuePropertyGetter>();
 				var otherPropertyGetters = new List<ICompilablePropertyGetter>();
@@ -68,7 +76,12 @@ namespace CompilableTypeConverter.TypeConverters.Factories
 						);
 						continue;
 					}
-					
+
+					failedCandidates.Add(new ByConstructorMappingFailureException.ConstructorOptionFailureDetails(
+						constructor,
+						ByConstructorMappingFailureException.ConstructorOptionFailureDetails.FailureReasonOptions.UnableToMapConstructorArgument,
+						arg
+					));
 					candidate = false;
 					break;
 				}
@@ -84,22 +97,41 @@ namespace CompilableTypeConverter.TypeConverters.Factories
 				}
 			}
 			if (constructorCandidates.Count == 0)
-				return null;
-            if (constructorCandidates.Count > 1)
-            {
-                // Use constructor prioritiser for standard ITypeConverterByConstructorFactory and then match back to original
-                // candidate instance so that we can return an ICompilableTypeConverterByConstructor
-                var constructorPrioritiser = _constructorPrioritiserFactory.Get<TSource, TDest>();
-                var selectedCandidate = constructorPrioritiser.Get(constructorCandidates);
-                var selectedCandidateCompiled = constructorCandidates.FirstOrDefault(c => c == selectedCandidate);
-                if (selectedCandidateCompiled == null)
-                    throw new Exception("constructorPrioritiser failure - didn't return valid candidate");
-                return selectedCandidateCompiled;
-            }
-			return constructorCandidates[0];
+			{
+				throw new ByConstructorMappingFailureException(
+					typeof(TSource),
+					typeof(TDest),
+					failedCandidates
+				);
+			}
+
+			// The ITypeConverterPrioritiser interface may be used to prioritise and filter. If there are multiple candidates then it may only
+			// prioritise the results (depending upon implementation), but it may also filter some out (again, depending upon implementation).
+			// This means that the prioritiser must be consulted even if there is only a single candidate (there is no prioritisation required
+			// in that case since there is only one option, but the possibility that this candidate will not be allowed through the filter
+			// means that the prioritiser must still be called upon).
+			var constructorPrioritiser = _constructorPrioritiserFactory.Get<TSource, TDest>();
+            var selectedCandidate = constructorPrioritiser.Get(constructorCandidates);
+            var selectedCandidateCompiled = constructorCandidates.FirstOrDefault(c => c == selectedCandidate);
+			if (selectedCandidateCompiled == null)
+			{
+				throw new ByConstructorMappingFailureException(
+					typeof(TSource),
+					typeof(TDest),
+					constructorCandidates.Select(c => new ByConstructorMappingFailureException.ConstructorOptionFailureDetails(
+						c.Constructor,
+						ByConstructorMappingFailureException.ConstructorOptionFailureDetails.FailureReasonOptions.FilteredOutByPrioritiser,
+						null
+					))
+				);
+			}
+            return selectedCandidateCompiled;
 		}
 
-        ITypeConverter<TSource, TDest> ITypeConverterFactory.Get<TSource, TDest>()
+        /// <summary>
+		/// This will throw an exception if no suitable constructors were retrieved, it will never return null
+		/// </summary>
+		ITypeConverter<TSource, TDest> ITypeConverterFactory.Get<TSource, TDest>()
         {
             return Get<TSource, TDest>();
         }

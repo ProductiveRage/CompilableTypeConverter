@@ -58,8 +58,6 @@ namespace DemoApp.AutoMapperExamples
 				ParameterLessConstructorBehaviourOptions.Ignore
             );
             var translator = translatorFactory.Get<SourceType, ConstructorDestType>();
-            if (translator == null)
-                throw new Exception("Unable to obtain a mapping");
 
             // Make our translation available to the AutoMapper configuration
             mapperConfig.CreateMap<SourceType, ConstructorDestType>().ConstructUsing(translator.Convert);
