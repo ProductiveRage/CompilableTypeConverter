@@ -53,25 +53,9 @@ namespace CompilableTypeConverter
         /// </summary>
 		public static void CreateMap<TSource, TDest>()
 		{
-			// This will clear the converter cache since any new mappings may open up the possibility for improved conversions
-			// so any subsequent converter requests should try to perform the work to generate the converter again
-			Exception mappingException;
-			lock (_lock)
-			{
-				try
-				{
-					var converter = GenerateConverter<TSource, TDest>();
-					_constructorBasedConverterFactory = _constructorBasedConverterFactory.AddNewConverter(converter);
-					_propertySetterBasedConverterFactory = _propertySetterBasedConverterFactory.AddNewConverter(converter);
-					_converterCache = new ImmutableConverterCache();
-					return;
-				}
-				catch (Exception e)
-				{
-					mappingException = e;
-				}
-			}
-			throw mappingException;
+			// This is just a wrapper around GetConverter for when you don't immediately care about the generated
+			// converter, you just need to build up some mappings
+			GetConverter<TSource, TDest>();
 		}
 
 		/// <summary>
@@ -79,6 +63,9 @@ namespace CompilableTypeConverter
 		/// </summary>
 		public static TDest Convert<TSource, TDest>(TSource source)
 		{
+			// This is also a wrapper around GetConverter to make it easy for callers to get going (for performance reasons,
+			// it would be best to call GetConverter from the caller and store the converter reference somewhere since that
+			// would avoid the lock around each request that the GetConverter method requires)
 			return GetConverter<TSource, TDest>().Convert(source);
 		}
 
@@ -98,6 +85,8 @@ namespace CompilableTypeConverter
 				try
 				{
 					converter = GenerateConverter<TSource, TDest>();
+					_constructorBasedConverterFactory = _constructorBasedConverterFactory.AddNewConverter(converter);
+					_propertySetterBasedConverterFactory = _propertySetterBasedConverterFactory.AddNewConverter(converter);
 					_converterCache = _converterCache.AddOrReplace<TSource, TDest>(converter);
 					return converter;
 				}
