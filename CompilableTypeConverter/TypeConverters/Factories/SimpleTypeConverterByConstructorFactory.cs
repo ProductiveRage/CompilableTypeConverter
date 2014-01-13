@@ -62,7 +62,7 @@ namespace CompilableTypeConverter.TypeConverters.Factories
 				var candidate = true;
 				foreach (var arg in args)
 				{
-                    var propertyGetter = _propertyGetterFactory.Get(typeof(TSource), arg.Name, arg.ParameterType);
+                    var propertyGetter = _propertyGetterFactory.TryToGet(typeof(TSource), arg.Name, arg.ParameterType);
 					if (propertyGetter != null)
 					{
 						otherPropertyGetters.Add(propertyGetter);

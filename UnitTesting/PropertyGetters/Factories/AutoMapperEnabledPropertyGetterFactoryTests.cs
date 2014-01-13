@@ -55,7 +55,7 @@ namespace UnitTesting.PropertyGetters.Factories
                 }),
                 getBasicAutoMapperConfiguration()
             );
-            var propertyGetter = propertyGetterFactory.Get(
+            var propertyGetter = propertyGetterFactory.TryToGet(
                 typeof(SourceType),
                 "intValue",
                 typeof(int)
@@ -84,7 +84,7 @@ namespace UnitTesting.PropertyGetters.Factories
                 }),
                 mappingConfig
             );
-            var propertyGetter = propertyGetterFactory.Get(
+            var propertyGetter = propertyGetterFactory.TryToGet(
                 typeof(SourceType),
                 "intValue",
                 typeof(SourceType)
@@ -115,7 +115,7 @@ namespace UnitTesting.PropertyGetters.Factories
                 }),
                 getBasicAutoMapperConfiguration()
             );
-            var propertyGetter = propertyGetterFactory.Get(
+            var propertyGetter = propertyGetterFactory.TryToGet(
                 typeof(SourceType),
                 "intValue",
                 typeof(SourceType)

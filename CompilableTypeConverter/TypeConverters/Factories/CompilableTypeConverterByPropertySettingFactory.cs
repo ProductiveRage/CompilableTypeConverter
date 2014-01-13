@@ -49,7 +49,7 @@ namespace CompilableTypeConverter.TypeConverters.Factories
                     continue;
 
                 // If we can't retrieve a property getter for the property then either give up (if MatchAll) or push on (if MatchAsManyAsPossible)
-                var propertyGetter = _propertyGetterFactory.Get(typeof(TSource), property.Name, property.PropertyType);
+                var propertyGetter = _propertyGetterFactory.TryToGet(typeof(TSource), property.Name, property.PropertyType);
                 if (propertyGetter == null)
                 {
                     if (_propertySettingType == PropertySettingTypeOptions.MatchAll)

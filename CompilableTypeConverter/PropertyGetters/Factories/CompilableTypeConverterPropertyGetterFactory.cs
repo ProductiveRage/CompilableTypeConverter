@@ -29,7 +29,7 @@ namespace CompilableTypeConverter.PropertyGetters.Factories
         /// <summary>
         /// This will return null if unable to return an ICompilablePropertyGetter for the named property that will return a value as the requested type
         /// </summary>
-        public ICompilablePropertyGetter Get(Type srcType, string propertyName, Type destPropertyType)
+        public ICompilablePropertyGetter TryToGet(Type srcType, string propertyName, Type destPropertyType)
         {
             if (srcType == null)
                 throw new ArgumentNullException("srcType");
@@ -64,9 +64,9 @@ namespace CompilableTypeConverter.PropertyGetters.Factories
             );
         }
 
-        IPropertyGetter IPropertyGetterFactory.Get(Type srcType, string propertyName, Type destPropertyType)
+        IPropertyGetter IPropertyGetterFactory.TryToGet(Type srcType, string propertyName, Type destPropertyType)
         {
-            return Get(srcType, propertyName, destPropertyType);
+            return TryToGet(srcType, propertyName, destPropertyType);
         }
     }
 }
