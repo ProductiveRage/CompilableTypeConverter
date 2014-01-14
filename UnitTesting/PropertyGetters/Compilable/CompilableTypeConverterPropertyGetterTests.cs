@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using CompilableTypeConverter.PropertyGetters.Compilable;
-using NUnit.Framework;
-using CompilableTypeConverter.TypeConverters;
 using System.Linq.Expressions;
+using CompilableTypeConverter.PropertyGetters.Compilable;
+using CompilableTypeConverter.TypeConverters;
+using NUnit.Framework;
 
 namespace UnitTesting.PropertyGetters
 {
@@ -160,7 +157,15 @@ namespace UnitTesting.PropertyGetters
                     throw new ArgumentNullException("param");
                 return param;
             }
-        }
+			public Expression<Func<int, int>> GetTypeConverterFuncExpression()
+			{
+				var srcParameter = Expression.Parameter(typeof(int), "src");
+				return Expression.Lambda<Func<int, int>>(
+					GetTypeConverterExpression(srcParameter),
+					srcParameter
+				);
+			}
+		}
 
         private class NonConvertingCompilableStringTypeConverter : ICompilableTypeConverter<string, string>
         {
@@ -174,7 +179,15 @@ namespace UnitTesting.PropertyGetters
                     throw new ArgumentNullException("param");
                 return param;
             }
-        }
+			public Expression<Func<string, string>> GetTypeConverterFuncExpression()
+			{
+				var srcParameter = Expression.Parameter(typeof(string), "src");
+				return Expression.Lambda<Func<string, string>>(
+					GetTypeConverterExpression(srcParameter),
+					srcParameter
+				);
+			}
+		}
 
         private class CompilableIntToStringTypeConverter : ICompilableTypeConverter<int, string>
         {
@@ -191,6 +204,14 @@ namespace UnitTesting.PropertyGetters
                     typeof(int).GetMethod("ToString", new Type[0])
                 );
             }
-        }
+			public Expression<Func<int, string>> GetTypeConverterFuncExpression()
+			{
+				var srcParameter = Expression.Parameter(typeof(int), "src");
+				return Expression.Lambda<Func<int, string>>(
+					GetTypeConverterExpression(srcParameter),
+					srcParameter
+				);
+			}
+		}
     }
 }

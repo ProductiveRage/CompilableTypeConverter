@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using CompilableTypeConverter.PropertyGetters.Compilable;
@@ -12,10 +13,11 @@ namespace CompilableTypeConverter.TypeConverters
     /// </summary>
     public class CompilableTypeConverterByPropertySetting<TSource, TDest> : ICompilableTypeConverter<TSource, TDest> where TDest : new()
     {
-        private List<ICompilablePropertyGetter> _propertyGetters;
-        private List<PropertyInfo> _propertiesToSet;
-        private Lazy<Func<TSource, TDest>> _converter;
-        public CompilableTypeConverterByPropertySetting(IEnumerable<ICompilablePropertyGetter> propertyGetters, IEnumerable<PropertyInfo> propertiesToSet)
+        private readonly IEnumerable<ICompilablePropertyGetter> _propertyGetters;
+		private readonly IEnumerable<PropertyInfo> _propertiesToSet;
+		private readonly Expression<Func<TSource, TDest>> _converterFuncExpression;
+		private readonly Func<TSource, TDest> _converter;
+		public CompilableTypeConverterByPropertySetting(IEnumerable<ICompilablePropertyGetter> propertyGetters, IEnumerable<PropertyInfo> propertiesToSet)
         {
             if (propertyGetters == null)
                 throw new ArgumentNullException("propertyGetters");
@@ -51,36 +53,39 @@ namespace CompilableTypeConverter.TypeConverters
                     throw new ArgumentException("propertyGetter[" + index + "].TargetType is not assignable to corresponding propertyToSet");
             }
 
-            _propertyGetters = propertyGettersList;
-            _propertiesToSet = propertiesToSetList;
-            _converter = new Lazy<Func<TSource, TDest>>(generateCompiledConverter, true);
-        }
+			_propertyGetters = propertyGettersList.AsReadOnly();
+            _propertiesToSet = propertiesToSetList.AsReadOnly();
+
+			// Generate a Expression<Func<TSource, TDest>>, the _rawConverterExpression is still required for the GetTypeConverterExpression
+			// method (this may be called to retrieve the raw expression, rather than the Func-wrapped version - eg. by the ListCompilablePropertyGetter,
+			// which has a set of TSource objects and wants to translate them into a set of TDest objects)
+			var srcParameter = Expression.Parameter(typeof(TSource), "src");
+			_converterFuncExpression = Expression.Lambda<Func<TSource, TDest>>(
+				GetTypeConverterExpression(srcParameter),
+				srcParameter
+			);
+
+			// Compile the expression into an actual Func<TSource, TDest> (this is expected to be the most commonly-used form of the data)
+			_converter = _converterFuncExpression.Compile();
+		}
 
         /// <summary>
         /// Create a new target type instance from a source value - this will throw an exception if conversion fails
         /// </summary>
         public TDest Convert(TSource src)
         {
-            return _converter.Value(src);
+            return _converter(src);
         }
 
-        private Func<TSource, TDest> generateCompiledConverter()
-        {
-            // Declare an expression to represent the src parameter
-            var srcParameter = Expression.Parameter(typeof(TSource), "src");
-
-            // Return compiled expression that instantiates a new object by retrieving properties from the source and passing as constructor arguments
-            return Expression.Lambda<Func<TSource, TDest>>(
-                GetTypeConverterExpression(srcParameter),
-                srcParameter
-            ).Compile();
-        }
-
-        /// <summary>
-        /// This must return a Linq Expression that returns a new TDest instance - the specified "param" Expression must have a type that is assignable to TSource.
-        /// The resulting Expression will be assigned to a Lambda Expression typed as a TSource to TDest Func.
-        /// </summary>
-        public Expression GetTypeConverterExpression(Expression param)
+		/// <summary>
+		/// This must return a Linq Expression that returns a new TDest instance - the specified "param" Expression must have a type that is assignable to TSource.
+		/// The resulting Expression may be used to create a Func to take a TSource instance and return a new TDest if the specified param is a ParameterExpression.
+		/// If an expression of this form is required then the GetTypeConverterFuncExpression method may be more appropriate to use, this method is only when direct
+		/// access to the conversion expression is required, it may be preferable to GetTypeConverterFuncExpression when generating complex expression that this is
+		/// to be part of, potentially gaining a minor performance improvement (compared to calling GetTypeConverterFuncExpression) at the cost of compile-time
+		/// type safety. Alternatively, this method may be required if an expression value is to be convered where the expression is not a ParameterExpression.
+		/// </summary>
+		public Expression GetTypeConverterExpression(Expression param)
         {
             if (param == null)
                 throw new ArgumentNullException("param");
@@ -98,15 +103,17 @@ namespace CompilableTypeConverter.TypeConverters
                     Expression.New(typeof(TDest).GetConstructor(new Type[0]))
                 )
             };
-            for (var index = 0; index < _propertiesToSet.Count; index++)
+			var index = 0;
+			foreach (var propertyToSet in _propertiesToSet)
             {
                 newInstanceGenerationExpressions.Add(
                     Expression.Call(
                         dest,
-                        _propertiesToSet[index].GetSetMethod(),
-                        _propertyGetters[index].GetPropertyGetterExpression(param)
+						propertyToSet.GetSetMethod(),
+						_propertyGetters.ElementAt(index).GetPropertyGetterExpression(param)
                     )
                 );
+				index++;
             }
             newInstanceGenerationExpressions.Add(
                 dest
@@ -126,5 +133,13 @@ namespace CompilableTypeConverter.TypeConverters
                 )
             );
         }
-    }
+
+		/// <summary>
+		/// This will never return null, it will return an Func Expression for mapping from a TSource instance to a TDest
+		/// </summary>
+		public Expression<Func<TSource, TDest>> GetTypeConverterFuncExpression()
+		{
+			return _converterFuncExpression;
+		}
+	}
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using CompilableTypeConverter.ConstructorInvokers;
 using CompilableTypeConverter.PropertyGetters.Compilable;
 
 namespace CompilableTypeConverter.TypeConverters
@@ -15,9 +14,9 @@ namespace CompilableTypeConverter.TypeConverters
     /// </summary>
     public class CompilableTypeConverterByConstructor<TSource, TDest> : ICompilableTypeConverterByConstructor<TSource, TDest>
     {
-        private ConstructorInfo _constructor;
-        private List<ICompilablePropertyGetter> _propertyGetters;
-        private Lazy<Func<TSource, TDest>> _converter;
+		private readonly IEnumerable<ICompilablePropertyGetter> _propertyGetters;
+        private readonly Expression<Func<TSource, TDest>> _converterFuncExpression;
+        private readonly Func<TSource, TDest> _converter;
         public CompilableTypeConverterByConstructor(
 			IEnumerable<ICompilablePropertyGetter> propertyGetters,
 			IEnumerable<ICompilableConstructorDefaultValuePropertyGetter> defaultValuePropertyGetters,
@@ -81,21 +80,29 @@ namespace CompilableTypeConverter.TypeConverters
 				propertyGettersList.RemoveAt(0);
             }
 
-            _constructor = constructor;
-			_propertyGetters = combinedPropertyGetters;
-            _converter = new Lazy<Func<TSource, TDest>>(generateCompiledConverter, true);
-
+			// Record the validated member variables
+			_propertyGetters = combinedPropertyGetters.AsReadOnly();
+			Constructor = constructor;
 			NumberOfConstructorArgumentsMatchedWithNonDefaultValues = defaultValuePropertyGettersList.Count;
+
+			// Generate a Expression<Func<TSource, TDest>>, the _rawConverterExpression is still required for the GetTypeConverterExpression
+			// method (this may be called to retrieve the raw expression, rather than the Func-wrapped version - eg. by the ListCompilablePropertyGetter,
+			// which has a set of TSource objects and wants to translate them into a set of TDest objects)
+			var srcParameter = Expression.Parameter(typeof(TSource), "src");
+			_converterFuncExpression = Expression.Lambda<Func<TSource, TDest>>(
+				GetTypeConverterExpression(srcParameter),
+				srcParameter
+			);
+
+			// Compile the expression into an actual Func<TSource, TDest> (this is expected to be the most commonly-used form of the data)
+			_converter = _converterFuncExpression.Compile();
         }
 
         /// <summary>
         /// The destination Constructor must be exposed by ITypeConverterByConstructor so that ITypeConverterPrioritiser implementations have something to work
         /// with - this value will never be null
         /// </summary>
-        public ConstructorInfo Constructor
-        {
-            get { return _constructor; }
-        }
+        public ConstructorInfo Constructor { get; private set; }
 
 		/// <summary>
 		/// This will always be zero or greater and less than or equal to the number of parameters that the Constructor reference has
@@ -107,41 +114,23 @@ namespace CompilableTypeConverter.TypeConverters
         /// </summary>
         public TDest Convert(TSource src)
         {
-            return _converter.Value(src);
-        }
-
-        private Func<TSource, TDest> generateCompiledConverter()
-        {
-            // Declare an expression to represent the src parameter
-            var srcParameter = Expression.Parameter(typeof(TSource), "src");
-
-            // Return compiled expression that instantiates a new object by retrieving properties from the source and passing as constructor arguments
-            return Expression.Lambda<Func<TSource, TDest>>(
-                GetTypeConverterExpression(srcParameter),
-                srcParameter
-            ).Compile();
+            return _converter(src);
         }
 
         /// <summary>
         /// This must return a Linq Expression that returns a new TDest instance - the specified "param" Expression must have a type that is assignable to TSource.
-        /// The resulting Expression will be assigned to a Lambda Expression typed as a TSource to TDest Func.
-        /// </summary>
+        /// The resulting Expression may be used to create a Func to take a TSource instance and return a new TDest if the specified param is a ParameterExpression.
+		/// If an expression of this form is required then the GetTypeConverterFuncExpression method may be more appropriate to use, this method is only when direct
+		/// access to the conversion expression is required, it may be preferable to GetTypeConverterFuncExpression when generating complex expression that this is
+		/// to be part of, potentially gaining a minor performance improvement (compared to calling GetTypeConverterFuncExpression) at the cost of compile-time
+		/// type safety. Alternatively, this method may be required if an expression value is to be convered where the expression is not a ParameterExpression.
+		/// </summary>
         public Expression GetTypeConverterExpression(Expression param)
         {
             if (param == null)
                 throw new ArgumentNullException("param");
             if (!typeof(TSource).IsAssignableFrom(param.Type))
                 throw new ArgumentException("param.Type must be assignable to typeparam TSource");
-
-            // Instantiate expressions for each constructor parameter by using each of the property getters against the source value
-            var constructorParameterExpressions = new List<Expression>();
-            foreach (var constructorParameter in _constructor.GetParameters())
-            {
-                var index = constructorParameterExpressions.Count;
-                constructorParameterExpressions.Add(
-                    _propertyGetters[index].GetPropertyGetterExpression(param)
-                );
-            }
 
             // Return an expression that to instantiate a new TDest by using property getters as constructor arguments
             return Expression.Condition(
@@ -151,10 +140,18 @@ namespace CompilableTypeConverter.TypeConverters
                 ),
                 Expression.Constant(default(TDest), typeof(TDest)),
                 Expression.New(
-                    _constructor,
-                    constructorParameterExpressions.ToArray()
+                    Constructor,
+					_propertyGetters.Select(propertyGetter => propertyGetter.GetPropertyGetterExpression(param))
                 )
             );
-        }
-    }
+		}
+
+		/// <summary>
+		/// This will never return null, it will return an Func Expression for mapping from a TSource instance to a TDest
+		/// </summary>
+		public Expression<Func<TSource, TDest>> GetTypeConverterFuncExpression()
+		{
+			return _converterFuncExpression;
+		}
+	}
 }
