@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using CompilableTypeConverter.PropertyGetters.Compilable;
 using CompilableTypeConverter.PropertyGetters.Factories;
@@ -8,19 +9,26 @@ namespace CompilableTypeConverter.TypeConverters.Factories
 {
     public class CompilableTypeConverterByPropertySettingFactory : ICompilableTypeConverterFactory
     {
-        private ICompilablePropertyGetterFactory _propertyGetterFactory;
-        private PropertySettingTypeOptions _propertySettingType;
+        private readonly ICompilablePropertyGetterFactory _propertyGetterFactory;
+		private readonly PropertySettingTypeOptions _propertySettingType;
+		private readonly HashSet<PropertyInfo> _propertiesToIgnore;
         public CompilableTypeConverterByPropertySettingFactory(
             ICompilablePropertyGetterFactory propertyGetterFactory,
-            PropertySettingTypeOptions propertySettingType)
+            PropertySettingTypeOptions propertySettingType,
+			IEnumerable<PropertyInfo> propertiesToIgnore)
 		{
             if (propertyGetterFactory == null)
                 throw new ArgumentNullException("propertyGetterFactory");
             if (!Enum.IsDefined(typeof(PropertySettingTypeOptions), propertySettingType))
                 throw new ArgumentOutOfRangeException("propertySettingType");
+			if (propertiesToIgnore == null)
+				throw new ArgumentNullException("propertiesToIgnore");
 
 			_propertyGetterFactory = propertyGetterFactory;
             _propertySettingType = propertySettingType;
+			_propertiesToIgnore = new HashSet<PropertyInfo>(propertiesToIgnore);
+			if (_propertiesToIgnore.Any(p => p == null))
+				throw new ArgumentException("Null reference encountered in propertiesToIgnore set");
 		}
 
         public enum PropertySettingTypeOptions
@@ -47,6 +55,10 @@ namespace CompilableTypeConverter.TypeConverters.Factories
                 // If there isn't a public, non-indexed setter then move on
                 if ((property.GetSetMethod() == null) || (property.GetIndexParameters().Length > 0))
                     continue;
+
+				// If this is a property to ignore then do just that
+				if (_propertiesToIgnore.Contains(property))
+					continue;
 
                 // If we can't retrieve a property getter for the property then either give up (if MatchAll) or push on (if MatchAsManyAsPossible)
                 var propertyGetter = _propertyGetterFactory.TryToGet(typeof(TSource), property.Name, property.PropertyType);

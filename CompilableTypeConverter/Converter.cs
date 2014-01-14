@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using CompilableTypeConverter.ConstructorPrioritisers.Factories;
 using CompilableTypeConverter.NameMatchers;
 using CompilableTypeConverter.PropertyGetters.Factories;
@@ -16,7 +19,8 @@ namespace CompilableTypeConverter
 	{
 		private static ExtendableCompilableTypeConverterFactory _constructorBasedConverterFactory;
 		private static ExtendableCompilableTypeConverterFactory _propertySetterBasedConverterFactory;
-		private static ImmutableConverterCache _converterCache;
+		private static readonly List<PropertyInfo> _allPropertiesToIgnoreToPropertySetterConversions;
+		private static readonly Dictionary<Tuple<Type, Type>, object> _converterCache;
 		private static object _lock;
 		static Converter()
 		{
@@ -36,9 +40,11 @@ namespace CompilableTypeConverter
 			_propertySetterBasedConverterFactory = ExtendableCompilableTypeConverterFactoryHelpers.GeneratePropertySetterBasedFactory(
 				nameMatcher,
 				CompilableTypeConverterByPropertySettingFactory.PropertySettingTypeOptions.MatchAll,
-				basePropertyGetterFactories
+				basePropertyGetterFactories,
+				new PropertyInfo[0]
 			);
-			_converterCache = new ImmutableConverterCache();
+			_allPropertiesToIgnoreToPropertySetterConversions = new List<PropertyInfo>();
+			_converterCache = new Dictionary<Tuple<Type, Type>, object>();
 			_lock = new object();
 		}
 
@@ -51,43 +57,75 @@ namespace CompilableTypeConverter
 		/// are deeply-nested types for conversion, CreateMap should be called from the deepest level and worked up to
 		/// the top.
         /// </summary>
-		public static void CreateMap<TSource, TDest>()
+		public static void CreateMap<TSource, TDest>(IEnumerable<PropertyInfo> propertiesToIgnoreIfSettingPropertiesOnTDest)
 		{
 			// This is just a wrapper around GetConverter for when you don't immediately care about the generated
 			// converter, you just need to build up some mappings
-			GetConverter<TSource, TDest>();
+			GetConverter<TSource, TDest>(propertiesToIgnoreIfSettingPropertiesOnTDest);
+		}
+		public static void CreateMap<TSource, TDest>()
+		{
+			CreateMap<TSource, TDest>(new PropertyInfo[0]);
 		}
 
 		/// <summary>
 		/// Create a new target type instance from a source value - this will throw an exception if conversion fails
 		/// </summary>
-		public static TDest Convert<TSource, TDest>(TSource source)
+		public static TDest Convert<TSource, TDest>(TSource source, IEnumerable<PropertyInfo> propertiesToIgnoreIfSettingPropertiesOnTDest)
 		{
 			// This is also a wrapper around GetConverter to make it easy for callers to get going (for performance reasons,
 			// it would be best to call GetConverter from the caller and store the converter reference somewhere since that
-			// would avoid the lock around each request that the GetConverter method requires)
-			return GetConverter<TSource, TDest>().Convert(source);
+			// would avoid the lock around each request that the GetConverter method requires).
+			return GetConverter<TSource, TDest>(propertiesToIgnoreIfSettingPropertiesOnTDest).Convert(source);
+		}
+		public static TDest Convert<TSource, TDest>(TSource source)
+		{
+			return Convert<TSource, TDest>(source, new PropertyInfo[0]);
 		}
 
 		/// <summary>
 		/// This will throw an exception if unable to generate a converter for request TSource and TDest pair, it will never return null
 		/// </summary>
-		public static ICompilableTypeConverter<TSource, TDest> GetConverter<TSource, TDest>()
+		public static ICompilableTypeConverter<TSource, TDest> GetConverter<TSource, TDest>(IEnumerable<PropertyInfo> propertiesToIgnoreIfSettingPropertiesOnTDest)
 		{
-			ICompilableTypeConverter<TSource, TDest> converter;
+			if (propertiesToIgnoreIfSettingPropertiesOnTDest == null)
+				throw new ArgumentNullException("propertiesToIgnoreIfSettingPropertiesOnTDest");
+			var propertiesToIgnoreList = propertiesToIgnoreIfSettingPropertiesOnTDest.ToList();
+			if (propertiesToIgnoreList.Any(p => p == null))
+				throw new ArgumentException("Null reference encountered in propertiesToIgnoreIfSettingPropertiesOnTDest set ");
+
 			Exception mappingException;
 			lock (_lock)
 			{
-				var cachedResult = _converterCache.TryToGet<TSource, TDest>();
-				if (cachedResult != null)
-					return cachedResult.Converter;
+				var cacheKey = Tuple.Create(typeof(TSource), typeof(TDest));
+				object unTypedCachedResult;
+				if (_converterCache.TryGetValue(cacheKey, out unTypedCachedResult))
+					return (ICompilableTypeConverter<TSource, TDest>)unTypedCachedResult;
+
+				// If there are any properties-to-ignore specified then add them to the total combined list and re-generate
+				// the _propertySetterBasedConverterFactory reference to take them into account
+				if (propertiesToIgnoreList.Any())
+				{
+					_allPropertiesToIgnoreToPropertySetterConversions.AddRange(propertiesToIgnoreIfSettingPropertiesOnTDest);
+					var currentByPropertySetterConvererFactoryConfigurationData = _propertySetterBasedConverterFactory.GetConfigurationData();
+					_propertySetterBasedConverterFactory = new ExtendableCompilableTypeConverterFactory(
+						currentByPropertySetterConvererFactoryConfigurationData.NameMatcher,
+						currentByPropertySetterConvererFactoryConfigurationData.BasePropertyGetterFactories,
+						propertyGetterFactories => new CompilableTypeConverterByPropertySettingFactory(
+							new CombinedCompilablePropertyGetterFactory(propertyGetterFactories),
+							CompilableTypeConverterByPropertySettingFactory.PropertySettingTypeOptions.MatchAll,
+							_allPropertiesToIgnoreToPropertySetterConversions
+						),
+						currentByPropertySetterConvererFactoryConfigurationData.PropertyGetterFactoryExtrapolator
+					);
+				}
 
 				try
 				{
-					converter = GenerateConverter<TSource, TDest>();
+					var converter = GenerateConverter<TSource, TDest>();
 					_constructorBasedConverterFactory = _constructorBasedConverterFactory.AddNewConverter(converter);
 					_propertySetterBasedConverterFactory = _propertySetterBasedConverterFactory.AddNewConverter(converter);
-					_converterCache = _converterCache.AddOrReplace<TSource, TDest>(converter);
+					_converterCache[cacheKey] = converter;
 					return converter;
 				}
 				catch (Exception e)
@@ -96,6 +134,10 @@ namespace CompilableTypeConverter
 				}
 			}
 			throw mappingException;
+		}
+		public static ICompilableTypeConverter<TSource, TDest> GetConverter<TSource, TDest>()
+		{
+			return GetConverter<TSource, TDest>(new PropertyInfo[0]);
 		}
 
 		/// <summary>

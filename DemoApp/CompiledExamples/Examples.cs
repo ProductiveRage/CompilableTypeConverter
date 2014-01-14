@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 ﻿using CompilableTypeConverter.ConstructorPrioritisers.Factories;
 using CompilableTypeConverter.NameMatchers;
 using CompilableTypeConverter.PropertyGetters.Factories;
@@ -44,7 +45,8 @@ namespace DemoApp.CompiledExamples
                 {
                     new CompilableAssignableTypesPropertyGetterFactory(nameMatcher),
                     new CompilableEnumConversionPropertyGetterFactory(nameMatcher)
-                }
+                },
+				new PropertyInfo[0] // propertiesToIgnore
             );
 
             // Extend the converter to handle SourceType.Sub1 to ConstructorDestType.Sub1 and IEnumerable<SourceType.Sub1> to IEnumerable<ConstructorDestType.Sub1>

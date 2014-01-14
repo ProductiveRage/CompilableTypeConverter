@@ -17,11 +17,8 @@ namespace CompilableTypeConverter.TypeConverters.Factories
     /// </summary>
     public class ExtendableCompilableTypeConverterFactory : ICompilableTypeConverterFactory
     {
-        private readonly INameMatcher _nameMatcher;
-		private readonly IEnumerable<ICompilablePropertyGetterFactory> _basePropertyGetterFactories;
-		private readonly ConverterFactoryGenerator _converterFactoryGenerator;
-		private readonly IPropertyGetterFactoryExtrapolator _propertyGetterFactoryExtrapolator;
-		private readonly Lazy<ICompilableTypeConverterFactory> _typeConverterFactory;
+		private readonly ConfigurationData _configurationData;
+		private readonly ICompilableTypeConverterFactory _typeConverterFactory;
         public ExtendableCompilableTypeConverterFactory(
             INameMatcher nameMatcher,
             IEnumerable<ICompilablePropertyGetterFactory> basePropertyGetterFactories,
@@ -37,28 +34,16 @@ namespace CompilableTypeConverter.TypeConverters.Factories
             if (propertyGetterFactoryExtrapolator == null)
                 throw new ArgumentNullException("propertyGetterFactoryExtrapolator");
 
-            var basePropertyGetterFactoryList = new List<ICompilablePropertyGetterFactory>();
-            foreach (var basePropertyGetterFactory in basePropertyGetterFactories)
-            {
-                if (basePropertyGetterFactory == null)
-                    throw new ArgumentException("Null entry encountered in basePropertyGetterFactories");
-                basePropertyGetterFactoryList.Add(basePropertyGetterFactory);
-            }
-
-            _nameMatcher = nameMatcher;
-            _basePropertyGetterFactories = basePropertyGetterFactoryList;
-            _converterFactoryGenerator = converterFactoryGenerator;
-            _propertyGetterFactoryExtrapolator = propertyGetterFactoryExtrapolator;
-            _typeConverterFactory = new Lazy<ICompilableTypeConverterFactory>(
-                () =>
-                {
-                    var compilableTypeConverterFactory = converterFactoryGenerator(_basePropertyGetterFactories);
-                    if (compilableTypeConverterFactory == null)
-                        throw new Exception("Specified converterFactoryGenerator returned null");
-                    return compilableTypeConverterFactory;
-                },
-                true
-            );
+			// Record all these settings in a ConfigurationData instance rather than duplicating the check-for-null-property-getter-factories logic here
+			_configurationData = new ConfigurationData(
+				nameMatcher,
+				basePropertyGetterFactories,
+				converterFactoryGenerator,
+				propertyGetterFactoryExtrapolator
+			);
+			_typeConverterFactory = converterFactoryGenerator(_configurationData.BasePropertyGetterFactories);
+            if (_typeConverterFactory == null)
+                throw new Exception("Specified converterFactoryGenerator returned null");
         }
 
         /// <summary>
@@ -79,7 +64,7 @@ namespace CompilableTypeConverter.TypeConverters.Factories
 		/// </summary>
 		public ICompilableTypeConverter<TSource, TDest> Get<TSource, TDest>()
         {
-            return _typeConverterFactory.Value.Get<TSource, TDest>();
+            return _typeConverterFactory.Get<TSource, TDest>();
         }
 
 		/// <summary>
@@ -98,7 +83,7 @@ namespace CompilableTypeConverter.TypeConverters.Factories
 		{
 			// Try to generate a converter for the requested mapping
 			return AddNewConverter<TSource, TDest>(
-				_typeConverterFactory.Value.Get<TSource, TDest>() // This will throw an exception if unable to generate a TSource -> TDest converter
+				_typeConverterFactory.Get<TSource, TDest>() // This will throw an exception if unable to generate a TSource -> TDest converter
 			);
 		}
 
@@ -112,12 +97,12 @@ namespace CompilableTypeConverter.TypeConverters.Factories
                 throw new ArgumentNullException("converterNew");
 
             // Get any additional, extrapolated property getter factories (ensure that neither null or a set containing nulls is generated)
-            var extrapolatedPropertyGetterFactories = _propertyGetterFactoryExtrapolator.Get<TSource, TDest>(converterNew);
+            var extrapolatedPropertyGetterFactories = _configurationData.PropertyGetterFactoryExtrapolator.Get<TSource, TDest>(converterNew);
             if (extrapolatedPropertyGetterFactories == null)
-                throw new Exception("propertyGetterFactoryExtrapolator (" + _propertyGetterFactoryExtrapolator.GetType().ToString() + ") returned null");
-            var extrapolatedPropertyGetterFactoriesList = new List<ICompilablePropertyGetterFactory>(extrapolatedPropertyGetterFactories);
+				throw new Exception("propertyGetterFactoryExtrapolator (" + _configurationData.PropertyGetterFactoryExtrapolator.GetType().ToString() + ") returned null");
+			var extrapolatedPropertyGetterFactoriesList = new List<ICompilablePropertyGetterFactory>(extrapolatedPropertyGetterFactories);
             if (extrapolatedPropertyGetterFactoriesList.Any(f => f == null))
-                throw new Exception("propertyGetterFactoryExtrapolator (" + _propertyGetterFactoryExtrapolator.GetType().ToString() + ") returned a null reference in the set");
+				throw new Exception("propertyGetterFactoryExtrapolator (" + _configurationData.PropertyGetterFactoryExtrapolator.GetType().ToString() + ") returned a null reference in the set");
 
             // Create a property getter factory that retrieves and convert properties using this converter by default, combine with any additional factories
             // generated by the propertyGetterFactoryExtrapolator. Note: The new property getter factories are specified first in the list so if there are
@@ -126,20 +111,75 @@ namespace CompilableTypeConverter.TypeConverters.Factories
             var extendedPropertyGetterFactories = new List<ICompilablePropertyGetterFactory>();
             extendedPropertyGetterFactories.Add(
                 new CompilableTypeConverterPropertyGetterFactory<TSource, TDest>(
-                    _nameMatcher,
+					_configurationData.NameMatcher,
                     converterNew
                 )
             );
             extendedPropertyGetterFactories.AddRange(extrapolatedPropertyGetterFactoriesList);
-			extendedPropertyGetterFactories.AddRange(_basePropertyGetterFactories);
+			extendedPropertyGetterFactories.AddRange(_configurationData.BasePropertyGetterFactories);
 
             // Return a new ExtendableCompilableTypeConverterFactory that can make use of these new property getter factories
             return new ExtendableCompilableTypeConverterFactory(
-                _nameMatcher,
+				_configurationData.NameMatcher,
                 extendedPropertyGetterFactories,
-                _converterFactoryGenerator,
-                _propertyGetterFactoryExtrapolator
+				_configurationData.ConverterFactoryGenerator,
+				_configurationData.PropertyGetterFactoryExtrapolator
             );
         }
+
+		/// <summary>
+		/// This will return null. This method is only required if a complex operation is required that the CreateMap and AddNewConverter methods can
+		/// not achieve (the expectation that this data be manipulated and a new ExtendableCompilableTypeConverterFactory instance created the result).
+		/// </summary>
+		public ConfigurationData GetConfigurationData()
+		{
+			return _configurationData;
+		}
+
+		public class ConfigurationData
+		{
+			public ConfigurationData(
+				INameMatcher nameMatcher,
+				IEnumerable<ICompilablePropertyGetterFactory> basePropertyGetterFactories,
+				ConverterFactoryGenerator converterFactoryGenerator,
+				IPropertyGetterFactoryExtrapolator propertyGetterFactoryExtrapolator)
+			{
+				if (nameMatcher == null)
+					throw new ArgumentNullException("nameMatcher");
+				if (basePropertyGetterFactories == null)
+					throw new ArgumentNullException("basePropertyGetterFactories");
+				if (converterFactoryGenerator == null)
+					throw new ArgumentNullException("converterFactoryGenerator");
+				if (propertyGetterFactoryExtrapolator == null)
+					throw new ArgumentNullException("propertyGetterFactoryExtrapolator");
+
+				NameMatcher = nameMatcher;
+				BasePropertyGetterFactories = basePropertyGetterFactories.ToList().AsReadOnly();
+				if (BasePropertyGetterFactories.Any(f => f == null))
+					throw new ArgumentException("Null reference encountered in basePropertyGetterFactories set");
+				ConverterFactoryGenerator = converterFactoryGenerator;
+				PropertyGetterFactoryExtrapolator = propertyGetterFactoryExtrapolator;
+			}
+
+			/// <summary>
+			/// This will never be null
+			/// </summary>
+			public INameMatcher NameMatcher { get; private set; }
+
+			/// <summary>
+			/// This will never be null nor contain any null references
+			/// </summary>
+			public IEnumerable<ICompilablePropertyGetterFactory> BasePropertyGetterFactories { get; private set; }
+
+			/// <summary>
+			/// This will never be null
+			/// </summary>
+			public ConverterFactoryGenerator ConverterFactoryGenerator { get; private set; }
+
+			/// <summary>
+			/// This will never be null
+			/// </summary>
+			public IPropertyGetterFactoryExtrapolator PropertyGetterFactoryExtrapolator { get; private set; }
+		}
     }
 }

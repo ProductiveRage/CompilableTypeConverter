@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using CompilableTypeConverter.ConstructorPrioritisers.Factories;
 using CompilableTypeConverter.NameMatchers;
 using CompilableTypeConverter.PropertyGetters.Factories;
@@ -46,7 +47,8 @@ namespace CompilableTypeConverter.TypeConverters.Factories
         public static ExtendableCompilableTypeConverterFactory GeneratePropertySetterBasedFactory(
             INameMatcher nameMatcher,
             CompilableTypeConverterByPropertySettingFactory.PropertySettingTypeOptions propertySettingTypeOptions,
-            IEnumerable<ICompilablePropertyGetterFactory> basePropertyGetterFactories)
+            IEnumerable<ICompilablePropertyGetterFactory> basePropertyGetterFactories,
+			IEnumerable<PropertyInfo> propertiesToIgnore)
         {
             if (nameMatcher == null)
                 throw new ArgumentNullException("nameMatcher");
@@ -54,6 +56,8 @@ namespace CompilableTypeConverter.TypeConverters.Factories
                 throw new ArgumentOutOfRangeException("propertySettingTypeOptions");
             if (basePropertyGetterFactories == null)
                 throw new ArgumentNullException("basePropertyGetterFactories");
+			if (propertiesToIgnore == null)
+				throw new ArgumentNullException("propertiesToIgnore");
 
             return new ExtendableCompilableTypeConverterFactory(
                 nameMatcher,
@@ -61,7 +65,8 @@ namespace CompilableTypeConverter.TypeConverters.Factories
                 propertyGetterFactories => new CompilableTypeConverterByPropertySettingFactory(
                     // Define a ConverterFactoryGenerator to return a CompilableTypeConverterByPropertySettingFactory when new conversions are registered
                     new CombinedCompilablePropertyGetterFactory(propertyGetterFactories),
-                    propertySettingTypeOptions
+                    propertySettingTypeOptions,
+					propertiesToIgnore
                 ),
                 new CompilableTypeConverterPropertyGetterFactoryExtrapolator(nameMatcher)
             );
