@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using CompilableTypeConverter.ConstructorPrioritisers.Factories;
 using CompilableTypeConverter.NameMatchers;
@@ -46,6 +47,18 @@ namespace CompilableTypeConverter
 			_allPropertiesToIgnoreToPropertySetterConversions = new List<PropertyInfo>();
 			_converterCache = new Dictionary<Tuple<Type, Type>, object>();
 			_lock = new object();
+		}
+
+		/// <summary>
+		/// This may be used to specify custom rules for the mapping to be created. It will never return null. When the Create
+		/// method is called on the returned Configurer instance a new mapping will be created if possible (if not then an
+		/// exception will be raised). As with CreateMap, Convert and GetNewConverter, if there has already been a converter
+		/// generated for the specified TSource, TDest pair then this will be returned and no new converter will be created
+		/// (so any custom mapping rules will end up being ignored).
+		/// </summary>
+		public static Configurer<TSource, TDest> BeginCreateMap<TSource, TDest>()
+		{
+			return new Configurer<TSource, TDest>(new PropertyInfo[0]);
 		}
 
 		/// <summary>
@@ -170,6 +183,75 @@ namespace CompilableTypeConverter
 				}
 			}
 			throw mappingException;
+		}
+
+		public class Configurer<TSource, TDest>
+		{
+			private readonly IEnumerable<PropertyInfo> _propertiesToIgnore;
+			public Configurer(IEnumerable<PropertyInfo> propertiesToIgnore)
+			{
+				if (propertiesToIgnore == null)
+					throw new ArgumentNullException("propertiesToIgnore");
+
+				_propertiesToIgnore = propertiesToIgnore.ToList().AsReadOnly();
+				if (_propertiesToIgnore.Any(p => p == null))
+					throw new ArgumentException("Null reference encountered in propertiesToIgnore set");
+			}
+
+			/// <summary>
+			/// Specify properties on the TSource type that should be ignored if the generated converter uses the populate-by-property-setting
+			/// method (this will not have any effect if the by-constructor method seems most appropriate when the converter is created). The
+			/// accessor must all indicate properties on TDest that are publicly writeable and non-indexed, anything else will result in an
+			/// exception being thrown.
+			/// </summary>
+			public Configurer<TSource, TDest> Ignore(params Expression<Func<TDest, object>>[] accessors)
+			{
+				if (accessors == null)
+					throw new ArgumentNullException("accessors");
+
+				var propertyInfoList = new List<PropertyInfo>();
+				foreach (var accessor in accessors)
+				{
+					if (accessor == null)
+						throw new ArgumentException("Null reference encountered in accessors set");
+
+					propertyInfoList.Add(
+						GetPropertyFromAccessorFuncExpression(accessor)
+					);
+				}
+				if (!propertyInfoList.Any())
+					return this;
+				return new Configurer<TSource, TDest>(_propertiesToIgnore.Concat(propertyInfoList));
+			}
+
+			/// <summary>
+			/// This will throw an exception if a converter for the TSource, TDest could not be created
+			/// </summary>
+			public void Create()
+			{
+				Converter.CreateMap<TSource, TDest>(_propertiesToIgnore);
+			}
+
+			/// <summary>
+			/// This will throw an exception for a null accessor reference, one that is not a member accessor, one that is not a property member accessor
+			/// or one whose target property is either not public writeable or is indexed
+			/// </summary>
+			private PropertyInfo GetPropertyFromAccessorFuncExpression(Expression<Func<TDest, object>> accessor)
+			{
+				// This code was very much inspired by looking into the AutoMapper source! :)
+				if (accessor == null)
+					throw new ArgumentNullException("accessor");
+				if (accessor.Body.NodeType != ExpressionType.MemberAccess)
+					throw new ArgumentException("accessor.Body.NodeType must be a MemberAccess");
+				var property = (accessor.Body as MemberExpression).Member as PropertyInfo;
+				if (property == null)
+					throw new ArgumentException("The accessor must specify a property");
+				if (property.GetSetMethod() == null)
+					throw new ArgumentException("The accessor must specify a writeable property");
+				if (property.GetIndexParameters().Any())
+					throw new ArgumentException("The accessor must specify a non-indexed property");
+				return property;
+			}
 		}
 	}
 }
