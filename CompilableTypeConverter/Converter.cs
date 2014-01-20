@@ -241,9 +241,18 @@ namespace CompilableTypeConverter
 				// This code was very much inspired by looking into the AutoMapper source! :)
 				if (accessor == null)
 					throw new ArgumentNullException("accessor");
-				if (accessor.Body.NodeType != ExpressionType.MemberAccess)
+
+				// Expecting the accessor.Body to be a MemberExpression indicating a Property, but if the target Property type needs to be boxed then
+				// it will be wrapped in a UnaryExpression
+				Expression accessorBody = accessor.Body;
+				if (accessorBody.NodeType == ExpressionType.Convert)
+				{
+					var convertExpression = accessor.Body as UnaryExpression;
+					accessorBody = convertExpression.Operand;
+				}
+				if (accessorBody.NodeType != ExpressionType.MemberAccess)
 					throw new ArgumentException("accessor.Body.NodeType must be a MemberAccess");
-				var property = (accessor.Body as MemberExpression).Member as PropertyInfo;
+				var property = (accessorBody as MemberExpression).Member as PropertyInfo;
 				if (property == null)
 					throw new ArgumentException("The accessor must specify a property");
 				if (property.GetSetMethod() == null)
