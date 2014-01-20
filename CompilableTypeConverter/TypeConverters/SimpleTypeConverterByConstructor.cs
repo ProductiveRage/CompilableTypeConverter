@@ -84,7 +84,7 @@ namespace CompilableTypeConverter.TypeConverters
             _constructorInvoker = constructorInvoker;
             _propertyGetters = propertyGettersList;
 
-			NumberOfConstructorArgumentsMatchedWithNonDefaultValues = defaultValuePropertyGettersList.Count;
+			NumberOfConstructorArgumentsMatchedWithNonDefaultValues = constructorParameters.Length - defaultValuePropertyGettersList.Count;
 		}
 
         /// <summary>

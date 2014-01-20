@@ -29,11 +29,7 @@ namespace CompilableTypeConverter.ConstructorPrioritisers
             if (optionsList.Count > 1)
             {
                 optionsList.Sort(
-                    delegate(ITypeConverterByConstructor<TSource, TDest> x, ITypeConverterByConstructor<TSource, TDest> y)
-                    {
-                        return (x.Constructor.GetParameters().Length - x.NumberOfConstructorArgumentsMatchedWithNonDefaultValues)
-							.CompareTo(y.Constructor.GetParameters().Length - y.NumberOfConstructorArgumentsMatchedWithNonDefaultValues);
-                    }
+					(x, y) => x.NumberOfConstructorArgumentsMatchedWithNonDefaultValues.CompareTo(y.NumberOfConstructorArgumentsMatchedWithNonDefaultValues)
                 );
             }
             return optionsList[optionsList.Count - 1];

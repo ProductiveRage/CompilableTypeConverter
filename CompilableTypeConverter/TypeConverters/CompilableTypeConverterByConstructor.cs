@@ -83,7 +83,7 @@ namespace CompilableTypeConverter.TypeConverters
 			// Record the validated member variables
 			_propertyGetters = combinedPropertyGetters.AsReadOnly();
 			Constructor = constructor;
-			NumberOfConstructorArgumentsMatchedWithNonDefaultValues = defaultValuePropertyGettersList.Count;
+			NumberOfConstructorArgumentsMatchedWithNonDefaultValues = constructorParameters.Length - defaultValuePropertyGettersList.Count;
 
 			// Generate a Expression<Func<TSource, TDest>>, the _rawConverterExpression is still required for the GetTypeConverterExpression
 			// method (this may be called to retrieve the raw expression, rather than the Func-wrapped version - eg. by the ListCompilablePropertyGetter,
