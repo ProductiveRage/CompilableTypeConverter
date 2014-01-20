@@ -70,42 +70,54 @@ namespace CompilableTypeConverter
 		/// are deeply-nested types for conversion, CreateMap should be called from the deepest level and worked up to
 		/// the top.
         /// </summary>
-		public static void CreateMap<TSource, TDest>(IEnumerable<PropertyInfo> propertiesToIgnoreIfSettingPropertiesOnTDest)
+		public static void CreateMap<TSource, TDest>(
+			IEnumerable<PropertyInfo> propertiesToIgnoreIfSettingPropertiesOnTDest,
+			ConverterOverrideBehaviourOptions converterOverrideBehaviour = ConverterOverrideBehaviourOptions.UseAnyExistingConverter)
 		{
 			// This is just a wrapper around GetConverter for when you don't immediately care about the generated
 			// converter, you just need to build up some mappings
-			GetConverter<TSource, TDest>(propertiesToIgnoreIfSettingPropertiesOnTDest);
+			GetConverter<TSource, TDest>(propertiesToIgnoreIfSettingPropertiesOnTDest, converterOverrideBehaviour);
 		}
-		public static void CreateMap<TSource, TDest>()
+		public static void CreateMap<TSource, TDest>(
+			ConverterOverrideBehaviourOptions converterOverrideBehaviour = ConverterOverrideBehaviourOptions.UseAnyExistingConverter)
 		{
-			CreateMap<TSource, TDest>(new PropertyInfo[0]);
+			CreateMap<TSource, TDest>(new PropertyInfo[0], converterOverrideBehaviour);
 		}
 
 		/// <summary>
 		/// Create a new target type instance from a source value - this will throw an exception if conversion fails
 		/// </summary>
-		public static TDest Convert<TSource, TDest>(TSource source, IEnumerable<PropertyInfo> propertiesToIgnoreIfSettingPropertiesOnTDest)
+		public static TDest Convert<TSource, TDest>(
+			TSource source,
+			IEnumerable<PropertyInfo> propertiesToIgnoreIfSettingPropertiesOnTDest,
+			ConverterOverrideBehaviourOptions converterOverrideBehaviour = ConverterOverrideBehaviourOptions.UseAnyExistingConverter)
 		{
 			// This is also a wrapper around GetConverter to make it easy for callers to get going (for performance reasons,
 			// it would be best to call GetConverter from the caller and store the converter reference somewhere since that
 			// would avoid the lock around each request that the GetConverter method requires).
-			return GetConverter<TSource, TDest>(propertiesToIgnoreIfSettingPropertiesOnTDest).Convert(source);
+			return GetConverter<TSource, TDest>(propertiesToIgnoreIfSettingPropertiesOnTDest, converterOverrideBehaviour).Convert(source);
 		}
-		public static TDest Convert<TSource, TDest>(TSource source)
+		public static TDest Convert<TSource, TDest>(
+			TSource source,
+			ConverterOverrideBehaviourOptions converterOverrideBehaviour = ConverterOverrideBehaviourOptions.UseAnyExistingConverter)
 		{
-			return Convert<TSource, TDest>(source, new PropertyInfo[0]);
+			return Convert<TSource, TDest>(source, new PropertyInfo[0], converterOverrideBehaviour);
 		}
 
 		/// <summary>
 		/// This will throw an exception if unable to generate a converter for request TSource and TDest pair, it will never return null
 		/// </summary>
-		public static ICompilableTypeConverter<TSource, TDest> GetConverter<TSource, TDest>(IEnumerable<PropertyInfo> propertiesToIgnoreIfSettingPropertiesOnTDest)
+		public static ICompilableTypeConverter<TSource, TDest> GetConverter<TSource, TDest>(
+			IEnumerable<PropertyInfo> propertiesToIgnoreIfSettingPropertiesOnTDest,
+			ConverterOverrideBehaviourOptions converterOverrideBehaviour = ConverterOverrideBehaviourOptions.UseAnyExistingConverter)
 		{
 			if (propertiesToIgnoreIfSettingPropertiesOnTDest == null)
 				throw new ArgumentNullException("propertiesToIgnoreIfSettingPropertiesOnTDest");
 			var propertiesToIgnoreList = propertiesToIgnoreIfSettingPropertiesOnTDest.ToList();
 			if (propertiesToIgnoreList.Any(p => p == null))
 				throw new ArgumentException("Null reference encountered in propertiesToIgnoreIfSettingPropertiesOnTDest set ");
+			if (!Enum.IsDefined(typeof(ConverterOverrideBehaviourOptions), converterOverrideBehaviour))
+				throw new ArgumentOutOfRangeException("converterOverrideBehaviour");
 
 			Exception mappingException;
 			lock (_lock)
@@ -113,7 +125,11 @@ namespace CompilableTypeConverter
 				var cacheKey = Tuple.Create(typeof(TSource), typeof(TDest));
 				object unTypedCachedResult;
 				if (_converterCache.TryGetValue(cacheKey, out unTypedCachedResult))
-					return (ICompilableTypeConverter<TSource, TDest>)unTypedCachedResult;
+				{
+					if (converterOverrideBehaviour == ConverterOverrideBehaviourOptions.UseAnyExistingConverter)
+						return (ICompilableTypeConverter<TSource, TDest>)unTypedCachedResult;
+					_converterCache.Remove(cacheKey);
+				}
 
 				// If there are any properties-to-ignore specified then add them to the total combined list and re-generate
 				// the _propertySetterBasedConverterFactory reference to take them into account
@@ -185,6 +201,12 @@ namespace CompilableTypeConverter
 			throw mappingException;
 		}
 
+		public enum ConverterOverrideBehaviourOptions
+		{
+			ForceConverterRebuild,
+			UseAnyExistingConverter
+		}
+
 		public class Configurer<TSource, TDest>
 		{
 			private readonly IEnumerable<PropertyInfo> _propertiesToIgnore;
@@ -227,9 +249,9 @@ namespace CompilableTypeConverter
 			/// <summary>
 			/// This will throw an exception if a converter for the TSource, TDest could not be created
 			/// </summary>
-			public void Create()
+			public void Create(ConverterOverrideBehaviourOptions converterOverrideBehaviour = ConverterOverrideBehaviourOptions.UseAnyExistingConverter)
 			{
-				Converter.CreateMap<TSource, TDest>(_propertiesToIgnore);
+				Converter.CreateMap<TSource, TDest>(_propertiesToIgnore, converterOverrideBehaviour);
 			}
 
 			/// <summary>
