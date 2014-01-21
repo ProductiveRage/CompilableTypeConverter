@@ -63,7 +63,7 @@ namespace CompilableTypeConverter.TypeConverters.Factories
 			DestProperty = (PropertyInfo)info.GetValue("DestProperty", typeof(PropertyInfo));
 		}
 
-		public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
+		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			if (info == null)
 				throw new ArgumentNullException("info");

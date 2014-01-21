@@ -26,7 +26,7 @@ namespace CompilableTypeConverter.TypeConverters.Factories
 			DestType = (Type)info.GetValue("DestType", typeof(Type));
 		}
 
-		public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
+		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			if (info == null)
 				throw new ArgumentNullException("info");
