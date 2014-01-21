@@ -69,7 +69,12 @@ namespace CompilableTypeConverter.TypeConverters
 			_converter = _converterFuncExpression.Compile();
 		}
 
-        /// <summary>
+		/// <summary>
+		/// This will never be null nor contain any null references
+		/// </summary>
+		public IEnumerable<PropertyInfo> SourcePropertiesAccessed { get { return _propertyGetters.Select(p => p.Property); } }
+
+		/// <summary>
         /// Create a new target type instance from a source value - this will throw an exception if conversion fails
         /// </summary>
         public TDest Convert(TSource src)
@@ -97,7 +102,7 @@ namespace CompilableTypeConverter.TypeConverters
 
             // Define statements to instantiate new value, set properties and then return the reference
             var newInstanceGenerationExpressions = new List<Expression>
-            {
+			{
                 Expression.Assign(
                     dest,
                     Expression.New(typeof(TDest).GetConstructor(new Type[0]))
@@ -111,28 +116,28 @@ namespace CompilableTypeConverter.TypeConverters
                         dest,
 						propertyToSet.GetSetMethod(),
 						_propertyGetters.ElementAt(index).GetPropertyGetterExpression(param)
-                    )
-                );
+					)
+				);
 				index++;
-            }
+			}
             newInstanceGenerationExpressions.Add(
                 dest
             );
 
-            // Return an expression that to instantiate a new TDest by using property getters as constructor arguments
-            // - If source is null, return default(TDest)
-            return Expression.Condition(
-                Expression.Equal(
-                    param,
-                    Expression.Constant(null)
-                ),
-                Expression.Constant(default(TDest), typeof(TDest)),
+			// Return an expression that to instantiate a new TDest by using property getters as constructor arguments
+			// - If source is null, return default(TDest)
+			return Expression.Condition(
+				Expression.Equal(
+					param,
+					Expression.Constant(null)
+				),
+				Expression.Constant(default(TDest), typeof(TDest)),
                 Expression.Block(
                     new[] { dest },
                     newInstanceGenerationExpressions
-                )
-            );
-        }
+				)
+			);
+		}
 
 		/// <summary>
 		/// This will never return null, it will return an Func Expression for mapping from a TSource instance to a TDest

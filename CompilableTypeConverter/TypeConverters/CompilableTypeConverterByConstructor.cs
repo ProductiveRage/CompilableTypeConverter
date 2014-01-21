@@ -109,6 +109,11 @@ namespace CompilableTypeConverter.TypeConverters
 		/// </summary>
 		public int NumberOfConstructorArgumentsMatchedWithNonDefaultValues { get; private set; }
 
+		/// <summary>
+		/// This will never be null nor contain any null references
+		/// </summary>
+		public IEnumerable<PropertyInfo> SourcePropertiesAccessed { get { return _propertyGetters.Select(p => p.Property); } }
+
         /// <summary>
         /// Create a new target type instance from a source value - this will throw an exception if conversion fails
         /// </summary>

@@ -101,6 +101,11 @@ namespace CompilableTypeConverter.TypeConverters
 		/// </summary>
 		public int NumberOfConstructorArgumentsMatchedWithNonDefaultValues { get; private set; }
 
+		/// <summary>
+		/// This will never be null nor contain any null references
+		/// </summary>
+		public IEnumerable<PropertyInfo> SourcePropertiesAccessed { get { return _propertyGetters.Select(p => p.Property); } }
+
         /// <summary>
         /// Try to retrieve the value of the specified Property from the specified object (which must be of type SrcType) - this will throw an exception for null input
         /// or if retrieval fails
