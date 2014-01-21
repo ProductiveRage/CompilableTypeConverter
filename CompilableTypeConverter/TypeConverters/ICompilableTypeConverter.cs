@@ -16,11 +16,16 @@ namespace CompilableTypeConverter.TypeConverters
 		/// to be part of, potentially gaining a minor performance improvement (compared to calling GetTypeConverterFuncExpression) at the cost of compile-time
 		/// type safety. Alternatively, this method may be required if an expression value is to be convered where the expression is not a ParameterExpression.
 		/// </summary>
-		Expression GetTypeConverterExpression(Expression param);
+		Expression GetTypeConverterExpression(
+			Expression param,
+			TypeConverterExpressionNullBehaviourOptions typeConverterExpressionNullBehaviour = TypeConverterExpressionNullBehaviourOptions.UseDestDefaultIfSourceIsNull
+		);
 
 		/// <summary>
 		/// This will never return null, it will return an Func Expression for mapping from a TSource instance to a TDest
 		/// </summary>
-		Expression<Func<TSource, TDest>> GetTypeConverterFuncExpression();
+		Expression<Func<TSource, TDest>> GetTypeConverterFuncExpression(
+			TypeConverterExpressionNullBehaviourOptions typeConverterExpressionNullBehaviour = TypeConverterExpressionNullBehaviourOptions.UseDestDefaultIfSourceIsNull
+		);
     }
 }

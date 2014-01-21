@@ -154,14 +154,16 @@ namespace UnitTesting.PropertyGetters
             {
                 return src;
             }
-            public Expression GetTypeConverterExpression(Expression param)
-            {
+            public Expression GetTypeConverterExpression(
+				Expression param,
+				TypeConverterExpressionNullBehaviourOptions typeConverterExpressionNullBehaviour = TypeConverterExpressionNullBehaviourOptions.UseDestDefaultIfSourceIsNull)
+			{
                 if (param == null)
                     throw new ArgumentNullException("param");
                 return param;
             }
-			public Expression<Func<int, int>> GetTypeConverterFuncExpression()
-			{
+			public Expression<Func<int, int>> GetTypeConverterFuncExpression(
+				TypeConverterExpressionNullBehaviourOptions typeConverterExpressionNullBehaviour = TypeConverterExpressionNullBehaviourOptions.UseDestDefaultIfSourceIsNull)			{
 				var srcParameter = Expression.Parameter(typeof(int), "src");
 				return Expression.Lambda<Func<int, int>>(
 					GetTypeConverterExpression(srcParameter),
@@ -177,13 +179,16 @@ namespace UnitTesting.PropertyGetters
             {
                 return src;
             }
-            public Expression GetTypeConverterExpression(Expression param)
-            {
+            public Expression GetTypeConverterExpression(
+				Expression param,
+				TypeConverterExpressionNullBehaviourOptions typeConverterExpressionNullBehaviour = TypeConverterExpressionNullBehaviourOptions.UseDestDefaultIfSourceIsNull)
+			{
                 if (param == null)
                     throw new ArgumentNullException("param");
                 return param;
             }
-			public Expression<Func<string, string>> GetTypeConverterFuncExpression()
+			public Expression<Func<string, string>> GetTypeConverterFuncExpression(
+				TypeConverterExpressionNullBehaviourOptions typeConverterExpressionNullBehaviour = TypeConverterExpressionNullBehaviourOptions.UseDestDefaultIfSourceIsNull)
 			{
 				var srcParameter = Expression.Parameter(typeof(string), "src");
 				return Expression.Lambda<Func<string, string>>(
@@ -200,8 +205,10 @@ namespace UnitTesting.PropertyGetters
                 return src.ToString();
             }
 			public IEnumerable<PropertyInfo> SourcePropertiesAccessed { get { return new PropertyInfo[0]; } }
-			public Expression GetTypeConverterExpression(Expression param)
-            {
+			public Expression GetTypeConverterExpression(
+				Expression param,
+				TypeConverterExpressionNullBehaviourOptions typeConverterExpressionNullBehaviour = TypeConverterExpressionNullBehaviourOptions.UseDestDefaultIfSourceIsNull)
+			{
                 if (param == null)
                     throw new ArgumentNullException("param");
                 return Expression.Call(
@@ -209,7 +216,8 @@ namespace UnitTesting.PropertyGetters
                     typeof(int).GetMethod("ToString", new Type[0])
                 );
             }
-			public Expression<Func<int, string>> GetTypeConverterFuncExpression()
+			public Expression<Func<int, string>> GetTypeConverterFuncExpression(
+				TypeConverterExpressionNullBehaviourOptions typeConverterExpressionNullBehaviour = TypeConverterExpressionNullBehaviourOptions.UseDestDefaultIfSourceIsNull)
 			{
 				var srcParameter = Expression.Parameter(typeof(int), "src");
 				return Expression.Lambda<Func<int, string>>(

@@ -105,6 +105,7 @@
     <Compile Include="TypeConverters\Factories\SimpleTypeConverterByConstructorFactory.cs" />
     <Compile Include="TypeConverters\SimpleTypeConverterByConstructor.cs" />
     <Compile Include="TypeConverters\ITypeConverterByConstructor.cs" />
+    <Compile Include="TypeConverters\TypeConverterExpressionNullBehaviourOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">

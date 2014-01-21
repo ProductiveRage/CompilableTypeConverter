@@ -90,61 +90,69 @@ namespace CompilableTypeConverter.TypeConverters
 		/// to be part of, potentially gaining a minor performance improvement (compared to calling GetTypeConverterFuncExpression) at the cost of compile-time
 		/// type safety. Alternatively, this method may be required if an expression value is to be convered where the expression is not a ParameterExpression.
 		/// </summary>
-		public Expression GetTypeConverterExpression(Expression param)
+		public Expression GetTypeConverterExpression(
+			Expression param,
+			TypeConverterExpressionNullBehaviourOptions typeConverterExpressionNullBehaviour = TypeConverterExpressionNullBehaviourOptions.UseDestDefaultIfSourceIsNull)
         {
             if (param == null)
                 throw new ArgumentNullException("param");
             if (!typeof(TSource).IsAssignableFrom(param.Type))
                 throw new ArgumentException("param.Type must be assignable to typeparam TSource");
 
-            // Declare a local variable that will be used within the Expression block to have a new instance assigned to it and properties set
-            var dest = Expression.Parameter(typeof(TDest));
-
-            // Define statements to instantiate new value, set properties and then return the reference
-            var newInstanceGenerationExpressions = new List<Expression>
+			// Generate the property bindings that accompany the parameter-less constructor call to initialise the target
+			var propertyBindings = new List<MemberBinding>();
+			foreach (var indexedProperty in _propertiesToSet.Select((property, index) => new { Property = property, Index = index }))
 			{
-                Expression.Assign(
-                    dest,
-                    Expression.New(typeof(TDest).GetConstructor(new Type[0]))
-                )
-            };
-			var index = 0;
-			foreach (var propertyToSet in _propertiesToSet)
-            {
-                newInstanceGenerationExpressions.Add(
-                    Expression.Call(
-                        dest,
-						propertyToSet.GetSetMethod(),
-						_propertyGetters.ElementAt(index).GetPropertyGetterExpression(param)
+				propertyBindings.Add(
+					Expression.Bind(
+						indexedProperty.Property,
+						_propertyGetters.ElementAt(indexedProperty.Index).GetPropertyGetterExpression(param)
 					)
 				);
-				index++;
 			}
-            newInstanceGenerationExpressions.Add(
-                dest
-            );
 
-			// Return an expression that to instantiate a new TDest by using property getters as constructor arguments
-			// - If source is null, return default(TDest)
-			return Expression.Condition(
-				Expression.Equal(
-					param,
-					Expression.Constant(null)
-				),
-				Expression.Constant(default(TDest), typeof(TDest)),
-                Expression.Block(
-                    new[] { dest },
-                    newInstanceGenerationExpressions
-				)
+			var conversionExpression = Expression.MemberInit(
+				Expression.New(typeof(TDest).GetConstructor(new Type[0])),
+				propertyBindings
 			);
+			if (typeConverterExpressionNullBehaviour == TypeConverterExpressionNullBehaviourOptions.SkipNullHandling)
+				return conversionExpression;
+			else if (typeConverterExpressionNullBehaviour == TypeConverterExpressionNullBehaviourOptions.UseDestDefaultIfSourceIsNull)
+			{
+				return Expression.Condition(
+					Expression.Equal(
+						param,
+						Expression.Constant(null)
+					),
+					Expression.Constant(default(TDest), typeof(TDest)),
+					conversionExpression
+				);
+			}
+			else
+				throw new ArgumentOutOfRangeException("typeConverterExpressionNullBehaviour");
 		}
 
 		/// <summary>
 		/// This will never return null, it will return an Func Expression for mapping from a TSource instance to a TDest
 		/// </summary>
-		public Expression<Func<TSource, TDest>> GetTypeConverterFuncExpression()
+		public Expression<Func<TSource, TDest>> GetTypeConverterFuncExpression(
+			TypeConverterExpressionNullBehaviourOptions typeConverterExpressionNullBehaviour = TypeConverterExpressionNullBehaviourOptions.UseDestDefaultIfSourceIsNull)
 		{
-			return _converterFuncExpression;
+			if (typeConverterExpressionNullBehaviour == TypeConverterExpressionNullBehaviourOptions.UseDestDefaultIfSourceIsNull)
+			{
+				// This is the default behaviour that this class uses internally, so we can just share the _converterFuncExpression reference
+				return _converterFuncExpression;
+			}
+			else if (typeConverterExpressionNullBehaviour == TypeConverterExpressionNullBehaviourOptions.SkipNullHandling)
+			{
+				var srcParameter = Expression.Parameter(typeof(TSource), "src");
+				return Expression.Lambda<Func<TSource, TDest>>(
+					GetTypeConverterExpression(srcParameter, typeConverterExpressionNullBehaviour),
+					srcParameter
+				);
+			}
+			else
+				throw new ArgumentOutOfRangeException("typeConverterExpressionNullBehaviour");
 		}
 	}
 }
