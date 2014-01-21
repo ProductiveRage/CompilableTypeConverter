@@ -25,28 +25,10 @@ namespace CompilableTypeConverter
 		private static object _lock;
 		static Converter()
 		{
-			// Prepare converter factories (for by-constructor and by-property-setters) using the base types (AssignableType and
-			// EnumConversion property getter factories)
-			var nameMatcher = new CaseInsensitiveSkipUnderscoreNameMatcher();
-			var basePropertyGetterFactories = new ICompilablePropertyGetterFactory[]
-            {
-                new CompilableAssignableTypesPropertyGetterFactory(nameMatcher),
-                new CompilableEnumConversionPropertyGetterFactory(nameMatcher)
-            };
-			_constructorBasedConverterFactory = ExtendableCompilableTypeConverterFactoryHelpers.GenerateConstructorBasedFactory(
-				nameMatcher,
-				new ArgsLengthTypeConverterPrioritiserFactory(),
-				basePropertyGetterFactories
-			);
-			_propertySetterBasedConverterFactory = ExtendableCompilableTypeConverterFactoryHelpers.GeneratePropertySetterBasedFactory(
-				nameMatcher,
-				CompilableTypeConverterByPropertySettingFactory.PropertySettingTypeOptions.MatchAll,
-				basePropertyGetterFactories,
-				new PropertyInfo[0]
-			);
+			_lock = new object();
 			_allPropertiesToIgnoreToPropertySetterConversions = new List<PropertyInfo>();
 			_converterCache = new Dictionary<Tuple<Type, Type>, object>();
-			_lock = new object();
+			Reset();
 		}
 
 		/// <summary>
@@ -199,6 +181,37 @@ namespace CompilableTypeConverter
 				}
 			}
 			throw mappingException;
+		}
+
+		/// <summary>
+		/// This will reset entirely to the base state, as if no calls to Convert, Create or GetConverter had been made
+		/// </summary>
+		public static void Reset()
+		{
+			lock (_lock)
+			{
+				// Prepare converter factories (for by-constructor and by-property-setters) using the base types (AssignableType and
+				// EnumConversion property getter factories)
+				var nameMatcher = new CaseInsensitiveSkipUnderscoreNameMatcher();
+				var basePropertyGetterFactories = new ICompilablePropertyGetterFactory[]
+				{
+					new CompilableAssignableTypesPropertyGetterFactory(nameMatcher),
+					new CompilableEnumConversionPropertyGetterFactory(nameMatcher)
+				};
+				_constructorBasedConverterFactory = ExtendableCompilableTypeConverterFactoryHelpers.GenerateConstructorBasedFactory(
+					nameMatcher,
+					new ArgsLengthTypeConverterPrioritiserFactory(),
+					basePropertyGetterFactories
+				);
+				_propertySetterBasedConverterFactory = ExtendableCompilableTypeConverterFactoryHelpers.GeneratePropertySetterBasedFactory(
+					nameMatcher,
+					CompilableTypeConverterByPropertySettingFactory.PropertySettingTypeOptions.MatchAll,
+					basePropertyGetterFactories,
+					new PropertyInfo[0]
+				);
+				_allPropertiesToIgnoreToPropertySetterConversions.Clear();
+				_converterCache.Clear();
+			}
 		}
 
 		public enum ConverterOverrideBehaviourOptions
