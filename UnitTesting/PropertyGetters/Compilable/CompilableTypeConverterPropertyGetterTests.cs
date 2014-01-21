@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Reflection;
 using CompilableTypeConverter.PropertyGetters.Compilable;
 using CompilableTypeConverter.TypeConverters;
 using NUnit.Framework;
@@ -147,7 +149,8 @@ namespace UnitTesting.PropertyGetters
 
         private class NonConvertingCompilableIntTypeConverter : ICompilableTypeConverter<int, int>
         {
-            public int Convert(int src)
+			public IEnumerable<PropertyInfo> SourcePropertiesAccessed { get { return new PropertyInfo[0]; } }
+			public int Convert(int src)
             {
                 return src;
             }
@@ -169,7 +172,8 @@ namespace UnitTesting.PropertyGetters
 
         private class NonConvertingCompilableStringTypeConverter : ICompilableTypeConverter<string, string>
         {
-            public string Convert(string src)
+			public IEnumerable<PropertyInfo> SourcePropertiesAccessed { get { return new PropertyInfo[0]; } }
+			public string Convert(string src)
             {
                 return src;
             }
@@ -195,7 +199,8 @@ namespace UnitTesting.PropertyGetters
             {
                 return src.ToString();
             }
-            public Expression GetTypeConverterExpression(Expression param)
+			public IEnumerable<PropertyInfo> SourcePropertiesAccessed { get { return new PropertyInfo[0]; } }
+			public Expression GetTypeConverterExpression(Expression param)
             {
                 if (param == null)
                     throw new ArgumentNullException("param");
