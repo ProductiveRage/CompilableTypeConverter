@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using CompilableTypeConverter.ConstructorPrioritisers.Factories;
+using CompilableTypeConverter.ConverterWrapperHelpers;
 using CompilableTypeConverter.NameMatchers;
 using CompilableTypeConverter.PropertyGetters.Factories;
 using CompilableTypeConverter.TypeConverters;
@@ -38,9 +38,9 @@ namespace CompilableTypeConverter
 		/// generated for the specified TSource, TDest pair then this will be returned and no new converter will be created
 		/// (so any custom mapping rules will end up being ignored).
 		/// </summary>
-		public static Configurer<TSource, TDest> BeginCreateMap<TSource, TDest>()
+		public static ConverterConfigurer<TSource, TDest> BeginCreateMap<TSource, TDest>()
 		{
-			return new Configurer<TSource, TDest>(new PropertyInfo[0]);
+			return new ConverterConfigurer<TSource, TDest>(new PropertyInfo[0]);
 		}
 
 		/// <summary>
@@ -105,12 +105,15 @@ namespace CompilableTypeConverter
 			lock (_lock)
 			{
 				var cacheKey = Tuple.Create(typeof(TSource), typeof(TDest));
-				object unTypedCachedResult;
-				if (_converterCache.TryGetValue(cacheKey, out unTypedCachedResult))
+				if (converterOverrideBehaviour != ConverterOverrideBehaviourOptions.IgnoreCache)
 				{
-					if (converterOverrideBehaviour == ConverterOverrideBehaviourOptions.UseAnyExistingConverter)
-						return (ICompilableTypeConverter<TSource, TDest>)unTypedCachedResult;
-					_converterCache.Remove(cacheKey);
+					object unTypedCachedResult;
+					if (_converterCache.TryGetValue(cacheKey, out unTypedCachedResult))
+					{
+						if (converterOverrideBehaviour == ConverterOverrideBehaviourOptions.UseAnyExistingConverter)
+							return (ICompilableTypeConverter<TSource, TDest>)unTypedCachedResult;
+						_converterCache.Remove(cacheKey);
+					}
 				}
 
 				// If there are any properties-to-ignore specified then add them to the total combined list and re-generate
@@ -136,7 +139,8 @@ namespace CompilableTypeConverter
 					var converter = GenerateConverter<TSource, TDest>();
 					_constructorBasedConverterFactory = _constructorBasedConverterFactory.AddNewConverter(converter);
 					_propertySetterBasedConverterFactory = _propertySetterBasedConverterFactory.AddNewConverter(converter);
-					_converterCache[cacheKey] = converter;
+					if (converterOverrideBehaviour != ConverterOverrideBehaviourOptions.IgnoreCache)
+						_converterCache[cacheKey] = converter;
 					return converter;
 				}
 				catch (Exception e)
@@ -146,9 +150,10 @@ namespace CompilableTypeConverter
 			}
 			throw mappingException;
 		}
-		public static ICompilableTypeConverter<TSource, TDest> GetConverter<TSource, TDest>()
+		public static ICompilableTypeConverter<TSource, TDest> GetConverter<TSource, TDest>(
+			ConverterOverrideBehaviourOptions converterOverrideBehaviour = ConverterOverrideBehaviourOptions.UseAnyExistingConverter)
 		{
-			return GetConverter<TSource, TDest>(new PropertyInfo[0]);
+			return GetConverter<TSource, TDest>(new PropertyInfo[0], converterOverrideBehaviour);
 		}
 
 		/// <summary>
@@ -211,90 +216,6 @@ namespace CompilableTypeConverter
 				);
 				_allPropertiesToIgnoreToPropertySetterConversions.Clear();
 				_converterCache.Clear();
-			}
-		}
-
-		public enum ConverterOverrideBehaviourOptions
-		{
-			ForceConverterRebuild,
-			UseAnyExistingConverter
-		}
-
-		public class Configurer<TSource, TDest>
-		{
-			private readonly IEnumerable<PropertyInfo> _propertiesToIgnore;
-			public Configurer(IEnumerable<PropertyInfo> propertiesToIgnore)
-			{
-				if (propertiesToIgnore == null)
-					throw new ArgumentNullException("propertiesToIgnore");
-
-				_propertiesToIgnore = propertiesToIgnore.ToList().AsReadOnly();
-				if (_propertiesToIgnore.Any(p => p == null))
-					throw new ArgumentException("Null reference encountered in propertiesToIgnore set");
-			}
-
-			/// <summary>
-			/// Specify properties on the TSource type that should be ignored if the generated converter uses the populate-by-property-setting
-			/// method (this will not have any effect if the by-constructor method seems most appropriate when the converter is created). The
-			/// accessor must all indicate properties on TDest that are publicly writeable and non-indexed, anything else will result in an
-			/// exception being thrown.
-			/// </summary>
-			public Configurer<TSource, TDest> Ignore(params Expression<Func<TDest, object>>[] accessors)
-			{
-				if (accessors == null)
-					throw new ArgumentNullException("accessors");
-
-				var propertyInfoList = new List<PropertyInfo>();
-				foreach (var accessor in accessors)
-				{
-					if (accessor == null)
-						throw new ArgumentException("Null reference encountered in accessors set");
-
-					propertyInfoList.Add(
-						GetPropertyFromAccessorFuncExpression(accessor)
-					);
-				}
-				if (!propertyInfoList.Any())
-					return this;
-				return new Configurer<TSource, TDest>(_propertiesToIgnore.Concat(propertyInfoList));
-			}
-
-			/// <summary>
-			/// This will throw an exception if a converter for the TSource, TDest could not be created
-			/// </summary>
-			public void Create(ConverterOverrideBehaviourOptions converterOverrideBehaviour = ConverterOverrideBehaviourOptions.UseAnyExistingConverter)
-			{
-				Converter.CreateMap<TSource, TDest>(_propertiesToIgnore, converterOverrideBehaviour);
-			}
-
-			/// <summary>
-			/// This will throw an exception for a null accessor reference, one that is not a member accessor, one that is not a property member accessor
-			/// or one whose target property is either not public writeable or is indexed
-			/// </summary>
-			private PropertyInfo GetPropertyFromAccessorFuncExpression(Expression<Func<TDest, object>> accessor)
-			{
-				// This code was very much inspired by looking into the AutoMapper source! :)
-				if (accessor == null)
-					throw new ArgumentNullException("accessor");
-
-				// Expecting the accessor.Body to be a MemberExpression indicating a Property, but if the target Property type needs to be boxed then
-				// it will be wrapped in a UnaryExpression
-				Expression accessorBody = accessor.Body;
-				if (accessorBody.NodeType == ExpressionType.Convert)
-				{
-					var convertExpression = accessor.Body as UnaryExpression;
-					accessorBody = convertExpression.Operand;
-				}
-				if (accessorBody.NodeType != ExpressionType.MemberAccess)
-					throw new ArgumentException("accessor.Body.NodeType must be a MemberAccess");
-				var property = (accessorBody as MemberExpression).Member as PropertyInfo;
-				if (property == null)
-					throw new ArgumentException("The accessor must specify a property");
-				if (property.GetSetMethod() == null)
-					throw new ArgumentException("The accessor must specify a writeable property");
-				if (property.GetIndexParameters().Any())
-					throw new ArgumentException("The accessor must specify a non-indexed property");
-				return property;
 			}
 		}
 	}

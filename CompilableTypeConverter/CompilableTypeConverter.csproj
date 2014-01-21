@@ -61,6 +61,8 @@
     <Compile Include="ConstructorInvokers\IConstructorInvoker.cs" />
     <Compile Include="ConstructorInvokers\SimpleConstructorInvoker.cs" />
     <Compile Include="Converter.cs" />
+    <Compile Include="ConverterWrapperHelpers\ConverterConfigurer.cs" />
+    <Compile Include="ConverterWrapperHelpers\ConverterOverrideBehaviourOptions.cs" />
     <Compile Include="PropertyGetters\Compilable\AbstractGenericCompilablePropertyGetter.cs" />
     <Compile Include="PropertyGetters\Compilable\CompilableEnumConversionPropertyGetter.cs" />
     <Compile Include="PropertyGetters\Compilable\CompilableTypeConverterPropertyGetter.cs" />
