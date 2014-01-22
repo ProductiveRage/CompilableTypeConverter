@@ -63,6 +63,7 @@
     <Compile Include="Converter.cs" />
     <Compile Include="ConverterWrapperHelpers\ConverterConfigurer.cs" />
     <Compile Include="ConverterWrapperHelpers\ConverterOverrideBehaviourOptions.cs" />
+    <Compile Include="ConverterWrapperHelpers\ConverterWrapper.cs" />
     <Compile Include="PropertyGetters\Compilable\AbstractGenericCompilablePropertyGetter.cs" />
     <Compile Include="PropertyGetters\Compilable\CompilableEnumConversionPropertyGetter.cs" />
     <Compile Include="PropertyGetters\Compilable\CompilableTypeConverterPropertyGetter.cs" />
