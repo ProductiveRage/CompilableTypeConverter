@@ -47,6 +47,14 @@ namespace CompilableTypeConverter.PropertyGetters.Compilable
 		/// </summary>
 		public string ArgumentName { get { return _argument.Name; } }
 
+		/// <summary>
+		/// If the source value is null should this property getter still be processed? If not, the assumption is that the target property / constructor argument on
+		/// the destination type will be assigned default(TPropertyAsRetrieved). For this implementation, it doesn't make any difference since a fixed value will be
+		/// returned, the source reference will never be accessed. Since that is the case, returning true here can remove the burden from the caller of having to
+		/// branch based upon the source reference being null or not.
+		/// </summary>
+		public bool PassNullSourceValuesForProcessing { get { return true; } }
+
 		public object GetValue(object src)
 		{
 			if (src == null)

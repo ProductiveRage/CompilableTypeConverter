@@ -48,7 +48,8 @@ namespace CompilableTypeConverter.TypeConverters.Factories
             INameMatcher nameMatcher,
             CompilableTypeConverterByPropertySettingFactory.PropertySettingTypeOptions propertySettingTypeOptions,
             IEnumerable<ICompilablePropertyGetterFactory> basePropertyGetterFactories,
-			IEnumerable<PropertyInfo> propertiesToIgnore)
+			IEnumerable<PropertyInfo> propertiesToIgnore,
+			ByPropertySettingNullSourceBehaviourOptions nullSourceBehaviour)
         {
             if (nameMatcher == null)
                 throw new ArgumentNullException("nameMatcher");
@@ -58,6 +59,8 @@ namespace CompilableTypeConverter.TypeConverters.Factories
                 throw new ArgumentNullException("basePropertyGetterFactories");
 			if (propertiesToIgnore == null)
 				throw new ArgumentNullException("propertiesToIgnore");
+			if (!Enum.IsDefined(typeof(ByPropertySettingNullSourceBehaviourOptions), nullSourceBehaviour))
+				throw new ArgumentOutOfRangeException("nullSourceBehaviour");
 
             return new ExtendableCompilableTypeConverterFactory(
                 nameMatcher,
@@ -66,7 +69,8 @@ namespace CompilableTypeConverter.TypeConverters.Factories
                     // Define a ConverterFactoryGenerator to return a CompilableTypeConverterByPropertySettingFactory when new conversions are registered
                     new CombinedCompilablePropertyGetterFactory(propertyGetterFactories),
                     propertySettingTypeOptions,
-					propertiesToIgnore
+					propertiesToIgnore,
+					nullSourceBehaviour
                 ),
                 new CompilableTypeConverterPropertyGetterFactoryExtrapolator(nameMatcher)
             );

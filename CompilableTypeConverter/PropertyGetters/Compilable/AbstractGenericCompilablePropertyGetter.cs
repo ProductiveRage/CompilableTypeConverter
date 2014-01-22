@@ -42,6 +42,12 @@ namespace CompilableTypeConverter.PropertyGetters.Compilable
             get { return typeof(TPropertyAsRetrieved); }
         }
 
+		/// <summary>
+		/// If the source value is null should this property getter still be processed? If not, the assumption is that the target property / constructor argument on
+		/// the destination type will be assigned default(TPropertyAsRetrieved).
+		/// </summary>
+		public abstract bool PassNullSourceValuesForProcessing { get; }
+
         /// <summary>
         /// Try to retrieve the value of the specified Property from the specified object (which must be of type SrcType) - this will throw an exception for null input
         /// or if retrieval fails

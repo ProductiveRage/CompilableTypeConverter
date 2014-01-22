@@ -15,5 +15,11 @@ namespace CompilableTypeConverter.PropertyGetters.Compilable
         /// access to these Expressions allows us to create type converters that are almost as fast as hand-written versions, which is the trade-off.
         /// </summary>
         Expression GetPropertyGetterExpression(Expression param);
-    }
+
+		/// <summary>
+		/// If the source value is null should this property getter still be processed? If not, the assumption is that the target property / constructor argument on
+		/// the destination type will be assigned default(TPropertyAsRetrieved).
+		/// </summary>
+		bool PassNullSourceValuesForProcessing { get; }
+	}
 }

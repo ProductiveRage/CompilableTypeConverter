@@ -110,6 +110,13 @@ namespace CompilableTypeConverter.TypeConverters
 		public int NumberOfConstructorArgumentsMatchedWithNonDefaultValues { get; private set; }
 
 		/// <summary>
+		/// If the source value is null should this property getter still be processed? If not, the assumption is that the target property / constructor argument on
+		/// the destination type will be assigned default(TPropertyAsRetrieved). For this implementation, we always wants a non-null source reference so that the
+		/// constructor arguments can be populated with data from it, so return false.
+		/// </summary>
+		public bool PassNullSourceValuesForProcessing { get { return false; } }
+
+		/// <summary>
 		/// This will never be null nor contain any null references
 		/// </summary>
 		public IEnumerable<PropertyInfo> SourcePropertiesAccessed { get { return _propertyGetters.Select(p => p.Property); } }
@@ -130,58 +137,32 @@ namespace CompilableTypeConverter.TypeConverters
 		/// to be part of, potentially gaining a minor performance improvement (compared to calling GetTypeConverterFuncExpression) at the cost of compile-time
 		/// type safety. Alternatively, this method may be required if an expression value is to be convered where the expression is not a ParameterExpression.
 		/// </summary>
-        public Expression GetTypeConverterExpression(
-			Expression param,
-			TypeConverterExpressionNullBehaviourOptions typeConverterExpressionNullBehaviour = TypeConverterExpressionNullBehaviourOptions.UseDestDefaultIfSourceIsNull)
-        {
+        public Expression GetTypeConverterExpression(Expression param)
+		{
             if (param == null)
                 throw new ArgumentNullException("param");
-            if (!typeof(TSource).IsAssignableFrom(param.Type))
-                throw new ArgumentException("param.Type must be assignable to typeparam TSource");
 
 			var conversionExpression = Expression.New(
                 Constructor,
 				_propertyGetters.Select(propertyGetter => propertyGetter.GetPropertyGetterExpression(param))
             );
 
-			if (typeConverterExpressionNullBehaviour == TypeConverterExpressionNullBehaviourOptions.SkipNullHandling)
-				return conversionExpression;
-			else if (typeConverterExpressionNullBehaviour == TypeConverterExpressionNullBehaviourOptions.UseDestDefaultIfSourceIsNull)
-			{
-				return Expression.Condition(
-					Expression.Equal(
-						param,
-						Expression.Constant(null)
-					),
-					Expression.Constant(default(TDest), typeof(TDest)),
-					conversionExpression
-				);
-			}
-			else
-				throw new ArgumentOutOfRangeException("typeConverterExpressionNullBehaviour");
+			return Expression.Condition(
+				Expression.Equal(
+					param,
+					Expression.Constant(null)
+				),
+				Expression.Constant(default(TDest), typeof(TDest)),
+				conversionExpression
+			);
 		}
 
 		/// <summary>
 		/// This will never return null, it will return an Func Expression for mapping from a TSource instance to a TDest
 		/// </summary>
-		public Expression<Func<TSource, TDest>> GetTypeConverterFuncExpression(
-			TypeConverterExpressionNullBehaviourOptions typeConverterExpressionNullBehaviour = TypeConverterExpressionNullBehaviourOptions.UseDestDefaultIfSourceIsNull)
+		public Expression<Func<TSource, TDest>> GetTypeConverterFuncExpression()
         {
-			if (typeConverterExpressionNullBehaviour == TypeConverterExpressionNullBehaviourOptions.UseDestDefaultIfSourceIsNull)
-			{
-				// This is the default behaviour that this class uses internally, so we can just share the _converterFuncExpression reference
-				return _converterFuncExpression;
-			}
-			else if (typeConverterExpressionNullBehaviour == TypeConverterExpressionNullBehaviourOptions.SkipNullHandling)
-			{
-				var srcParameter = Expression.Parameter(typeof(TSource), "src");
-				return Expression.Lambda<Func<TSource, TDest>>(
-					GetTypeConverterExpression(srcParameter, typeConverterExpressionNullBehaviour),
-					srcParameter
-				);
-			}
-			else
-				throw new ArgumentOutOfRangeException("typeConverterExpressionNullBehaviour");
+			return _converterFuncExpression;
 		}
 	}
 }

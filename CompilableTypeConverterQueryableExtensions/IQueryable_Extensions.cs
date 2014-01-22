@@ -128,10 +128,11 @@ namespace CompilableTypeConverterQueryableExtensions
 				// TODO: https://groups.google.com/forum/#!topic/automapper-users/fsIQttgDksk suggests that the error would not occur with NH?
 				// TODO: Test with a nested type that is nullable
 				// TODO: Otherwise document limitations (eg. collections won't work due to Expression.Block)
+				// TODO: TypeConverterExpressionNullBehaviourOptions has been moved
                 var firstConverter = Converter.GetConverter<TSource, TInterim>();
                 var secondConverter = Converter.GetConverter<TInterim, TDest>();
                 return source => source
-                    .Select(firstConverter.GetTypeConverterFuncExpression(TypeConverterExpressionNullBehaviourOptions.SkipNullHandling))
+                    .Select(firstConverter.GetTypeConverterFuncExpression())
                     .AsEnumerable()
                     .Select(secondConverter.Convert);
             }

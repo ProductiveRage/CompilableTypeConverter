@@ -15,14 +15,20 @@ namespace CompilableTypeConverter.TypeConverters
     {
         private readonly IEnumerable<ICompilablePropertyGetter> _propertyGetters;
 		private readonly IEnumerable<PropertyInfo> _propertiesToSet;
+		private readonly ByPropertySettingNullSourceBehaviourOptions _nullSourceBehaviour;
 		private readonly Expression<Func<TSource, TDest>> _converterFuncExpression;
 		private readonly Func<TSource, TDest> _converter;
-		public CompilableTypeConverterByPropertySetting(IEnumerable<ICompilablePropertyGetter> propertyGetters, IEnumerable<PropertyInfo> propertiesToSet)
+		public CompilableTypeConverterByPropertySetting(
+			IEnumerable<ICompilablePropertyGetter> propertyGetters,
+			IEnumerable<PropertyInfo> propertiesToSet,
+			ByPropertySettingNullSourceBehaviourOptions nullSourceBehaviour)
         {
             if (propertyGetters == null)
                 throw new ArgumentNullException("propertyGetters");
             if (propertiesToSet == null)
                 throw new ArgumentNullException("propertiesToSet");
+			if (!Enum.IsDefined(typeof(ByPropertySettingNullSourceBehaviourOptions), nullSourceBehaviour))
+				throw new ArgumentOutOfRangeException("nullSourceBehaviour");
 
             // Ensure there are no null references in the property lists
             var propertyGettersList = new List<ICompilablePropertyGetter>();
@@ -55,6 +61,7 @@ namespace CompilableTypeConverter.TypeConverters
 
 			_propertyGetters = propertyGettersList.AsReadOnly();
             _propertiesToSet = propertiesToSetList.AsReadOnly();
+			_nullSourceBehaviour = nullSourceBehaviour;
 
 			// Generate a Expression<Func<TSource, TDest>>, the _rawConverterExpression is still required for the GetTypeConverterExpression
 			// method (this may be called to retrieve the raw expression, rather than the Func-wrapped version - eg. by the ListCompilablePropertyGetter,
@@ -75,6 +82,18 @@ namespace CompilableTypeConverter.TypeConverters
 		public IEnumerable<PropertyInfo> SourcePropertiesAccessed { get { return _propertyGetters.Select(p => p.Property); } }
 
 		/// <summary>
+		/// If the source value is null should this property getter still be processed? If not, the assumption is that the target property / constructor argument on the
+		/// destination type will be assigned default(TPropertyAsRetrieved). For this implementation, this depends upon the ByPropertySettingNullSourceBehaviourOptions
+		/// configuration option - if a null source should result in an empty instance being created with the same properties being set as for a non-null source then
+		/// this should return true (Entity Framework's LINQ projections rely upon this, it won't accept a branch where zero fields are requested for a null source
+		/// and a non-zero quantity of fields being requested otherwise, it requires consistent field access).
+		/// </summary>
+		public bool PassNullSourceValuesForProcessing
+		{
+			get { return _nullSourceBehaviour == ByPropertySettingNullSourceBehaviourOptions.CreateEmptyInstanceWithDefaultPropertyValues; }
+		}
+
+		/// <summary>
         /// Create a new target type instance from a source value - this will throw an exception if conversion fails
         /// </summary>
         public TDest Convert(TSource src)
@@ -90,9 +109,7 @@ namespace CompilableTypeConverter.TypeConverters
 		/// to be part of, potentially gaining a minor performance improvement (compared to calling GetTypeConverterFuncExpression) at the cost of compile-time
 		/// type safety. Alternatively, this method may be required if an expression value is to be convered where the expression is not a ParameterExpression.
 		/// </summary>
-		public Expression GetTypeConverterExpression(
-			Expression param,
-			TypeConverterExpressionNullBehaviourOptions typeConverterExpressionNullBehaviour = TypeConverterExpressionNullBehaviourOptions.UseDestDefaultIfSourceIsNull)
+		public Expression GetTypeConverterExpression(Expression param)
         {
             if (param == null)
                 throw new ArgumentNullException("param");
@@ -103,10 +120,32 @@ namespace CompilableTypeConverter.TypeConverters
 			var propertyBindings = new List<MemberBinding>();
 			foreach (var indexedProperty in _propertiesToSet.Select((property, index) => new { Property = property, Index = index }))
 			{
+				var propertyGetter = _propertyGetters.ElementAt(indexedProperty.Index);
+				Expression bindValueExpression = propertyGetter.GetPropertyGetterExpression(param);
+				if (_nullSourceBehaviour == ByPropertySettingNullSourceBehaviourOptions.CreateEmptyInstanceWithDefaultPropertyValues)
+				{
+					// If _compilableTypeConverter supports passing null into it, then don't generate the condition that prevents a null source from being
+					// passed to it
+					if (!propertyGetter.PassNullSourceValuesForProcessing)
+					{
+						bindValueExpression = Expression.Condition(
+							Expression.Equal(
+								param,
+								Expression.Constant(null)
+							),
+							Expression.Constant(
+								GetDefaultValue(indexedProperty.Property.PropertyType),
+								indexedProperty.Property.PropertyType
+							),
+							bindValueExpression
+						);
+					}
+				}
+
 				propertyBindings.Add(
 					Expression.Bind(
 						indexedProperty.Property,
-						_propertyGetters.ElementAt(indexedProperty.Index).GetPropertyGetterExpression(param)
+						bindValueExpression
 					)
 				);
 			}
@@ -115,9 +154,9 @@ namespace CompilableTypeConverter.TypeConverters
 				Expression.New(typeof(TDest).GetConstructor(new Type[0])),
 				propertyBindings
 			);
-			if (typeConverterExpressionNullBehaviour == TypeConverterExpressionNullBehaviourOptions.SkipNullHandling)
+			if (_nullSourceBehaviour == ByPropertySettingNullSourceBehaviourOptions.CreateEmptyInstanceWithDefaultPropertyValues)
 				return conversionExpression;
-			else if (typeConverterExpressionNullBehaviour == TypeConverterExpressionNullBehaviourOptions.UseDestDefaultIfSourceIsNull)
+			else if (_nullSourceBehaviour == ByPropertySettingNullSourceBehaviourOptions.UseDestDefaultIfSourceIsNull)
 			{
 				return Expression.Condition(
 					Expression.Equal(
@@ -132,27 +171,22 @@ namespace CompilableTypeConverter.TypeConverters
 				throw new ArgumentOutOfRangeException("typeConverterExpressionNullBehaviour");
 		}
 
+		 private object GetDefaultValue(Type type)
+		 {
+			 if (type == null)
+				 throw new ArgumentNullException("t");
+
+			if (type.IsValueType && (Nullable.GetUnderlyingType(type) == null))
+				return Activator.CreateInstance(type);
+			return null;
+		}
+
 		/// <summary>
 		/// This will never return null, it will return an Func Expression for mapping from a TSource instance to a TDest
 		/// </summary>
-		public Expression<Func<TSource, TDest>> GetTypeConverterFuncExpression(
-			TypeConverterExpressionNullBehaviourOptions typeConverterExpressionNullBehaviour = TypeConverterExpressionNullBehaviourOptions.UseDestDefaultIfSourceIsNull)
+		public Expression<Func<TSource, TDest>> GetTypeConverterFuncExpression()
 		{
-			if (typeConverterExpressionNullBehaviour == TypeConverterExpressionNullBehaviourOptions.UseDestDefaultIfSourceIsNull)
-			{
-				// This is the default behaviour that this class uses internally, so we can just share the _converterFuncExpression reference
-				return _converterFuncExpression;
-			}
-			else if (typeConverterExpressionNullBehaviour == TypeConverterExpressionNullBehaviourOptions.SkipNullHandling)
-			{
-				var srcParameter = Expression.Parameter(typeof(TSource), "src");
-				return Expression.Lambda<Func<TSource, TDest>>(
-					GetTypeConverterExpression(srcParameter, typeConverterExpressionNullBehaviour),
-					srcParameter
-				);
-			}
-			else
-				throw new ArgumentOutOfRangeException("typeConverterExpressionNullBehaviour");
+			return _converterFuncExpression;
 		}
 	}
 }

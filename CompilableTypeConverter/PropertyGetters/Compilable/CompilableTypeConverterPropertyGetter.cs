@@ -36,6 +36,16 @@ namespace CompilableTypeConverter.PropertyGetters.Compilable
             get { return _propertyInfo; }
         }
 
+		/// <summary>
+		/// If the source value is null should this property getter still be processed? If not, the assumption is that the target property / constructor argument on
+		/// the destination type will be assigned default(TPropertyAsRetrieved). For this implementation, this relies entirely upon the type converter that is being
+		/// used.
+		/// </summary>
+		public override bool PassNullSourceValuesForProcessing
+		{
+			get { return _compilableTypeConverter.PassNullSourceValuesForProcessing; }
+		}
+
         /// <summary>
         /// This must return a Linq Expression that retrieves the value from SrcType.Property as TargetType - the specified "param" Expression must have a type that
         /// is assignable to SrcType. The resulting Expression will be assigned to a Lambda Expression typed as a TSourceObject to TPropertyAsRetrieved Func.
@@ -52,8 +62,16 @@ namespace CompilableTypeConverter.PropertyGetters.Compilable
             // - Otherwise, pass through type converter (to translate from TPropertyOnSource to TPropertyAsRetrieved)
             var propertyValue = Expression.Property(param, _propertyInfo);
             var conversionExpression = _compilableTypeConverter.GetTypeConverterExpression(propertyValue);
-            if (typeof(TPropertyOnSource).IsValueType)
-                return conversionExpression;
+			if (typeof(TPropertyOnSource).IsValueType)
+			{
+				// If it's a value type then it's not possible for it to be null so don't do the below work
+				return conversionExpression;
+			}
+			if (_compilableTypeConverter.PassNullSourceValuesForProcessing)
+			{
+				// If _compilableTypeConverter supports passing null into it, then don't generate the condition that prevents this from happening
+				return conversionExpression;
+			}
             return Expression.Condition(
                 Expression.Equal(
                     propertyValue,

@@ -16,16 +16,17 @@ namespace CompilableTypeConverter.TypeConverters
 		/// to be part of, potentially gaining a minor performance improvement (compared to calling GetTypeConverterFuncExpression) at the cost of compile-time
 		/// type safety. Alternatively, this method may be required if an expression value is to be convered where the expression is not a ParameterExpression.
 		/// </summary>
-		Expression GetTypeConverterExpression(
-			Expression param,
-			TypeConverterExpressionNullBehaviourOptions typeConverterExpressionNullBehaviour = TypeConverterExpressionNullBehaviourOptions.UseDestDefaultIfSourceIsNull
-		);
+		Expression GetTypeConverterExpression(Expression param);
 
 		/// <summary>
 		/// This will never return null, it will return an Func Expression for mapping from a TSource instance to a TDest
 		/// </summary>
-		Expression<Func<TSource, TDest>> GetTypeConverterFuncExpression(
-			TypeConverterExpressionNullBehaviourOptions typeConverterExpressionNullBehaviour = TypeConverterExpressionNullBehaviourOptions.UseDestDefaultIfSourceIsNull
-		);
+		Expression<Func<TSource, TDest>> GetTypeConverterFuncExpression();
+
+		/// <summary>
+		/// If the source value is null should this property getter still be processed? If not, the assumption is that the target property / constructor argument on
+		/// the destination type will be assigned default(TPropertyAsRetrieved).
+		/// </summary>
+		bool PassNullSourceValuesForProcessing { get; }
     }
 }

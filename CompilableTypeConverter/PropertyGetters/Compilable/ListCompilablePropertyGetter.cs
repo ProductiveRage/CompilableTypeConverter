@@ -49,6 +49,12 @@ namespace CompilableTypeConverter.PropertyGetters.Compilable
             get { return _propertyInfo; }
         }
 
+		/// <summary>
+		/// If the source value is null should this property getter still be processed? If not, the assumption is that the target property / constructor argument on
+		/// the destination type will be assigned default(TPropertyAsRetrieved).
+		/// </summary>
+		public override bool PassNullSourceValuesForProcessing { get { return false; } }
+
         /// <summary>
         /// This must return a Linq Expression that retrieves the value from SrcType.Property as TargetType - the specified "param" Expression must have a type that
         /// is assignable to SrcType. The resulting Expression will be assigned to a Lambda Expression typed as a TSourceObject to TPropertyAsRetrieved Func.

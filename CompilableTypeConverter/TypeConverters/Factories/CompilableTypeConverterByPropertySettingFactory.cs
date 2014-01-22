@@ -12,23 +12,28 @@ namespace CompilableTypeConverter.TypeConverters.Factories
         private readonly ICompilablePropertyGetterFactory _propertyGetterFactory;
 		private readonly PropertySettingTypeOptions _propertySettingType;
 		private readonly HashSet<PropertyInfo> _propertiesToIgnore;
-        public CompilableTypeConverterByPropertySettingFactory(
+		private readonly ByPropertySettingNullSourceBehaviourOptions _nullSourceBehaviour;
+		public CompilableTypeConverterByPropertySettingFactory(
             ICompilablePropertyGetterFactory propertyGetterFactory,
             PropertySettingTypeOptions propertySettingType,
-			IEnumerable<PropertyInfo> propertiesToIgnore)
+			IEnumerable<PropertyInfo> propertiesToIgnore,
+			ByPropertySettingNullSourceBehaviourOptions nullSourceBehaviour)
 		{
             if (propertyGetterFactory == null)
                 throw new ArgumentNullException("propertyGetterFactory");
-            if (!Enum.IsDefined(typeof(PropertySettingTypeOptions), propertySettingType))
-                throw new ArgumentOutOfRangeException("propertySettingType");
+			if (!Enum.IsDefined(typeof(PropertySettingTypeOptions), propertySettingType))
+				throw new ArgumentOutOfRangeException("propertySettingType");
 			if (propertiesToIgnore == null)
 				throw new ArgumentNullException("propertiesToIgnore");
+			if (!Enum.IsDefined(typeof(ByPropertySettingNullSourceBehaviourOptions), nullSourceBehaviour))
+				throw new ArgumentOutOfRangeException("nullSourceBehaviour");
 
 			_propertyGetterFactory = propertyGetterFactory;
             _propertySettingType = propertySettingType;
 			_propertiesToIgnore = new HashSet<PropertyInfo>(propertiesToIgnore);
 			if (_propertiesToIgnore.Any(p => p == null))
 				throw new ArgumentException("Null reference encountered in propertiesToIgnore set");
+			_nullSourceBehaviour = nullSourceBehaviour;
 		}
 
         public enum PropertySettingTypeOptions
@@ -83,7 +88,8 @@ namespace CompilableTypeConverter.TypeConverters.Factories
                     typeof(TDest)
                 ),
                 propertyGetters,
-                propertiesToSet
+                propertiesToSet,
+				_nullSourceBehaviour
             );
 		}
 
