@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTesting", "UnitTesting\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMapperIntegration", "AutoMapperIntegration\AutoMapperIntegration.csproj", "{CC3627EE-ECFB-47C2-9BEF-C623A2103F85}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompilableTypeConverterQueryableExtensions", "CompilableTypeConverterQueryableExtensions\CompilableTypeConverterQueryableExtensions.csproj", "{9BD5BCBB-1EAC-4872-8B99-81E7C8EEBDA5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,16 @@ Global
 		{CC3627EE-ECFB-47C2-9BEF-C623A2103F85}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{CC3627EE-ECFB-47C2-9BEF-C623A2103F85}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{CC3627EE-ECFB-47C2-9BEF-C623A2103F85}.Release|x86.ActiveCfg = Release|Any CPU
+		{9BD5BCBB-1EAC-4872-8B99-81E7C8EEBDA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BD5BCBB-1EAC-4872-8B99-81E7C8EEBDA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BD5BCBB-1EAC-4872-8B99-81E7C8EEBDA5}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{9BD5BCBB-1EAC-4872-8B99-81E7C8EEBDA5}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{9BD5BCBB-1EAC-4872-8B99-81E7C8EEBDA5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9BD5BCBB-1EAC-4872-8B99-81E7C8EEBDA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BD5BCBB-1EAC-4872-8B99-81E7C8EEBDA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BD5BCBB-1EAC-4872-8B99-81E7C8EEBDA5}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{9BD5BCBB-1EAC-4872-8B99-81E7C8EEBDA5}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{9BD5BCBB-1EAC-4872-8B99-81E7C8EEBDA5}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
