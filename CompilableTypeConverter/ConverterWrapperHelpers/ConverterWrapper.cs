@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using CompilableTypeConverter.ConstructorPrioritisers.Factories;
 using CompilableTypeConverter.NameMatchers;
+using CompilableTypeConverter.PropertyGetters.Compilable;
 using CompilableTypeConverter.PropertyGetters.Factories;
 using CompilableTypeConverter.TypeConverters;
 using CompilableTypeConverter.TypeConverters.Factories;
@@ -20,14 +21,18 @@ namespace CompilableTypeConverter.ConverterWrapperHelpers
 		private ExtendableCompilableTypeConverterFactory _constructorBasedConverterFactory;
 		private ExtendableCompilableTypeConverterFactory _propertySetterBasedConverterFactory;
 		private readonly ByPropertySettingNullSourceBehaviourOptions _nullSourceBehaviour;
+		private readonly EnumerableSetNullHandlingOptions _enumerableSetNullHandling;
 		private readonly List<PropertyInfo> _allPropertiesToIgnoreToPropertySetterConversions;
 		private readonly Dictionary<Tuple<Type, Type>, object> _converterCache;
-		public ConverterWrapper(ByPropertySettingNullSourceBehaviourOptions nullSourceBehaviour)
+		public ConverterWrapper(ByPropertySettingNullSourceBehaviourOptions nullSourceBehaviour, EnumerableSetNullHandlingOptions enumerableSetNullHandling)
 		{
 			if (!Enum.IsDefined(typeof(ByPropertySettingNullSourceBehaviourOptions), nullSourceBehaviour))
 				throw new ArgumentOutOfRangeException("nullSourceBehaviour");
+			if (!Enum.IsDefined(typeof(EnumerableSetNullHandlingOptions), enumerableSetNullHandling))
+				throw new ArgumentOutOfRangeException("enumerableSetNullHandling");
 
 			_nullSourceBehaviour = nullSourceBehaviour;
+			_enumerableSetNullHandling = enumerableSetNullHandling;
 			_allPropertiesToIgnoreToPropertySetterConversions = new List<PropertyInfo>();
 			_converterCache = new Dictionary<Tuple<Type, Type>, object>();
 
@@ -49,7 +54,8 @@ namespace CompilableTypeConverter.ConverterWrapperHelpers
 				CompilableTypeConverterByPropertySettingFactory.PropertySettingTypeOptions.MatchAll,
 				basePropertyGetterFactories,
 				new PropertyInfo[0],
-				_nullSourceBehaviour
+				_nullSourceBehaviour,
+				_enumerableSetNullHandling
 			);
 		}
 

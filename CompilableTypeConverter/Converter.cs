@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using CompilableTypeConverter.ConverterWrapperHelpers;
 using CompilableTypeConverter.TypeConverters;
+using CompilableTypeConverter.PropertyGetters.Compilable;
 
 namespace CompilableTypeConverter
 {
@@ -112,7 +113,10 @@ namespace CompilableTypeConverter
 		{
 			lock (_lock)
 			{
-				_converter = new ConverterWrapper(ByPropertySettingNullSourceBehaviourOptions.UseDestDefaultIfSourceIsNull);
+				_converter = new ConverterWrapper(
+					ByPropertySettingNullSourceBehaviourOptions.UseDestDefaultIfSourceIsNull,
+					EnumerableSetNullHandlingOptions.ReturnNullSetForNullInput
+				);
 			}
 		}
 	}

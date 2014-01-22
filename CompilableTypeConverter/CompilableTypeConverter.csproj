@@ -68,14 +68,15 @@
     <Compile Include="PropertyGetters\Compilable\CompilableEnumConversionPropertyGetter.cs" />
     <Compile Include="PropertyGetters\Compilable\CompilableTypeConverterPropertyGetter.cs" />
     <Compile Include="PropertyGetters\Compilable\CompilableConstructorDefaultValuePropertyGetter.cs" />
+    <Compile Include="PropertyGetters\Compilable\EnumerableSetNullHandlingOptions.cs" />
     <Compile Include="PropertyGetters\Compilable\ICompilableConstructorDefaultValuePropertyGetter.cs" />
     <Compile Include="PropertyGetters\Compilable\IConstructorDefaultValuePropertyGetter.cs" />
-    <Compile Include="PropertyGetters\Compilable\ListCompilablePropertyGetter.cs" />
+    <Compile Include="PropertyGetters\Compilable\EnumerableCompilablePropertyGetter.cs" />
     <Compile Include="PropertyGetters\Factories\CompilableAssignableTypesPropertyGetterFactory.cs" />
     <Compile Include="PropertyGetters\Factories\CompilableEnumConversionPropertyGetterFactory.cs" />
     <Compile Include="PropertyGetters\Factories\CombinedCompilablePropertyGetterFactory.cs" />
     <Compile Include="PropertyGetters\Factories\CompilableTypeConverterPropertyGetterFactory.cs" />
-    <Compile Include="PropertyGetters\Factories\ListCompilablePropertyGetterFactory.cs" />
+    <Compile Include="PropertyGetters\Factories\EnumerableCompilablePropertyGetterFactory.cs" />
     <Compile Include="PropertyGetters\Factories\ICompilablePropertyGetterFactory.cs" />
     <Compile Include="PropertyGetters\Compilable\ICompilablePropertyGetter.cs" />
     <Compile Include="PropertyGetters\Compilable\CompilableAssignableTypesPropertyGetter.cs" />

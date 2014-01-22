@@ -4,6 +4,7 @@ using System.Reflection;
 using CompilableTypeConverter.ConstructorPrioritisers.Factories;
 using CompilableTypeConverter.NameMatchers;
 using CompilableTypeConverter.PropertyGetters.Factories;
+using CompilableTypeConverter.PropertyGetters.Compilable;
 
 namespace CompilableTypeConverter.TypeConverters.Factories
 {
@@ -13,7 +14,11 @@ namespace CompilableTypeConverter.TypeConverters.Factories
     public static class ExtendableCompilableTypeConverterFactoryHelpers
     {
         /// <summary>
-        /// This will return an ExtendableCompilableTypeConverterFactory that is based around the destination types being instantiated by constructor
+        /// This will return an ExtendableCompilableTypeConverterFactory that is based around the destination types being instantiated by constructor. Note
+		/// that this method has less options than GeneratePropertySetterBasedFactory since by-property-setter translation may be used in more scenarios
+		/// that the by-constructor translations and with more specific configurations (eg. by-constructor translations can't be used in Entity Framework
+		/// IQueryable mappings since constructors with parameters can not be used - the nullSourceBehaviour and enumerableSetNullHandling options are
+		/// to tailor conversions to work with such IQueryable translations).
         /// </summary>
         public static ExtendableCompilableTypeConverterFactory GenerateConstructorBasedFactory(
             INameMatcher nameMatcher,
@@ -36,7 +41,10 @@ namespace CompilableTypeConverter.TypeConverters.Factories
                     new CombinedCompilablePropertyGetterFactory(propertyGetterFactories),
 					ParameterLessConstructorBehaviourOptions.Ignore
                 ),
-                new CompilableTypeConverterPropertyGetterFactoryExtrapolator(nameMatcher)
+                new CompilableTypeConverterPropertyGetterFactoryExtrapolator(
+					nameMatcher,
+					EnumerableSetNullHandlingOptions.ReturnNullSetForNullInput
+				)
             );
         }
 
@@ -49,7 +57,8 @@ namespace CompilableTypeConverter.TypeConverters.Factories
             CompilableTypeConverterByPropertySettingFactory.PropertySettingTypeOptions propertySettingTypeOptions,
             IEnumerable<ICompilablePropertyGetterFactory> basePropertyGetterFactories,
 			IEnumerable<PropertyInfo> propertiesToIgnore,
-			ByPropertySettingNullSourceBehaviourOptions nullSourceBehaviour)
+			ByPropertySettingNullSourceBehaviourOptions nullSourceBehaviour,
+			EnumerableSetNullHandlingOptions enumerableSetNullHandling)
         {
             if (nameMatcher == null)
                 throw new ArgumentNullException("nameMatcher");
@@ -61,6 +70,8 @@ namespace CompilableTypeConverter.TypeConverters.Factories
 				throw new ArgumentNullException("propertiesToIgnore");
 			if (!Enum.IsDefined(typeof(ByPropertySettingNullSourceBehaviourOptions), nullSourceBehaviour))
 				throw new ArgumentOutOfRangeException("nullSourceBehaviour");
+			if (!Enum.IsDefined(typeof(EnumerableSetNullHandlingOptions), enumerableSetNullHandling))
+				throw new ArgumentOutOfRangeException("enumerableSetNullHandling");
 
             return new ExtendableCompilableTypeConverterFactory(
                 nameMatcher,
@@ -72,7 +83,10 @@ namespace CompilableTypeConverter.TypeConverters.Factories
 					propertiesToIgnore,
 					nullSourceBehaviour
                 ),
-                new CompilableTypeConverterPropertyGetterFactoryExtrapolator(nameMatcher)
+				new CompilableTypeConverterPropertyGetterFactoryExtrapolator(
+					nameMatcher,
+					enumerableSetNullHandling
+				)
             );
         }
 
@@ -84,13 +98,17 @@ namespace CompilableTypeConverter.TypeConverters.Factories
         /// </summary>
         private class CompilableTypeConverterPropertyGetterFactoryExtrapolator : ExtendableCompilableTypeConverterFactory.IPropertyGetterFactoryExtrapolator
         {
-            private INameMatcher _nameMatcher;
-            public CompilableTypeConverterPropertyGetterFactoryExtrapolator(INameMatcher nameMatcher)
+            private readonly INameMatcher _nameMatcher;
+			private readonly EnumerableSetNullHandlingOptions _enumerableSetNullHandling;
+			public CompilableTypeConverterPropertyGetterFactoryExtrapolator(INameMatcher nameMatcher, EnumerableSetNullHandlingOptions enumerableSetNullHandling)
             {
                 if (nameMatcher == null)
                     throw new ArgumentNullException("nameMatcher");
+				if (!Enum.IsDefined(typeof(EnumerableSetNullHandlingOptions), enumerableSetNullHandling))
+					throw new ArgumentOutOfRangeException("enumerableSetNullHandling");
 
                 _nameMatcher = nameMatcher;
+				_enumerableSetNullHandling = enumerableSetNullHandling;
             }
 
             /// <summary>
@@ -103,9 +121,10 @@ namespace CompilableTypeConverter.TypeConverters.Factories
 
                 return new ICompilablePropertyGetterFactory[]
                 {
-                    new ListCompilablePropertyGetterFactory<TSource, TDest>(
+                    new EnumerableCompilablePropertyGetterFactory<TSource, TDest>(
                         _nameMatcher,
-                        converter
+                        converter,
+						_enumerableSetNullHandling
                     )
                 };
             }

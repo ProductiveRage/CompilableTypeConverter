@@ -13,19 +13,26 @@ namespace CompilableTypeConverter.PropertyGetters.Factories
     /// type converter (so the element type of the source property IEnumerable will have to match the source type of the type converter and the
     /// destination type will have to be an IEnumerable of the type converter's destination type)
     /// </summary>
-    public class ListCompilablePropertyGetterFactory<TPropertyOnSourceElement, TPropertyAsRetrievedElement> : ICompilablePropertyGetterFactory
+	public class EnumerableCompilablePropertyGetterFactory<TPropertyOnSourceElement, TPropertyAsRetrievedElement> : ICompilablePropertyGetterFactory
     {
-        private INameMatcher _nameMatcher;
-        private ICompilableTypeConverter<TPropertyOnSourceElement, TPropertyAsRetrievedElement> _typeConverter;
-        public ListCompilablePropertyGetterFactory(INameMatcher nameMatcher, ICompilableTypeConverter<TPropertyOnSourceElement, TPropertyAsRetrievedElement> typeConverter)
-        {
+        private readonly INameMatcher _nameMatcher;
+        private readonly ICompilableTypeConverter<TPropertyOnSourceElement, TPropertyAsRetrievedElement> _typeConverter;
+		private readonly EnumerableSetNullHandlingOptions _enumerableSetNullHandling;
+        public EnumerableCompilablePropertyGetterFactory(
+			INameMatcher nameMatcher,
+			ICompilableTypeConverter<TPropertyOnSourceElement, TPropertyAsRetrievedElement> typeConverter,
+			EnumerableSetNullHandlingOptions enumerableSetNullHandling)
+		{
             if (nameMatcher == null)
                 throw new ArgumentNullException("nameMatcher");
             if (typeConverter == null)
                 throw new ArgumentNullException("typeConverter");
+			if (!Enum.IsDefined(typeof(EnumerableSetNullHandlingOptions), enumerableSetNullHandling))
+				throw new ArgumentOutOfRangeException("enumerableSetNullHandling");
 
             _nameMatcher = nameMatcher;
             _typeConverter = typeConverter;
+			_enumerableSetNullHandling = enumerableSetNullHandling;
         }
 
         /// <summary>
@@ -58,14 +65,15 @@ namespace CompilableTypeConverter.PropertyGetters.Factories
                 if (srcPropertyTypeAsEnumerableElement == typeof(TPropertyOnSourceElement))
                 {
                     return (ICompilablePropertyGetter)Activator.CreateInstance(
-                        typeof(ListCompilablePropertyGetter<,,,>).MakeGenericType(
+                        typeof(EnumerableCompilablePropertyGetter<,,,>).MakeGenericType(
                             srcType,
                             srcPropertyTypeAsEnumerableElement,
                             destPropertyTypeAsEnumerableElement,
                             destPropertyType
                         ),
                         property,
-                        _typeConverter
+                        _typeConverter,
+						_enumerableSetNullHandling
                     );
                 }
             }
