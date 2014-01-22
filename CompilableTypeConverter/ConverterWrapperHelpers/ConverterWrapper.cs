@@ -19,13 +19,38 @@ namespace CompilableTypeConverter.ConverterWrapperHelpers
 	{
 		private ExtendableCompilableTypeConverterFactory _constructorBasedConverterFactory;
 		private ExtendableCompilableTypeConverterFactory _propertySetterBasedConverterFactory;
+		private readonly ByPropertySettingNullSourceBehaviourOptions _nullSourceBehaviour;
 		private readonly List<PropertyInfo> _allPropertiesToIgnoreToPropertySetterConversions;
 		private readonly Dictionary<Tuple<Type, Type>, object> _converterCache;
-		public ConverterWrapper()
+		public ConverterWrapper(ByPropertySettingNullSourceBehaviourOptions nullSourceBehaviour)
 		{
+			if (!Enum.IsDefined(typeof(ByPropertySettingNullSourceBehaviourOptions), nullSourceBehaviour))
+				throw new ArgumentOutOfRangeException("nullSourceBehaviour");
+
+			_nullSourceBehaviour = nullSourceBehaviour;
 			_allPropertiesToIgnoreToPropertySetterConversions = new List<PropertyInfo>();
 			_converterCache = new Dictionary<Tuple<Type, Type>, object>();
-			Reset();
+
+			// Prepare converter factories (for by-constructor and by-property-setters) using the base types (AssignableType and
+			// EnumConversion property getter factories)
+			var nameMatcher = new CaseInsensitiveSkipUnderscoreNameMatcher();
+			var basePropertyGetterFactories = new ICompilablePropertyGetterFactory[]
+			{
+				new CompilableAssignableTypesPropertyGetterFactory(nameMatcher),
+				new CompilableEnumConversionPropertyGetterFactory(nameMatcher)
+			};
+			_constructorBasedConverterFactory = ExtendableCompilableTypeConverterFactoryHelpers.GenerateConstructorBasedFactory(
+				nameMatcher,
+				new ArgsLengthTypeConverterPrioritiserFactory(),
+				basePropertyGetterFactories
+			);
+			_propertySetterBasedConverterFactory = ExtendableCompilableTypeConverterFactoryHelpers.GeneratePropertySetterBasedFactory(
+				nameMatcher,
+				CompilableTypeConverterByPropertySettingFactory.PropertySettingTypeOptions.MatchAll,
+				basePropertyGetterFactories,
+				new PropertyInfo[0],
+				_nullSourceBehaviour
+			);
 		}
 
 		/// <summary>
@@ -67,7 +92,8 @@ namespace CompilableTypeConverter.ConverterWrapperHelpers
 					propertyGetterFactories => new CompilableTypeConverterByPropertySettingFactory(
 						new CombinedCompilablePropertyGetterFactory(propertyGetterFactories),
 						CompilableTypeConverterByPropertySettingFactory.PropertySettingTypeOptions.MatchAll,
-						_allPropertiesToIgnoreToPropertySetterConversions
+						_allPropertiesToIgnoreToPropertySetterConversions,
+						_nullSourceBehaviour
 					),
 					currentByPropertySetterConvererFactoryConfigurationData.PropertyGetterFactoryExtrapolator
 				);
@@ -105,34 +131,6 @@ namespace CompilableTypeConverter.ConverterWrapperHelpers
 			if (converterOverrideBehaviour != ConverterOverrideBehaviourOptions.IgnoreCache)
 				_converterCache[cacheKey] = converter;
 			return converter;
-		}
-
-		/// <summary>
-		/// This will reset entirely to the base state, as if no calls to Convert, Create or GetConverter had been made
-		/// </summary>
-		public void Reset()
-		{
-			// Prepare converter factories (for by-constructor and by-property-setters) using the base types (AssignableType and
-			// EnumConversion property getter factories)
-			var nameMatcher = new CaseInsensitiveSkipUnderscoreNameMatcher();
-			var basePropertyGetterFactories = new ICompilablePropertyGetterFactory[]
-			{
-				new CompilableAssignableTypesPropertyGetterFactory(nameMatcher),
-				new CompilableEnumConversionPropertyGetterFactory(nameMatcher)
-			};
-			_constructorBasedConverterFactory = ExtendableCompilableTypeConverterFactoryHelpers.GenerateConstructorBasedFactory(
-				nameMatcher,
-				new ArgsLengthTypeConverterPrioritiserFactory(),
-				basePropertyGetterFactories
-			);
-			_propertySetterBasedConverterFactory = ExtendableCompilableTypeConverterFactoryHelpers.GeneratePropertySetterBasedFactory(
-				nameMatcher,
-				CompilableTypeConverterByPropertySettingFactory.PropertySettingTypeOptions.MatchAll,
-				basePropertyGetterFactories,
-				new PropertyInfo[0]
-			);
-			_allPropertiesToIgnoreToPropertySetterConversions.Clear();
-			_converterCache.Clear();
 		}
 	}
 }

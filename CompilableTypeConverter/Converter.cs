@@ -20,8 +20,8 @@ namespace CompilableTypeConverter
 		private static object _lock;
 		static Converter()
 		{
-			_converter = new ConverterWrapper();
 			_lock = new object();
+			Reset();
 		}
 
 		/// <summary>
@@ -112,7 +112,7 @@ namespace CompilableTypeConverter
 		{
 			lock (_lock)
 			{
-				_converter.Reset();
+				_converter = new ConverterWrapper(ByPropertySettingNullSourceBehaviourOptions.UseDestDefaultIfSourceIsNull);
 			}
 		}
 	}
