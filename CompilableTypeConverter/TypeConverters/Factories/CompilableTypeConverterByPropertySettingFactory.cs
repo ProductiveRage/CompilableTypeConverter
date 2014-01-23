@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using CompilableTypeConverter.Common;
 using CompilableTypeConverter.PropertyGetters.Compilable;
 using CompilableTypeConverter.PropertyGetters.Factories;
 
@@ -62,7 +63,7 @@ namespace CompilableTypeConverter.TypeConverters.Factories
                     continue;
 
 				// If this is a property to ignore then do just that
-				if (_propertiesToIgnore.Contains(property))
+				if (_propertiesToIgnore.Any(p => p.MatchesProperty(property)))
 					continue;
 
                 // If we can't retrieve a property getter for the property then either give up (if MatchAll) or push on (if MatchAsManyAsPossible)

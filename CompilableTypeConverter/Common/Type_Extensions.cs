@@ -20,29 +20,7 @@ namespace CompilableTypeConverter.Common
 				.Concat(
 					type.GetInterfaces().SelectMany(i => i.GetProperties(bindingFlags))
 				)
-				.Any(p => 
-					(p.Name == property.Name) &&
-					(p.PropertyType == property.PropertyType) &&
-					(p.DeclaringType == property.DeclaringType) &&
-					DoTypeArraysMatch(p.GetIndexParameters(), property.GetIndexParameters())
-				);
-		}
-
-		private static bool DoTypeArraysMatch(ParameterInfo[] x, ParameterInfo[] y)
-		{
-			if ((x == null) && (y == null))
-				return true;
-			else if ((x == null) || (y == null))
-				return false;
-
-			if (x.Length != y.Length)
-				return false;
-			for (var index = 0; index < x.Length; index++)
-			{
-				if ((x[index].Name != y[index].Name) || (x[index].ParameterType != y[index].ParameterType))
-					return false;
-			}
-			return true;
+				.Any(p => p.MatchesProperty(property));
 		}
 	}
 }
