@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using CompilableTypeConverter.Common;
 using CompilableTypeConverter.NameMatchers;
 
 namespace CompilableTypeConverter.PropertyGetters.Compilable
@@ -23,9 +24,9 @@ namespace CompilableTypeConverter.PropertyGetters.Compilable
         {
             if (propertyInfo == null)
                 throw new ArgumentNullException("propertyInfo");
-            if (!propertyInfo.DeclaringType.Equals(typeof(TSourceObject)))
-                throw new ArgumentException("Invalid propertyInfo - DeclaringType must match TSourceObject");
-            if (!propertyInfo.PropertyType.IsEnum)
+			if (!typeof(TSourceObject).HasProperty(propertyInfo))
+				throw new ArgumentException("Invalid propertyInfo, not available on type TSource");
+			if (!propertyInfo.PropertyType.IsEnum)
                 throw new Exception("Invalid propertyInfo.PropertyType - must have IsEnum true");
             if (enumNameMatcher == null)
                 throw new ArgumentNullException("enumNameMatcher");

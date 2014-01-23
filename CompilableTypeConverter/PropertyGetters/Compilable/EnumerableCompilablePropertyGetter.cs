@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using CompilableTypeConverter.Common;
 using CompilableTypeConverter.TypeConverters;
 
 namespace CompilableTypeConverter.PropertyGetters.Compilable
@@ -31,9 +32,9 @@ namespace CompilableTypeConverter.PropertyGetters.Compilable
             // ends up getting matched
             if (propertyInfo == null)
                 throw new ArgumentNullException("propertyInfo");
-            if (!propertyInfo.DeclaringType.Equals(typeof(TSourceObject)))
-                throw new ArgumentException("Invalid propertyInfo - its DeclaringType must match TSourceObject");
-            if (!typeof(IEnumerable<TPropertyOnSourceElement>).IsAssignableFrom(propertyInfo.PropertyType))
+			if (!typeof(TSourceObject).HasProperty(propertyInfo))
+				throw new ArgumentException("Invalid propertyInfo, not available on type TSource");
+			if (!typeof(IEnumerable<TPropertyOnSourceElement>).IsAssignableFrom(propertyInfo.PropertyType))
                 throw new ArgumentException("Invalid propertyInfo - its PropertyType must be assignable match to IEnumerable<TPropertyOnSourceElement>");
             if (!typeof(IEnumerable<TPropertyAsRetrievedElement>).IsAssignableFrom(typeof(TPropertyAsRetrieved)))
                 throw new ArgumentException("Invalid configuration - TPropertyAsRetrieved must be assignable to IEnumerable<TPropertyAsRetrievedElement>");

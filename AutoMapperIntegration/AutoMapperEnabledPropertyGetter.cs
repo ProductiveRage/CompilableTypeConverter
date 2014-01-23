@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using AutoMapper;
+using CompilableTypeConverter.Common;
 using CompilableTypeConverter.PropertyGetters;
 
 namespace CompilableTypeConverter.AutoMapperIntegration.PropertyGetters
@@ -19,9 +20,9 @@ namespace CompilableTypeConverter.AutoMapperIntegration.PropertyGetters
         {
             if (propertyInfo == null)
                 throw new ArgumentNullException("propertyInfo");
-            if (!propertyInfo.DeclaringType.Equals(typeof(TSourceObject)))
-                throw new ArgumentException("Invalid propertyInfo - DeclaringType must match class typeparam");
-            if (mappingEngine == null)
+			if (!typeof(TSourceObject).HasProperty(propertyInfo))
+				throw new ArgumentException("Invalid propertyInfo, not available on type TSource");
+			if (mappingEngine == null)
                 throw new ArgumentNullException("mappingEngine");
 
             _propertyInfo = propertyInfo;

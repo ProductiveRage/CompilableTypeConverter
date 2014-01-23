@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using CompilableTypeConverter.Common;
 using CompilableTypeConverter.PropertyGetters.Compilable;
 
 namespace CompilableTypeConverter.TypeConverters
@@ -45,8 +46,8 @@ namespace CompilableTypeConverter.TypeConverters
             {
                 if (property == null)
                     throw new ArgumentException("Null reference encountered in propertyGetters list");
-                if (!property.DeclaringType.Equals(typeof(TDest)))
-                    throw new ArgumentException("Encountered invalid DeclaringType in property list, must match type param TDest");
+				if (!typeof(TDest).HasProperty(property))
+					throw new ArgumentException("Encountered invalid entry in propertiesToSete set, not available on type TDest");
                 propertiesToSetList.Add(property);
             }
 

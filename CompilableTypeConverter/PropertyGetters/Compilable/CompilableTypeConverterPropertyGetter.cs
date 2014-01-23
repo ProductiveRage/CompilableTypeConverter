@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using CompilableTypeConverter.Common;
 using CompilableTypeConverter.TypeConverters;
 
 namespace CompilableTypeConverter.PropertyGetters.Compilable
@@ -20,9 +21,9 @@ namespace CompilableTypeConverter.PropertyGetters.Compilable
         {
             if (propertyInfo == null)
                 throw new ArgumentNullException("propertyInfo");
-            if (!propertyInfo.DeclaringType.Equals(typeof(TSourceObject)))
-                throw new ArgumentException("Invalid propertyInfo - DeclaringType must match TSourceObject");
-            if (!propertyInfo.PropertyType.Equals(typeof(TPropertyOnSource)))
+			if (!typeof(TSourceObject).HasProperty(propertyInfo))
+				throw new ArgumentException("Invalid propertyInfo, not available on type TSource");
+			if (!propertyInfo.PropertyType.Equals(typeof(TPropertyOnSource)))
                 throw new ArgumentException("Invalid propertyInfo - PropertyType must match TPropertyOnSource");
             if (compilableTypeConverter == null)
                 throw new ArgumentNullException("compilableTypeConverter");

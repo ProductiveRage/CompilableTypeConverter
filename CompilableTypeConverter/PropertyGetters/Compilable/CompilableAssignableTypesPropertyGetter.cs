@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using CompilableTypeConverter.Common;
 
 namespace CompilableTypeConverter.PropertyGetters.Compilable
 {
@@ -16,8 +17,8 @@ namespace CompilableTypeConverter.PropertyGetters.Compilable
         {
             if (propertyInfo == null)
                 throw new ArgumentNullException("propertyInfo");
-            if (!propertyInfo.DeclaringType.Equals(typeof(TSourceObject)))
-                throw new ArgumentException("Invalid propertyInfo - DeclaringType must match TSourceObject");
+			if (!typeof(TSourceObject).HasProperty(propertyInfo))
+				throw new ArgumentException("Invalid propertyInfo, not available on type TSource");
 
             _propertyInfo = propertyInfo;
         }
