@@ -16,8 +16,8 @@ namespace CompilableTypeConverter.TypeConverters
     /// </summary>
     public class SimpleTypeConverterByConstructor<TSource, TDest> : ITypeConverterByConstructor<TSource, TDest>
     {
-        private IConstructorInvoker<TDest> _constructorInvoker;
-        private List<IPropertyGetter> _propertyGetters;
+        private readonly IConstructorInvoker<TDest> _constructorInvoker;
+		private readonly List<IPropertyGetter> _propertyGetters;
         public SimpleTypeConverterByConstructor(
 			IEnumerable<IPropertyGetter> propertyGetters,
 			IEnumerable<IConstructorDefaultValuePropertyGetter> defaultValuePropertyGetters,
@@ -82,7 +82,7 @@ namespace CompilableTypeConverter.TypeConverters
 			}
 
             _constructorInvoker = constructorInvoker;
-            _propertyGetters = propertyGettersList;
+			_propertyGetters = combinedPropertyGetters;
 
 			NumberOfConstructorArgumentsMatchedWithNonDefaultValues = constructorParameters.Length - defaultValuePropertyGettersList.Count;
 		}
