@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using CompilableTypeConverter.TypeConverters;
 
 namespace CompilableTypeConverter.ConstructorPrioritisers
@@ -26,10 +27,12 @@ namespace CompilableTypeConverter.ConstructorPrioritisers
             if (optionsList.Count == 0)
                 return null;
 
-            if (optionsList.Count > 1)
+            // For by-converter translations, the number of fulfilled constructor arguments (that aren't relying upon default argument values) is equal
+			// to the number of matches properties
+			if (optionsList.Count > 1)
             {
                 optionsList.Sort(
-					(x, y) => x.NumberOfConstructorArgumentsMatchedWithNonDefaultValues.CompareTo(y.NumberOfConstructorArgumentsMatchedWithNonDefaultValues)
+					(x, y) => x.PropertyMappings.Count().CompareTo(y.PropertyMappings.Count())
                 );
             }
             return optionsList[optionsList.Count - 1];

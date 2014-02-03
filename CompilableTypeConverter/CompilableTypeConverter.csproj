@@ -92,6 +92,7 @@
     <Compile Include="PropertyGetters\IPropertyGetter.cs" />
     <Compile Include="TypeConverters\CompilableTypeConverterByConstructor.cs" />
     <Compile Include="TypeConverters\CompilableTypeConverterByPropertySetting.cs" />
+    <Compile Include="TypeConverters\PropertyMappingDetails.cs" />
     <Compile Include="TypeConverters\Factories\CompilableTypeConverterByPropertySettingFactory.cs" />
     <Compile Include="TypeConverters\Factories\ByPropertyMappingFailureException.cs" />
     <Compile Include="TypeConverters\Factories\ByConstructorMappingFailureException.cs" />

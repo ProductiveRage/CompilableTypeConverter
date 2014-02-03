@@ -13,6 +13,6 @@ namespace CompilableTypeConverter.TypeConverters
 		/// <summary>
 		/// This will never be null nor contain any null references
 		/// </summary>
-		IEnumerable<PropertyInfo> SourcePropertiesAccessed { get; }
+		IEnumerable<PropertyMappingDetails> PropertyMappings { get; }
     }
 }

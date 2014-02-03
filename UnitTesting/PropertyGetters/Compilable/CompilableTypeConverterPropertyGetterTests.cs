@@ -149,7 +149,7 @@ namespace UnitTesting.PropertyGetters
 
         private class NonConvertingCompilableIntTypeConverter : ICompilableTypeConverter<int, int>
         {
-			public IEnumerable<PropertyInfo> SourcePropertiesAccessed { get { return new PropertyInfo[0]; } }
+			public IEnumerable<PropertyMappingDetails> PropertyMappings { get { return new PropertyMappingDetails[0]; } }
 			public bool PassNullSourceValuesForProcessing { get { return false; } }
 			public int Convert(int src)
             {
@@ -173,7 +173,7 @@ namespace UnitTesting.PropertyGetters
 
         private class NonConvertingCompilableStringTypeConverter : ICompilableTypeConverter<string, string>
         {
-			public IEnumerable<PropertyInfo> SourcePropertiesAccessed { get { return new PropertyInfo[0]; } }
+			public IEnumerable<PropertyMappingDetails> PropertyMappings { get { return new PropertyMappingDetails[0]; } }
 			public bool PassNullSourceValuesForProcessing { get { return false; } }
 			public string Convert(string src)
             {
@@ -201,7 +201,7 @@ namespace UnitTesting.PropertyGetters
             {
                 return src.ToString();
             }
-			public IEnumerable<PropertyInfo> SourcePropertiesAccessed { get { return new PropertyInfo[0]; } }
+			public IEnumerable<PropertyMappingDetails> PropertyMappings { get { return new PropertyMappingDetails[0]; } }
 			public bool PassNullSourceValuesForProcessing { get { return false; } }
 			public Expression GetTypeConverterExpression(Expression param)
 			{

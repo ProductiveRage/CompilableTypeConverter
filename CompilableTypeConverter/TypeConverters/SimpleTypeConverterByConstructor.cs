@@ -57,6 +57,7 @@ namespace CompilableTypeConverter.TypeConverters
 			if ((propertyGettersList.Count + defaultValuePropertyGettersList.Count) != constructorParameters.Length)
 				throw new ArgumentException("Number of propertyGetters.Count must match constructor.GetParameters().Length");
 			var combinedPropertyGetters = new List<IPropertyGetter>();
+			var propertyMappings = new List<PropertyMappingDetails>();
 			for (var index = 0; index < constructorParameters.Length; index++)
 			{
 				var constructorParameter = constructorParameters[index];
@@ -79,32 +80,36 @@ namespace CompilableTypeConverter.TypeConverters
 					throw new ArgumentException("propertyGetter[" + index + "].TargetType is not assignable to corresponding constructor parameter type");
 				combinedPropertyGetters.Add(propertyGetter);
 				propertyGettersList.RemoveAt(0);
+
+				propertyMappings.Add(
+					new PropertyMappingDetails(
+						propertyGetter.Property,
+						constructorParameter.Name,
+						constructorParameter.ParameterType
+					)
+				);
 			}
 
             _constructorInvoker = constructorInvoker;
 			_propertyGetters = combinedPropertyGetters;
 
-			NumberOfConstructorArgumentsMatchedWithNonDefaultValues = constructorParameters.Length - defaultValuePropertyGettersList.Count;
+			PropertyMappings = propertyMappings.AsReadOnly();
 		}
 
         /// <summary>
-        /// The destination Constructor must be exposed by ITypeConverterByConstructor so that ITypeConverterPrioritiser implementations have something to work
-        /// with - this value will never be null
-        /// </summary>
+		/// The destination Constructor must be exposed by ITypeConverterByConstructor so that ITypeConverterPrioritiser implementations have something to work
+		/// with - this value will never be null. Some of the constructor arguments may be satisfied by relying upon default argument values, to determine
+		/// whether this is the case for any particular argument, consult the PropertyMappings set.
+		/// </summary>
         public ConstructorInfo Constructor
         {
             get { return _constructorInvoker.Constructor; }
         }
 
 		/// <summary>
-		/// This will always be zero or greater and less than or equal to the number of parameters that the Constructor reference has
-		/// </summary>
-		public int NumberOfConstructorArgumentsMatchedWithNonDefaultValues { get; private set; }
-
-		/// <summary>
 		/// This will never be null nor contain any null references
 		/// </summary>
-		public IEnumerable<PropertyInfo> SourcePropertiesAccessed { get { return _propertyGetters.Select(p => p.Property); } }
+		public IEnumerable<PropertyMappingDetails> PropertyMappings { get; private set; }
 
         /// <summary>
         /// Try to retrieve the value of the specified Property from the specified object (which must be of type SrcType) - this will throw an exception for null input

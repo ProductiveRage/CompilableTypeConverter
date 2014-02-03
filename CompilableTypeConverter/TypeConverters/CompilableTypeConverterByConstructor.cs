@@ -56,7 +56,8 @@ namespace CompilableTypeConverter.TypeConverters
             if ((propertyGettersList.Count + defaultValuePropertyGettersList.Count) != constructorParameters.Length)
                 throw new ArgumentException("Number of propertyGetters.Count must match constructor.GetParameters().Length");
 			var combinedPropertyGetters = new List<ICompilablePropertyGetter>();
-            for (var index = 0; index < constructorParameters.Length; index++)
+			var propertyMappings = new List<PropertyMappingDetails>();
+			for (var index = 0; index < constructorParameters.Length; index++)
             {
 				var constructorParameter = constructorParameters[index];
 				var defaultValuePropertyGetter = defaultValuePropertyGetters.FirstOrDefault(p => p.ArgumentName == constructorParameter.Name);
@@ -78,12 +79,20 @@ namespace CompilableTypeConverter.TypeConverters
 					throw new ArgumentException("propertyGetter[" + index + "].TargetType is not assignable to corresponding constructor parameter type");
 				combinedPropertyGetters.Add(propertyGetter);
 				propertyGettersList.RemoveAt(0);
+
+				propertyMappings.Add(
+					new PropertyMappingDetails(
+						propertyGetter.Property,
+						constructorParameter.Name,
+						constructorParameter.ParameterType
+					)
+				);
             }
 
 			// Record the validated member variables
 			_propertyGetters = combinedPropertyGetters.AsReadOnly();
 			Constructor = constructor;
-			NumberOfConstructorArgumentsMatchedWithNonDefaultValues = constructorParameters.Length - defaultValuePropertyGettersList.Count;
+			PropertyMappings = propertyMappings.AsReadOnly();
 
 			// Generate a Expression<Func<TSource, TDest>>, the _rawConverterExpression is still required for the GetTypeConverterExpression
 			// method (this may be called to retrieve the raw expression, rather than the Func-wrapped version - eg. by the ListCompilablePropertyGetter,
@@ -99,15 +108,11 @@ namespace CompilableTypeConverter.TypeConverters
         }
 
         /// <summary>
-        /// The destination Constructor must be exposed by ITypeConverterByConstructor so that ITypeConverterPrioritiser implementations have something to work
-        /// with - this value will never be null
-        /// </summary>
-        public ConstructorInfo Constructor { get; private set; }
-
-		/// <summary>
-		/// This will always be zero or greater and less than or equal to the number of parameters that the Constructor reference has
+		/// The destination Constructor must be exposed by ITypeConverterByConstructor so that ITypeConverterPrioritiser implementations have something to work
+		/// with - this value will never be null. Some of the constructor arguments may be satisfied by relying upon default argument values, to determine
+		/// whether this is the case for any particular argument, consult the PropertyMappings set.
 		/// </summary>
-		public int NumberOfConstructorArgumentsMatchedWithNonDefaultValues { get; private set; }
+        public ConstructorInfo Constructor { get; private set; }
 
 		/// <summary>
 		/// If the source value is null should this property getter still be processed? If not, the assumption is that the target property / constructor argument on
@@ -119,7 +124,7 @@ namespace CompilableTypeConverter.TypeConverters
 		/// <summary>
 		/// This will never be null nor contain any null references
 		/// </summary>
-		public IEnumerable<PropertyInfo> SourcePropertiesAccessed { get { return _propertyGetters.Select(p => p.Property); } }
+		public IEnumerable<PropertyMappingDetails> PropertyMappings { get; private set; }
 
         /// <summary>
         /// Create a new target type instance from a source value - this will throw an exception if conversion fails

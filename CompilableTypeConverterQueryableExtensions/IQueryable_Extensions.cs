@@ -76,7 +76,7 @@ namespace CompilableTypeConverterQueryableExtensions
                         );
 
                         // Generate a type that has only the properties from TSource that would be mapped to TDest
-                        var interimType = GetInterimType(converter.SourcePropertiesAccessed);
+                        var interimType = GetInterimType(converter.PropertyMappings.Select(m => m.SourceProperty));
 
                         // Generate a translator that will map TSource onto the interim type within the IQueryable (so that the minimum data can be retrieved
                         // by the IQueryable implementation) and then take an IEnumerable view of the data and map it onto TDest instances

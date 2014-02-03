@@ -63,6 +63,12 @@ namespace CompilableTypeConverter.TypeConverters
 			_propertyGetters = propertyGettersList.AsReadOnly();
             _propertiesToSet = propertiesToSetList.AsReadOnly();
 			_nullSourceBehaviour = nullSourceBehaviour;
+			PropertyMappings = propertyGettersList
+				.Select((sourceProperty, index) => new PropertyMappingDetails(
+					sourceProperty.Property,
+					propertiesToSetList[index].Name,
+					propertiesToSetList[index].PropertyType
+				));
 
 			// Generate a Expression<Func<TSource, TDest>>, the _rawConverterExpression is still required for the GetTypeConverterExpression
 			// method (this may be called to retrieve the raw expression, rather than the Func-wrapped version - eg. by the ListCompilablePropertyGetter,
@@ -80,7 +86,7 @@ namespace CompilableTypeConverter.TypeConverters
 		/// <summary>
 		/// This will never be null nor contain any null references
 		/// </summary>
-		public IEnumerable<PropertyInfo> SourcePropertiesAccessed { get { return _propertyGetters.Select(p => p.Property); } }
+		public IEnumerable<PropertyMappingDetails> PropertyMappings { get; private set; }
 
 		/// <summary>
 		/// If the source value is null should this property getter still be processed? If not, the assumption is that the target property / constructor argument on the
@@ -150,7 +156,7 @@ namespace CompilableTypeConverter.TypeConverters
 					)
 				);
 			}
-
+			
 			var conversionExpression = Expression.MemberInit(
 				Expression.New(typeof(TDest).GetConstructor(new Type[0])),
 				propertyBindings
