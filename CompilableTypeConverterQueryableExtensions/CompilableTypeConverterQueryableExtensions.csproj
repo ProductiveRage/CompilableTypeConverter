@@ -8,8 +8,8 @@
     <ProjectGuid>{9BD5BCBB-1EAC-4872-8B99-81E7C8EEBDA5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CompilableTypeConverterQueryableExtensions</RootNamespace>
-    <AssemblyName>CompilableTypeConverterQueryableExtensions</AssemblyName>
+    <RootNamespace>CompilableTypeConverter.QueryableExtensions</RootNamespace>
+    <AssemblyName>CompilableTypeConverter.QueryableExtensions</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -34,10 +34,13 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnonymousTypeCreator.cs" />
-    <Compile Include="AnonymousTypePropertyInfoSet.cs" />
+    <Compile Include="ProjectionConverterHelpers\AnonymousTypeCreator.cs" />
+    <Compile Include="ProjectionConverterHelpers\AnonymousTypePropertyInfoSet.cs" />
+    <Compile Include="ProjectionConverterHelpers\PlaceHolderNonIndexedPropertyInfo.cs" />
+    <Compile Include="ProjectionConverter.cs" />
     <Compile Include="IQueryable_Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProjectionConverterHelpers\UninitialisedSourceToNullHandlingConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CompilableTypeConverter\CompilableTypeConverter.csproj">
@@ -45,6 +48,7 @@
       <Name>CompilableTypeConverter</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

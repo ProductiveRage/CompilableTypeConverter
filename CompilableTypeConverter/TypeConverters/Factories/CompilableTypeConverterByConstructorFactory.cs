@@ -87,7 +87,7 @@ namespace CompilableTypeConverter.TypeConverters.Factories
 				}
 				if (candidate)
 			    {
-                    constructorCandidates.Add(
+                        constructorCandidates.Add(
                         new CompilableTypeConverterByConstructor<TSource, TDest>(
 							otherPropertyGetters,
 							defaultValuePropertyGetters,

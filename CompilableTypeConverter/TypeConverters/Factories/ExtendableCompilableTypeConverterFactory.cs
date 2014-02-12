@@ -48,13 +48,15 @@ namespace CompilableTypeConverter.TypeConverters.Factories
 
         /// <summary>
         /// This must never return null nor may it return a set containing any null entries. It will never be called with a null propertyGetterFactories reference.
+		/// The set of property getter factories may include multiple factories that could perform part of any requested translation - they are provided ordered
+		/// such that the first factory in the set that may satisfy a property retrieval should be considered the best match.
         /// </summary>
         public delegate ICompilableTypeConverterFactory ConverterFactoryGenerator(IEnumerable<ICompilablePropertyGetterFactory> propertyGetterFactories);
 
         public interface IPropertyGetterFactoryExtrapolator
         {
             /// <summary>
-            /// This must never return null nor may any null entries be in the returned set. If will never be called with a null converter reference.
+            /// This must never return null nor may any null entries be in the returned set. It will never be called with a null converter reference.
             /// </summary>
             IEnumerable<ICompilablePropertyGetterFactory> Get<TSource, TDest>(ICompilableTypeConverter<TSource, TDest> converter);
         }
@@ -96,7 +98,7 @@ namespace CompilableTypeConverter.TypeConverters.Factories
             if (converterNew == null)
                 throw new ArgumentNullException("converterNew");
 
-            // Get any additional, extrapolated property getter factories (ensure that neither null or a set containing nulls is generated)
+            // Get any additional, extrapolated property getter factories (ensure that neither null nor a set containing nulls is generated)
             var extrapolatedPropertyGetterFactories = _configurationData.PropertyGetterFactoryExtrapolator.Get<TSource, TDest>(converterNew);
             if (extrapolatedPropertyGetterFactories == null)
 				throw new Exception("propertyGetterFactoryExtrapolator (" + _configurationData.PropertyGetterFactoryExtrapolator.GetType().ToString() + ") returned null");

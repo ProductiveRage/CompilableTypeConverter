@@ -14,11 +14,13 @@ namespace CompilableTypeConverter.TypeConverters.Factories
 		private readonly PropertySettingTypeOptions _propertySettingType;
 		private readonly HashSet<PropertyInfo> _propertiesToIgnore;
 		private readonly ByPropertySettingNullSourceBehaviourOptions _nullSourceBehaviour;
+		private readonly IEnumerable<PropertyInfo> _initialisedFlagsIfTranslatingNullsToEmptyInstances;
 		public CompilableTypeConverterByPropertySettingFactory(
             ICompilablePropertyGetterFactory propertyGetterFactory,
             PropertySettingTypeOptions propertySettingType,
 			IEnumerable<PropertyInfo> propertiesToIgnore,
-			ByPropertySettingNullSourceBehaviourOptions nullSourceBehaviour)
+			ByPropertySettingNullSourceBehaviourOptions nullSourceBehaviour,
+			IEnumerable<PropertyInfo> initialisedFlagsIfTranslatingNullsToEmptyInstances)
 		{
             if (propertyGetterFactory == null)
                 throw new ArgumentNullException("propertyGetterFactory");
@@ -28,6 +30,10 @@ namespace CompilableTypeConverter.TypeConverters.Factories
 				throw new ArgumentNullException("propertiesToIgnore");
 			if (!Enum.IsDefined(typeof(ByPropertySettingNullSourceBehaviourOptions), nullSourceBehaviour))
 				throw new ArgumentOutOfRangeException("nullSourceBehaviour");
+			if (initialisedFlagsIfTranslatingNullsToEmptyInstances == null)
+				throw new ArgumentNullException("initialisedFlagsIfTranslatingNullsToEmptyInstances");
+			if ((nullSourceBehaviour != ByPropertySettingNullSourceBehaviourOptions.CreateEmptyInstanceWithDefaultPropertyValues) && initialisedFlagsIfTranslatingNullsToEmptyInstances.Any())
+				throw new ArgumentException("initialisedFlagsIfTranslatingNullsToEmptyInstances must be empty if nullSourceBehaviour is not CreateEmptyInstanceWithDefaultPropertyValues");
 
 			_propertyGetterFactory = propertyGetterFactory;
             _propertySettingType = propertySettingType;
@@ -35,6 +41,11 @@ namespace CompilableTypeConverter.TypeConverters.Factories
 			if (_propertiesToIgnore.Any(p => p == null))
 				throw new ArgumentException("Null reference encountered in propertiesToIgnore set");
 			_nullSourceBehaviour = nullSourceBehaviour;
+			_initialisedFlagsIfTranslatingNullsToEmptyInstances = initialisedFlagsIfTranslatingNullsToEmptyInstances.ToList().AsReadOnly();
+			if (_initialisedFlagsIfTranslatingNullsToEmptyInstances.Any(p => p == null))
+				throw new ArgumentException("Null reference encountered in initialisedFlagsIfTranslatingNullToEmptyInstance set");
+			if (_initialisedFlagsIfTranslatingNullsToEmptyInstances.Any(p => (p.PropertyType != typeof(bool)) && (p.PropertyType != typeof(bool?))))
+				throw new ArgumentException("Encountered invalid property in initialisedFlagsIfTranslatingNullToEmptyInstance set, PropertyType must be bool or nullable bool");
 		}
 
         public enum PropertySettingTypeOptions
@@ -90,7 +101,10 @@ namespace CompilableTypeConverter.TypeConverters.Factories
                 ),
                 propertyGetters,
                 propertiesToSet,
-				_nullSourceBehaviour
+				_nullSourceBehaviour,
+				(_nullSourceBehaviour == ByPropertySettingNullSourceBehaviourOptions.CreateEmptyInstanceWithDefaultPropertyValues)
+					? _initialisedFlagsIfTranslatingNullsToEmptyInstances.Where(p => typeof(TDest).HasProperty(p))
+					: null
             );
 		}
 

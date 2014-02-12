@@ -17,12 +17,14 @@ namespace CompilableTypeConverter.TypeConverters
         private readonly IEnumerable<ICompilablePropertyGetter> _propertyGetters;
 		private readonly IEnumerable<PropertyInfo> _propertiesToSet;
 		private readonly ByPropertySettingNullSourceBehaviourOptions _nullSourceBehaviour;
+		private readonly IEnumerable<PropertyInfo> _initialisedFlagsIfTranslatingNullToEmptyInstance;
 		private readonly Expression<Func<TSource, TDest>> _converterFuncExpression;
 		private readonly Func<TSource, TDest> _converter;
 		public CompilableTypeConverterByPropertySetting(
 			IEnumerable<ICompilablePropertyGetter> propertyGetters,
 			IEnumerable<PropertyInfo> propertiesToSet,
-			ByPropertySettingNullSourceBehaviourOptions nullSourceBehaviour)
+			ByPropertySettingNullSourceBehaviourOptions nullSourceBehaviour,
+			IEnumerable<PropertyInfo> initialisedFlagsIfTranslatingNullToEmptyInstance)
         {
             if (propertyGetters == null)
                 throw new ArgumentNullException("propertyGetters");
@@ -30,6 +32,10 @@ namespace CompilableTypeConverter.TypeConverters
                 throw new ArgumentNullException("propertiesToSet");
 			if (!Enum.IsDefined(typeof(ByPropertySettingNullSourceBehaviourOptions), nullSourceBehaviour))
 				throw new ArgumentOutOfRangeException("nullSourceBehaviour");
+			if (initialisedFlagsIfTranslatingNullToEmptyInstance == null)
+				throw new ArgumentNullException("initialisedFlagsIfTranslatingNullToEmptyInstance");
+			if ((nullSourceBehaviour != ByPropertySettingNullSourceBehaviourOptions.CreateEmptyInstanceWithDefaultPropertyValues) && initialisedFlagsIfTranslatingNullToEmptyInstance.Any())
+				throw new ArgumentException("initialisedFlagsIfTranslatingNullToEmptyInstance must be empty if nullSourceBehaviour is not CreateEmptyInstanceWithDefaultPropertyValues");
 
             // Ensure there are no null references in the property lists
             var propertyGettersList = new List<ICompilablePropertyGetter>();
@@ -63,6 +69,13 @@ namespace CompilableTypeConverter.TypeConverters
 			_propertyGetters = propertyGettersList.AsReadOnly();
             _propertiesToSet = propertiesToSetList.AsReadOnly();
 			_nullSourceBehaviour = nullSourceBehaviour;
+			_initialisedFlagsIfTranslatingNullToEmptyInstance = initialisedFlagsIfTranslatingNullToEmptyInstance.ToList().AsReadOnly();
+			if (_initialisedFlagsIfTranslatingNullToEmptyInstance.Any(p => p == null))
+				throw new ArgumentException("Null reference encountered in initialisedFlagsIfTranslatingNullToEmptyInstance set");
+			if (_initialisedFlagsIfTranslatingNullToEmptyInstance.Any(p => (p.PropertyType != typeof(bool)) && (p.PropertyType != typeof(bool?))))
+				throw new ArgumentException("Encountered invalid property in initialisedFlagsIfTranslatingNullToEmptyInstance set, PropertyType must be bool or nullable bool");
+			if (_initialisedFlagsIfTranslatingNullToEmptyInstance.Any(p => !typeof(TDest).HasProperty(p)))
+				throw new ArgumentException("Encountered invalid property in initialisedFlagsIfTranslatingNullToEmptyInstance set, must be a property available on TDest");
 			PropertyMappings = propertyGettersList
 				.Select((sourceProperty, index) => new PropertyMappingDetails(
 					sourceProperty.Property,
@@ -156,6 +169,21 @@ namespace CompilableTypeConverter.TypeConverters
 					)
 				);
 			}
+			propertyBindings.AddRange(
+				_initialisedFlagsIfTranslatingNullToEmptyInstance.Select(initialisedFlagProperty =>
+					Expression.Bind(
+						initialisedFlagProperty,
+						Expression.Condition(
+							Expression.Equal(
+								param,
+								Expression.Constant(null)
+							),
+							Expression.Constant(false, initialisedFlagProperty.PropertyType),
+							Expression.Constant(true, initialisedFlagProperty.PropertyType)
+						)
+					)
+				)
+			);
 			
 			var conversionExpression = Expression.MemberInit(
 				Expression.New(typeof(TDest).GetConstructor(new Type[0])),

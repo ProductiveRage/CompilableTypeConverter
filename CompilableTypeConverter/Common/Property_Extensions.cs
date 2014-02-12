@@ -12,7 +12,6 @@ namespace CompilableTypeConverter.Common
 			if (otherProperty == null)
 				throw new ArgumentNullException("otherProperty");
 
-			// TODO
 			// Doing a Contains on the concat'd property sets won't do the job since there may be multiple PropertyInfo instances floating
 			// around that represent the same data but that aren't the same instance
 			return

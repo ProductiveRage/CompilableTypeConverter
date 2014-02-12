@@ -23,7 +23,8 @@ namespace CompilableTypeConverter.TypeConverters.Factories
         public static ExtendableCompilableTypeConverterFactory GenerateConstructorBasedFactory(
             INameMatcher nameMatcher,
             ITypeConverterPrioritiserFactory converterPrioritiser,
-            IEnumerable<ICompilablePropertyGetterFactory> basePropertyGetterFactories)
+            IEnumerable<ICompilablePropertyGetterFactory> basePropertyGetterFactories,
+			EnumerableSetNullHandlingOptions enumerableSetNullHandling)
         {
             if (nameMatcher == null)
                 throw new ArgumentNullException("nameMatcher");
@@ -31,6 +32,8 @@ namespace CompilableTypeConverter.TypeConverters.Factories
                 throw new ArgumentNullException("converterPrioritiser");
             if (basePropertyGetterFactories == null)
                 throw new ArgumentNullException("basePropertyGetterFactories");
+			if (!Enum.IsDefined(typeof(EnumerableSetNullHandlingOptions), enumerableSetNullHandling))
+				throw new ArgumentOutOfRangeException("enumerableSetNullHandling");
 
             return new ExtendableCompilableTypeConverterFactory(
                 nameMatcher,
@@ -43,7 +46,7 @@ namespace CompilableTypeConverter.TypeConverters.Factories
                 ),
                 new CompilableTypeConverterPropertyGetterFactoryExtrapolator(
 					nameMatcher,
-					EnumerableSetNullHandlingOptions.ReturnNullSetForNullInput
+					enumerableSetNullHandling
 				)
             );
         }
@@ -58,6 +61,7 @@ namespace CompilableTypeConverter.TypeConverters.Factories
             IEnumerable<ICompilablePropertyGetterFactory> basePropertyGetterFactories,
 			IEnumerable<PropertyInfo> propertiesToIgnore,
 			ByPropertySettingNullSourceBehaviourOptions nullSourceBehaviour,
+			IEnumerable<PropertyInfo> initialisedFlagsIfTranslatingNullsToEmptyInstances,
 			EnumerableSetNullHandlingOptions enumerableSetNullHandling)
         {
             if (nameMatcher == null)
@@ -68,6 +72,8 @@ namespace CompilableTypeConverter.TypeConverters.Factories
                 throw new ArgumentNullException("basePropertyGetterFactories");
 			if (propertiesToIgnore == null)
 				throw new ArgumentNullException("propertiesToIgnore");
+			if (initialisedFlagsIfTranslatingNullsToEmptyInstances == null)
+				throw new ArgumentNullException("initialisedFlagsIfTranslatingNullsToEmptyInstances");
 			if (!Enum.IsDefined(typeof(ByPropertySettingNullSourceBehaviourOptions), nullSourceBehaviour))
 				throw new ArgumentOutOfRangeException("nullSourceBehaviour");
 			if (!Enum.IsDefined(typeof(EnumerableSetNullHandlingOptions), enumerableSetNullHandling))
@@ -81,7 +87,8 @@ namespace CompilableTypeConverter.TypeConverters.Factories
                     new CombinedCompilablePropertyGetterFactory(propertyGetterFactories),
                     propertySettingTypeOptions,
 					propertiesToIgnore,
-					nullSourceBehaviour
+					nullSourceBehaviour,
+					initialisedFlagsIfTranslatingNullsToEmptyInstances
                 ),
 				new CompilableTypeConverterPropertyGetterFactoryExtrapolator(
 					nameMatcher,
@@ -112,7 +119,7 @@ namespace CompilableTypeConverter.TypeConverters.Factories
             }
 
             /// <summary>
-            /// This must never return null nor may any null entries be in the returned set. If will never be called with a null nameMatcher or converter reference.
+            /// This must never return null nor may any null entries be in the returned set. It will never be called with a null nameMatcher or converter reference.
             /// </summary>
             public IEnumerable<ICompilablePropertyGetterFactory> Get<TSource, TDest>(ICompilableTypeConverter<TSource, TDest> converter)
             {

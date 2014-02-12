@@ -23,6 +23,7 @@ namespace CompilableTypeConverter.ConverterWrapperHelpers
 		private readonly ByPropertySettingNullSourceBehaviourOptions _nullSourceBehaviour;
 		private readonly EnumerableSetNullHandlingOptions _enumerableSetNullHandling;
 		private readonly List<PropertyInfo> _allPropertiesToIgnoreToPropertySetterConversions;
+		private readonly List<PropertyInfo> _allInitialisedFlagsIfTranslatingNullsToEmptyInstances;
 		private readonly Dictionary<Tuple<Type, Type>, object> _converterCache;
 		public ConverterWrapper(ByPropertySettingNullSourceBehaviourOptions nullSourceBehaviour, EnumerableSetNullHandlingOptions enumerableSetNullHandling)
 		{
@@ -34,6 +35,7 @@ namespace CompilableTypeConverter.ConverterWrapperHelpers
 			_nullSourceBehaviour = nullSourceBehaviour;
 			_enumerableSetNullHandling = enumerableSetNullHandling;
 			_allPropertiesToIgnoreToPropertySetterConversions = new List<PropertyInfo>();
+			_allInitialisedFlagsIfTranslatingNullsToEmptyInstances = new List<PropertyInfo>();
 			_converterCache = new Dictionary<Tuple<Type, Type>, object>();
 
 			// Prepare converter factories (for by-constructor and by-property-setters) using the base types (AssignableType and
@@ -47,14 +49,16 @@ namespace CompilableTypeConverter.ConverterWrapperHelpers
 			_constructorBasedConverterFactory = ExtendableCompilableTypeConverterFactoryHelpers.GenerateConstructorBasedFactory(
 				nameMatcher,
 				new ArgsLengthTypeConverterPrioritiserFactory(),
-				basePropertyGetterFactories
+				basePropertyGetterFactories,
+				_enumerableSetNullHandling
 			);
 			_propertySetterBasedConverterFactory = ExtendableCompilableTypeConverterFactoryHelpers.GeneratePropertySetterBasedFactory(
 				nameMatcher,
 				CompilableTypeConverterByPropertySettingFactory.PropertySettingTypeOptions.MatchAll,
 				basePropertyGetterFactories,
-				new PropertyInfo[0],
+				_allPropertiesToIgnoreToPropertySetterConversions,
 				_nullSourceBehaviour,
+				_allInitialisedFlagsIfTranslatingNullsToEmptyInstances,
 				_enumerableSetNullHandling
 			);
 		}
@@ -64,6 +68,7 @@ namespace CompilableTypeConverter.ConverterWrapperHelpers
 		/// </summary>
 		public ICompilableTypeConverter<TSource, TDest> GetConverter<TSource, TDest>(
 			IEnumerable<PropertyInfo> propertiesToIgnoreIfSettingPropertiesOnTDest,
+			IEnumerable<PropertyInfo> initialisedFlagsIfTranslatingNullsToEmptyInstances,
 			ConverterOverrideBehaviourOptions converterOverrideBehaviour)
 		{
 			if (propertiesToIgnoreIfSettingPropertiesOnTDest == null)
@@ -71,6 +76,11 @@ namespace CompilableTypeConverter.ConverterWrapperHelpers
 			var propertiesToIgnoreList = propertiesToIgnoreIfSettingPropertiesOnTDest.ToList();
 			if (propertiesToIgnoreList.Any(p => p == null))
 				throw new ArgumentException("Null reference encountered in propertiesToIgnoreIfSettingPropertiesOnTDest set ");
+			if (initialisedFlagsIfTranslatingNullsToEmptyInstances == null)
+				throw new ArgumentNullException("initialisedFlagsIfTranslatingNullsToEmptyInstances");
+			var initialisedFlagsIfTranslatingNullsToEmptyInstancesList = initialisedFlagsIfTranslatingNullsToEmptyInstances.ToList();
+			if (initialisedFlagsIfTranslatingNullsToEmptyInstances.Any(p => p == null))
+				throw new ArgumentException("Null reference encountered in initialisedFlagsIfTranslatingNullsToEmptyInstances set ");
 			if (!Enum.IsDefined(typeof(ConverterOverrideBehaviourOptions), converterOverrideBehaviour))
 				throw new ArgumentOutOfRangeException("converterOverrideBehaviour");
 
@@ -86,11 +96,15 @@ namespace CompilableTypeConverter.ConverterWrapperHelpers
 				}
 			}
 
-			// If there are any properties-to-ignore specified then add them to the total combined list and re-generate
-			// the _propertySetterBasedConverterFactory reference to take them into account
-			if (propertiesToIgnoreList.Any())
+			// If there are any properties-to-ignore specified then add them to the total combined list and re-generate the
+			// _propertySetterBasedConverterFactory reference to take them into account. Also add any initialised-flags to the ignore list
+			// since these are not expected to be mapped from the source data, these flags are expected to be set afterwards (with false
+			// if the source reference was null and true if not)
+			if (propertiesToIgnoreList.Any() || initialisedFlagsIfTranslatingNullsToEmptyInstances.Any())
 			{
 				_allPropertiesToIgnoreToPropertySetterConversions.AddRange(propertiesToIgnoreIfSettingPropertiesOnTDest);
+				_allPropertiesToIgnoreToPropertySetterConversions.AddRange(initialisedFlagsIfTranslatingNullsToEmptyInstances);
+				_allInitialisedFlagsIfTranslatingNullsToEmptyInstances.AddRange(initialisedFlagsIfTranslatingNullsToEmptyInstances);
 				var currentByPropertySetterConvererFactoryConfigurationData = _propertySetterBasedConverterFactory.GetConfigurationData();
 				_propertySetterBasedConverterFactory = new ExtendableCompilableTypeConverterFactory(
 					currentByPropertySetterConvererFactoryConfigurationData.NameMatcher,
@@ -99,7 +113,8 @@ namespace CompilableTypeConverter.ConverterWrapperHelpers
 						new CombinedCompilablePropertyGetterFactory(propertyGetterFactories),
 						CompilableTypeConverterByPropertySettingFactory.PropertySettingTypeOptions.MatchAll,
 						_allPropertiesToIgnoreToPropertySetterConversions,
-						_nullSourceBehaviour
+						_nullSourceBehaviour,
+						_allInitialisedFlagsIfTranslatingNullsToEmptyInstances
 					),
 					currentByPropertySetterConvererFactoryConfigurationData.PropertyGetterFactoryExtrapolator
 				);
@@ -137,6 +152,30 @@ namespace CompilableTypeConverter.ConverterWrapperHelpers
 			if (converterOverrideBehaviour != ConverterOverrideBehaviourOptions.IgnoreCache)
 				_converterCache[cacheKey] = converter;
 			return converter;
+		}
+
+		/// <summary>
+		/// Specify a converter that will used whenever either a TSource-to-TDest translation is requested or a translation where properties must
+		/// be translated from TSource to TDest (or from IEnumerable sets of TSource to TDest). Any converter that was previously available for
+		/// this translation will be superceded by the one specified here (subsequent calls to this method with the same TSource and TDest
+		/// will then take precedence again).
+		/// </summary>
+		public void SetConverter<TSource, TDest>(ICompilableTypeConverter<TSource, TDest> converter)
+		{
+			if (converter == null)
+				throw new ArgumentNullException("converter");
+
+			// For the ExtendableCompilableTypeConverterFactories, we just call AddNewConverter which will register the new converter before
+			// any other converters which may handle the same translation. This sidesteps any complicated logic that might be involved in
+			// trying to identify any converters from its repertoire that may need to be removed, this way the new converter will just
+			// take precedence and any others will be ignored.
+			_constructorBasedConverterFactory = _constructorBasedConverterFactory.AddNewConverter<TSource, TDest>(converter);
+			_propertySetterBasedConverterFactory = _propertySetterBasedConverterFactory.AddNewConverter<TSource, TDest>(converter);
+
+			// For the internal cache (which will handle requests for translations of TSource-to-TDest, as opposed to translations which
+			// require property retrieval from TSource to populate a property of constructor argument of TDest), we just set the value
+			// on the dictionary, overwriting anything there before or adding a new item if not overwriting anything pre-existing.
+			_converterCache[Tuple.Create(typeof(TSource), typeof(TDest))] = converter;
 		}
 	}
 }

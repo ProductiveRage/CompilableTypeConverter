@@ -21,7 +21,8 @@ namespace DemoApp.CompiledExamples
                 {
                     new CompilableAssignableTypesPropertyGetterFactory(nameMatcher),
                     new CompilableEnumConversionPropertyGetterFactory(nameMatcher)
-                }
+                },
+				EnumerableSetNullHandlingOptions.ReturnNullSetForNullInput
             );
 
             // Extend the converter to handle SourceType.Sub1 to ConstructorDestType.Sub1 and IEnumerable<SourceType.Sub1> to IEnumerable<ConstructorDestType.Sub1>
@@ -48,7 +49,8 @@ namespace DemoApp.CompiledExamples
                     new CompilableEnumConversionPropertyGetterFactory(nameMatcher)
                 },
 				new PropertyInfo[0], // propertiesToIgnore
-				ByPropertySettingNullSourceBehaviourOptions.UseDestDefaultIfSourceIsNull, 
+				ByPropertySettingNullSourceBehaviourOptions.UseDestDefaultIfSourceIsNull,
+				new PropertyInfo[0], // initialisedFlagsIfTranslatingNullsToEmptyInstances (not applicable with UseDestDefaultIfSourceIsNull)
 				EnumerableSetNullHandlingOptions.ReturnNullSetForNullInput
             );
 
