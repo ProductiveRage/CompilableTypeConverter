@@ -21,7 +21,6 @@ namespace UnitTesting.IntegrationTests
 			_valueList = valueList;
 			_valueEnum = valueEnum;
 		}
-		public ConstructorDestType(Sub1 value, IEnumerable<Sub1> valueList) : this(value, valueList, Sub2.EnumValue1) { }
 
 		public Sub1 Value { get { return _value; } }
 		public IEnumerable<Sub1> ValueList { get { return _valueList; } }
@@ -29,7 +28,12 @@ namespace UnitTesting.IntegrationTests
 
 		public class Sub1
 		{
-			public string Name { get; set; }
+			private readonly string _name;
+			public Sub1(string name)
+			{
+				_name = name;
+			}
+			public string Name { get { return _name; } }
 		}
 
 		public enum Sub2 : uint
