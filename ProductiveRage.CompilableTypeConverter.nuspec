@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>ProductiveRage.CompilableTypeConverter</id>
+    <title>ProductiveRage.CompilableTypeConverter</title>
+    <version>1.0.0</version>
+    <authors>ProductiveRage</authors>
+    <owners>ProductiveRage</owners>
+    <licenseUrl>https://bitbucket.org/DanRoberts/compilabletypeconverter/src/318cf304f96ae73ebb0644f70dc0ffde9ea305c3/LICENSE.txt</licenseUrl>
+    <projectUrl>https://bitbucket.org/DanRoberts/compilabletypeconverter</projectUrl>
+    <iconUrl>https://secure.gravatar.com/avatar/6a1f781d4d5e2d50dcff04f8f049767a?s=200</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Fast mappings between types (from-and-to either mutable or immutable classes)</description>
+    <copyright>Copyright 2016 ProductiveRage</copyright>
+    <tags>C#</tags>
+  </metadata>
+  <files>
+    <file src="ProductiveRage.CompilableTypeConverter.dll" target="lib\net40" />
+    <file src="ProductiveRage.CompilableTypeConverter.xml" target="lib\net40" />
+    <file src="ProductiveRage.CompilableTypeConverter.QueryableExtensions.dll" target="lib\net40" />
+    <file src="ProductiveRage.CompilableTypeConverter.QueryableExtensions.xml" target="lib\net40" />
+  </files>
+</package>
