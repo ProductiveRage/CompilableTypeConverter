@@ -1,6 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CompilableTypeConverter;
+using CompilableTypeConverter.ConstructorPrioritisers.Factories;
+using CompilableTypeConverter.NameMatchers;
+using CompilableTypeConverter.PropertyGetters.Compilable;
+using CompilableTypeConverter.PropertyGetters.Factories;
+using CompilableTypeConverter.TypeConverters.Factories;
 using NUnit.Framework;
 
 namespace UnitTesting.IntegrationTests
@@ -94,6 +99,44 @@ namespace UnitTesting.IntegrationTests
 			{
 				Converter.Reset();
 			}
+			Assert.AreEqual("Test1", dest.Value.Name);
+			Assert.AreEqual(2, dest.ValueList.Count());
+			Assert.AreEqual("Test2", dest.ValueList.ElementAt(0).Name);
+			Assert.AreEqual("Test3", dest.ValueList.ElementAt(1).Name);
+			Assert.AreEqual(ConstructorDestType.Sub2.EnumValue2, dest.ValueEnum);
+		}
+
+		[Test]
+		public void VariousUsingExtendableCompilableTypeConverterFactoryHelpers()
+		{
+			var nameMatcher = new CaseInsensitiveSkipUnderscoreNameMatcher();
+			var converterFactory =
+				ExtendableCompilableTypeConverterFactoryHelpers.GenerateConstructorBasedFactory(
+					nameMatcher,
+					new ArgsLengthTypeConverterPrioritiserFactory(),
+					new ICompilablePropertyGetterFactory[]
+					{
+						new CompilableAssignableTypesPropertyGetterFactory(nameMatcher),
+						new CompilableEnumConversionPropertyGetterFactory(nameMatcher)
+					},
+					EnumerableSetNullHandlingOptions.ReturnNullSetForNullInput
+				)
+				.CreateMap<SourceType.Sub1, ConstructorDestType.Sub1>()
+				.CreateMap<SourceType, ConstructorDestType>();
+			var converter = converterFactory.Get<SourceType, ConstructorDestType>();
+
+			var source = new SourceType
+			{
+				Value = new SourceType.Sub1 { Name = "Test1" },
+				ValueList = new[]
+				{
+					new SourceType.Sub1 { Name = "Test2" },
+					new SourceType.Sub1 { Name = "Test3" }
+				},
+				ValueEnum = SourceType.Sub2.EnumValue2
+			};
+			var dest = converter.Convert(source);
+
 			Assert.AreEqual("Test1", dest.Value.Name);
 			Assert.AreEqual(2, dest.ValueList.Count());
 			Assert.AreEqual("Test2", dest.ValueList.ElementAt(0).Name);
