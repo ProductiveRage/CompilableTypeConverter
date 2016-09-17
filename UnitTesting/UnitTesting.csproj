@@ -76,6 +76,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common.cs" />
+    <Compile Include="IntegrationTests\ConstructorDestType.cs" />
+    <Compile Include="IntegrationTests\SourceType.cs" />
+    <Compile Include="IntegrationTests\SourceTypeSingleStringProperty.cs" />
+    <Compile Include="IntegrationTests\ConstructorDestTypeSingleStringProperty.cs" />
+    <Compile Include="IntegrationTests\SourceTypeSingleNestedClassProperty.cs" />
+    <Compile Include="IntegrationTests\ConstructorDestTypeSingleNestedClassProperty.cs" />
+    <Compile Include="IntegrationTests\MutableToImmutableTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyGetters\AutoMapperEnabledPropertyGetterTests.cs" />
     <Compile Include="PropertyGetters\Compilable\CompilableTypeConverterPropertyGetterTests.cs" />

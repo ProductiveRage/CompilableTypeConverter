@@ -104,7 +104,7 @@ namespace CompilableTypeConverter.TypeConverters.Factories
 				_nullSourceBehaviour,
 				(_nullSourceBehaviour == ByPropertySettingNullSourceBehaviourOptions.CreateEmptyInstanceWithDefaultPropertyValues)
 					? _initialisedFlagsIfTranslatingNullsToEmptyInstances.Where(p => typeof(TDest).HasProperty(p))
-					: null
+					: new PropertyInfo[0]
             );
 		}
 
