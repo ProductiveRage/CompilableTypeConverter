@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using CompilableTypeConverter.ConverterWrapperHelpers;
-using CompilableTypeConverter.TypeConverters;
 using CompilableTypeConverter.PropertyGetters.Compilable;
+using CompilableTypeConverter.TypeConverters;
 
 namespace CompilableTypeConverter
 {
@@ -38,7 +38,7 @@ namespace CompilableTypeConverter
 		}
 
 		/// <summary>
-        /// This will throw an exception if unable to generate the requested mapping. If successful, the returned converter
+		/// This will throw an exception if unable to generate the requested mapping. If successful, the returned converter
 		/// factory will be able to convert instances of TSource to TDest instances. It may also use this conversion knowledge
 		/// when generating later conversions - eg. if CreateMap is subsequently called for TSource2 ant TDest2, where TSource
 		/// has a property TSource that must be mapped to a property on TDest2 of type TDest, this new converter may be used
@@ -48,7 +48,7 @@ namespace CompilableTypeConverter
 		/// TryToGetConverter methods may be called without any prior CreateMap calls. If nested types are in the source or
 		/// destination types then CreateMap needs to be called for them. Where there are deeply-nested types for conversion,
 		/// CreateMap should be called from the deepest level and worked up to the top.
-        /// </summary>
+		/// </summary>
 		public static void CreateMap<TSource, TDest>(
 			IEnumerable<PropertyInfo> propertiesToIgnoreIfSettingPropertiesOnTDest,
 			ConverterOverrideBehaviourOptions converterOverrideBehaviour = ConverterOverrideBehaviourOptions.UseAnyExistingConverter)
@@ -81,6 +81,26 @@ namespace CompilableTypeConverter
 			ConverterOverrideBehaviourOptions converterOverrideBehaviour = ConverterOverrideBehaviourOptions.UseAnyExistingConverter)
 		{
 			return Convert<TSource, TDest>(source, new PropertyInfo[0], converterOverrideBehaviour);
+		}
+
+		public static IEnumerable<TDest> Convert<TSource, TDest>(
+			IEnumerable<TSource> source,
+			IEnumerable<PropertyInfo> propertiesToIgnoreIfSettingPropertiesOnTDest,
+			ConverterOverrideBehaviourOptions converterOverrideBehaviour = ConverterOverrideBehaviourOptions.UseAnyExistingConverter)
+		{
+			if (source == null)
+				return null;
+
+			return source.Select(value => Convert<TSource, TDest>(value, propertiesToIgnoreIfSettingPropertiesOnTDest, converterOverrideBehaviour));
+		}
+		public static IEnumerable<TDest> Convert<TSource, TDest>(
+			IEnumerable<TSource> source,
+			ConverterOverrideBehaviourOptions converterOverrideBehaviour = ConverterOverrideBehaviourOptions.UseAnyExistingConverter)
+		{
+			if (source == null)
+				return null;
+
+			return source.Select(value => Convert<TSource, TDest>(value, converterOverrideBehaviour));
 		}
 
 		/// <summary>

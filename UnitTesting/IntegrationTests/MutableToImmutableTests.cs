@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using CompilableTypeConverter;
 using NUnit.Framework;
 
@@ -22,6 +23,29 @@ namespace UnitTesting.IntegrationTests
 				Converter.Reset();
 			}
 			Assert.AreEqual("Test", dest.Name);
+		}
+
+		[Test]
+		public void SetOfSingleStringProperty()
+		{
+			IEnumerable<ConstructorDestTypeSingleStringProperty> dest;
+			try
+			{
+				Converter.CreateMap<SourceTypeSingleStringProperty, ConstructorDestTypeSingleStringProperty>();
+				var source = new[]
+				{
+					new SourceTypeSingleStringProperty { Name = "Test1" },
+					new SourceTypeSingleStringProperty { Name = "Test2" }
+				};
+				dest = Converter.Convert<SourceTypeSingleStringProperty, ConstructorDestTypeSingleStringProperty>(source);
+			}
+			finally
+			{
+				Converter.Reset();
+			}
+			Assert.AreEqual(2, dest.Count());
+			Assert.AreEqual("Test1", dest.ElementAt(0).Name);
+			Assert.AreEqual("Test2", dest.ElementAt(1).Name);
 		}
 
 		[Test]
