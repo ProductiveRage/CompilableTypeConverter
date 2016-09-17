@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace CompilableTypeConverter.ConverterWrapperHelpers
+namespace ProductiveRage.CompilableTypeConverter.ConverterWrapperHelpers
 {
 	public class ConverterConfigurer<TSource, TDest>
 	{

@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Linq;
-using CompilableTypeConverter.NameMatchers;
-using CompilableTypeConverter.PropertyGetters.Compilable;
-using CompilableTypeConverter.TypeConverters;
+using ProductiveRage.CompilableTypeConverter.NameMatchers;
+using ProductiveRage.CompilableTypeConverter.PropertyGetters.Compilable;
+using ProductiveRage.CompilableTypeConverter.TypeConverters;
 
-namespace CompilableTypeConverter.PropertyGetters.Factories
+namespace ProductiveRage.CompilableTypeConverter.PropertyGetters.Factories
 {
-    /// <summary>
-    /// This ICompilablePropertyGetterFactory implementation looks for properties on a source type whose name matches a specified value (in the context of
-    /// an INameMatcher) and whose value can be retrieved to a specified type using a particular compilable type converter (so the type of the source
-    /// property will have to match the source type of the type converter)
-    /// </summary>
-    public class CompilableTypeConverterPropertyGetterFactory<TPropertyOnSource, TPropertyAsRetrieved> : ICompilablePropertyGetterFactory
+	/// <summary>
+	/// This ICompilablePropertyGetterFactory implementation looks for properties on a source type whose name matches a specified value (in the context of
+	/// an INameMatcher) and whose value can be retrieved to a specified type using a particular compilable type converter (so the type of the source
+	/// property will have to match the source type of the type converter)
+	/// </summary>
+	public class CompilableTypeConverterPropertyGetterFactory<TPropertyOnSource, TPropertyAsRetrieved> : ICompilablePropertyGetterFactory
     {
         private INameMatcher _nameMatcher;
         private ICompilableTypeConverter<TPropertyOnSource, TPropertyAsRetrieved> _typeConverter;

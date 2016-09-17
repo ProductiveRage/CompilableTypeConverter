@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Reflection;
 
-namespace CompilableTypeConverter.ConstructorInvokers
+namespace ProductiveRage.CompilableTypeConverter.ConstructorInvokers
 {
-    /// <summary>
-    /// Returns a new instance of the target type by calling Invoke on the type constructor specified (with the provided arguments)
-    /// </summary>
-    public class SimpleConstructorInvoker<TDest> : IConstructorInvoker<TDest>
+	/// <summary>
+	/// Returns a new instance of the target type by calling Invoke on the type constructor specified (with the provided arguments)
+	/// </summary>
+	public class SimpleConstructorInvoker<TDest> : IConstructorInvoker<TDest>
     {
         private ConstructorInfo _constructor;
         public SimpleConstructorInvoker(ConstructorInfo constructor)

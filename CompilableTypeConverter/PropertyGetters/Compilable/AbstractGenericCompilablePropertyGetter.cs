@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Reflection;
-using CompilableTypeConverter.PropertyGetters;
 
-namespace CompilableTypeConverter.PropertyGetters.Compilable
+namespace ProductiveRage.CompilableTypeConverter.PropertyGetters.Compilable
 {
-    /// <summary>
-    /// This provides a lot of the plumbing for an ICompilablePropertyGetter implementation - the derived class only declare the Property value and override the
-    /// GetPropertyGetterExpression method, all other ICompilablePropertyGetter and IPropertyGetter requirements will be satisfied here
-    /// </summary>
-    /// <typeparam name="TSourceObject">This is the type of the target object, whose property is to be retrieved</typeparam>
-    /// <typeparam name="TPropertyAsRetrieved">This is the type that the property's value will be returned as</typeparam>
-    public abstract class AbstractGenericCompilablePropertyGetter<TSourceObject, TPropertyAsRetrieved> : ICompilablePropertyGetter
+	/// <summary>
+	/// This provides a lot of the plumbing for an ICompilablePropertyGetter implementation - the derived class only declare the Property value and override the
+	/// GetPropertyGetterExpression method, all other ICompilablePropertyGetter and IPropertyGetter requirements will be satisfied here
+	/// </summary>
+	/// <typeparam name="TSourceObject">This is the type of the target object, whose property is to be retrieved</typeparam>
+	/// <typeparam name="TPropertyAsRetrieved">This is the type that the property's value will be returned as</typeparam>
+	public abstract class AbstractGenericCompilablePropertyGetter<TSourceObject, TPropertyAsRetrieved> : ICompilablePropertyGetter
     {
         private Lazy<Func<TSourceObject, TPropertyAsRetrieved>> _getter;
         public AbstractGenericCompilablePropertyGetter()

@@ -1,7 +1,4 @@
-﻿using CompilableTypeConverter;
-using NUnit.Framework;
-
-namespace UnitTesting.IntegrationTests
+﻿namespace UnitTesting.IntegrationTests
 {
 	public class SourceTypeSingleNestedClassProperty
 	{

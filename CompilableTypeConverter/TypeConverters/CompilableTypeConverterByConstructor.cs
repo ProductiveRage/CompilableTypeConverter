@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using CompilableTypeConverter.PropertyGetters.Compilable;
+using ProductiveRage.CompilableTypeConverter.PropertyGetters.Compilable;
 
-namespace CompilableTypeConverter.TypeConverters
+namespace ProductiveRage.CompilableTypeConverter.TypeConverters
 {
-    /// <summary>
-    /// This will convert from one class to another using a constructor on the target type to pass in the data. The conversion process will be compiled using
-    /// LINQ Expressions with the aim of the resulting code being comparable in speed to a hand-crafted version. Unlike the SimpleTypeConverterByConstructor,
-    /// this does not use an IConstructorInvoker as the constructor calling code is tied to the implementation.
-    /// </summary>
-    public class CompilableTypeConverterByConstructor<TSource, TDest> : ICompilableTypeConverterByConstructor<TSource, TDest>
+	/// <summary>
+	/// This will convert from one class to another using a constructor on the target type to pass in the data. The conversion process will be compiled using
+	/// LINQ Expressions with the aim of the resulting code being comparable in speed to a hand-crafted version. Unlike the SimpleTypeConverterByConstructor,
+	/// this does not use an IConstructorInvoker as the constructor calling code is tied to the implementation.
+	/// </summary>
+	public class CompilableTypeConverterByConstructor<TSource, TDest> : ICompilableTypeConverterByConstructor<TSource, TDest>
     {
 		private readonly IEnumerable<ICompilablePropertyGetter> _propertyGetters;
         private readonly Expression<Func<TSource, TDest>> _converterFuncExpression;

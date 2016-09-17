@@ -1,4 +1,4 @@
-﻿namespace CompilableTypeConverter.TypeConverters.Factories
+﻿namespace ProductiveRage.CompilableTypeConverter.TypeConverters.Factories
 {
 	public enum ParameterLessConstructorBehaviourOptions
 	{

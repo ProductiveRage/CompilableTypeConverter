@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
-using CompilableTypeConverter.TypeConverters;
+using ProductiveRage.CompilableTypeConverter.TypeConverters;
 
-namespace CompilableTypeConverter.QueryableExtensions.ProjectionConverterHelpers
+namespace ProductiveRage.CompilableTypeConverter.QueryableExtensions.ProjectionConverterHelpers
 {
 	/// <summary>
 	/// Entity Framework won't let some values be set to null and some to non-null which is why the interim types have an is-initialised flag, so that this can

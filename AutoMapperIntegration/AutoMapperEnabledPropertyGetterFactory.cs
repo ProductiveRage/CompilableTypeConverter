@@ -2,17 +2,17 @@
 using System.Linq;
 using System.Reflection;
 using AutoMapper;
-using CompilableTypeConverter.NameMatchers;
-using CompilableTypeConverter.PropertyGetters;
-using CompilableTypeConverter.PropertyGetters.Factories;
+using ProductiveRage.CompilableTypeConverter.NameMatchers;
+using ProductiveRage.CompilableTypeConverter.PropertyGetters;
+using ProductiveRage.CompilableTypeConverter.PropertyGetters.Factories;
 
-namespace CompilableTypeConverter.AutoMapperIntegration.PropertyGetters.Factories
+namespace ProductiveRage.CompilableTypeConverter.AutoMapperIntegration.PropertyGetters.Factories
 {
-    /// <summary>
-    /// This IPropertyGetterFactory implementation looks for properties on a source type whose name matches a specified value (in the context of an INameMatcher)
-    /// and whose value can to translated to a specified type by using AutoMapper
-    /// </summary>
-    public class AutoMapperEnabledPropertyGetterFactory : IPropertyGetterFactory
+	/// <summary>
+	/// This IPropertyGetterFactory implementation looks for properties on a source type whose name matches a specified value (in the context of an INameMatcher)
+	/// and whose value can to translated to a specified type by using AutoMapper
+	/// </summary>
+	public class AutoMapperEnabledPropertyGetterFactory : IPropertyGetterFactory
     {
         private INameMatcher _nameMatcher;
         private IConfigurationProvider _mappingConfig;

@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CompilableTypeConverter.ConstructorInvokers.Factories;
-using CompilableTypeConverter.ConstructorPrioritisers.Factories;
-using CompilableTypeConverter.PropertyGetters;
-using CompilableTypeConverter.PropertyGetters.Factories;
-using CompilableTypeConverter.PropertyGetters.Compilable;
+using ProductiveRage.CompilableTypeConverter.ConstructorInvokers.Factories;
+using ProductiveRage.CompilableTypeConverter.ConstructorPrioritisers.Factories;
+using ProductiveRage.CompilableTypeConverter.PropertyGetters;
+using ProductiveRage.CompilableTypeConverter.PropertyGetters.Compilable;
+using ProductiveRage.CompilableTypeConverter.PropertyGetters.Factories;
 
-namespace CompilableTypeConverter.TypeConverters.Factories
+namespace ProductiveRage.CompilableTypeConverter.TypeConverters.Factories
 {
-    public class SimpleTypeConverterByConstructorFactory : ITypeConverterFactory
+	public class SimpleTypeConverterByConstructorFactory : ITypeConverterFactory
     {
 		private readonly ITypeConverterPrioritiserFactory _constructorPrioritiserFactory;
 		private readonly IConstructorInvokerFactory _constructorInvokerFactory;

@@ -8,8 +8,8 @@
     <ProjectGuid>{9BD5BCBB-1EAC-4872-8B99-81E7C8EEBDA5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CompilableTypeConverter.QueryableExtensions</RootNamespace>
-    <AssemblyName>CompilableTypeConverter.QueryableExtensions</AssemblyName>
+    <RootNamespace>ProductiveRage.CompilableTypeConverter.QueryableExtensions</RootNamespace>
+    <AssemblyName>ProductiveRage.CompilableTypeConverter.QueryableExtensions</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

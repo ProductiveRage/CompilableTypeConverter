@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Reflection;
 
-namespace CompilableTypeConverter.PropertyGetters
+namespace ProductiveRage.CompilableTypeConverter.PropertyGetters
 {
-    /// <summary>
-    /// Note: IPropertyGetter can not specify typeparams as we're likely to need to maintain a list of these (eg. see SimpleTypeConverterByConstructor) before
-    /// we know the types of the properties - we don't expect to know the TargetType values until runtime, even if we may know the SrcType at compile time
-    /// </summary>
-    public interface IPropertyGetter
+	/// <summary>
+	/// Note: IPropertyGetter can not specify typeparams as we're likely to need to maintain a list of these (eg. see SimpleTypeConverterByConstructor) before
+	/// we know the types of the properties - we don't expect to know the TargetType values until runtime, even if we may know the SrcType at compile time
+	/// </summary>
+	public interface IPropertyGetter
     {
         /// <summary>
         /// This is the type whose property is being accessed

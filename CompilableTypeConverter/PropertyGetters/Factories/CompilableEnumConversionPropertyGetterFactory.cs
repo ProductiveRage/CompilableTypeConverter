@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using CompilableTypeConverter.NameMatchers;
-using CompilableTypeConverter.PropertyGetters.Compilable;
+using ProductiveRage.CompilableTypeConverter.NameMatchers;
+using ProductiveRage.CompilableTypeConverter.PropertyGetters.Compilable;
 
-namespace CompilableTypeConverter.PropertyGetters.Factories
+namespace ProductiveRage.CompilableTypeConverter.PropertyGetters.Factories
 {
-    /// <summary>
-    /// This ICompilablePropertyGetterFactory implementation looks for properties on a source type whose name matches a specified value (in the context of
-    /// an INameMatcher) and whose value can to assigned directly to a specified type
-    /// </summary>
-    public class CompilableEnumConversionPropertyGetterFactory : ICompilablePropertyGetterFactory
+	/// <summary>
+	/// This ICompilablePropertyGetterFactory implementation looks for properties on a source type whose name matches a specified value (in the context of
+	/// an INameMatcher) and whose value can to assigned directly to a specified type
+	/// </summary>
+	public class CompilableEnumConversionPropertyGetterFactory : ICompilablePropertyGetterFactory
     {
         private INameMatcher _nameMatcher;
         public CompilableEnumConversionPropertyGetterFactory(INameMatcher nameMatcher)

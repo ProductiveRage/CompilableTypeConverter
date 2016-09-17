@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CompilableTypeConverter.NameMatchers;
-using CompilableTypeConverter.PropertyGetters.Compilable;
-using CompilableTypeConverter.TypeConverters;
+using ProductiveRage.CompilableTypeConverter.NameMatchers;
+using ProductiveRage.CompilableTypeConverter.PropertyGetters.Compilable;
+using ProductiveRage.CompilableTypeConverter.TypeConverters;
 
-namespace CompilableTypeConverter.PropertyGetters.Factories
+namespace ProductiveRage.CompilableTypeConverter.PropertyGetters.Factories
 {
-    /// <summary>
-    /// This ICompilablePropertyGetterFactory implementation looks for properties on a source type whose name matches a specified value (in the context of
-    /// an INameMatcher) and whose value can be retrieved as IEnumerable content with the its element type being passed through a particular compilable
-    /// type converter (so the element type of the source property IEnumerable will have to match the source type of the type converter and the
-    /// destination type will have to be an IEnumerable of the type converter's destination type)
-    /// </summary>
+	/// <summary>
+	/// This ICompilablePropertyGetterFactory implementation looks for properties on a source type whose name matches a specified value (in the context of
+	/// an INameMatcher) and whose value can be retrieved as IEnumerable content with the its element type being passed through a particular compilable
+	/// type converter (so the element type of the source property IEnumerable will have to match the source type of the type converter and the
+	/// destination type will have to be an IEnumerable of the type converter's destination type)
+	/// </summary>
 	public class EnumerableCompilablePropertyGetterFactory<TPropertyOnSourceElement, TPropertyAsRetrievedElement> : ICompilablePropertyGetterFactory
     {
         private readonly INameMatcher _nameMatcher;

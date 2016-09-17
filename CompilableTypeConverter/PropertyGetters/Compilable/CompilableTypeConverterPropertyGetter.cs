@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Reflection;
-using CompilableTypeConverter.Common;
-using CompilableTypeConverter.TypeConverters;
+using ProductiveRage.CompilableTypeConverter.Common;
+using ProductiveRage.CompilableTypeConverter.TypeConverters;
 
-namespace CompilableTypeConverter.PropertyGetters.Compilable
+namespace ProductiveRage.CompilableTypeConverter.PropertyGetters.Compilable
 {
-    /// <summary>
-    /// Retrieve the property value of a specified object, converting the property value to another type using a particular compilable type converter
-    /// </summary>
-    /// <typeparam name="TSourceObject">This is the type of the target object, whose property is to be retrieved</typeparam>
-    /// <typeparam name="TPropertyOnSource">This is the type that the property's is returned as before any conversion occurs</typeparam>
-    /// <typeparam name="TPropertyAsRetrieved">This is the type that the property's value will be returned as</typeparam>
-    public class CompilableTypeConverterPropertyGetter<TSourceObject, TPropertyOnSource, TPropertyAsRetrieved>
+	/// <summary>
+	/// Retrieve the property value of a specified object, converting the property value to another type using a particular compilable type converter
+	/// </summary>
+	/// <typeparam name="TSourceObject">This is the type of the target object, whose property is to be retrieved</typeparam>
+	/// <typeparam name="TPropertyOnSource">This is the type that the property's is returned as before any conversion occurs</typeparam>
+	/// <typeparam name="TPropertyAsRetrieved">This is the type that the property's value will be returned as</typeparam>
+	public class CompilableTypeConverterPropertyGetter<TSourceObject, TPropertyOnSource, TPropertyAsRetrieved>
         : AbstractGenericCompilablePropertyGetter<TSourceObject, TPropertyAsRetrieved>
     {
         private PropertyInfo _propertyInfo;

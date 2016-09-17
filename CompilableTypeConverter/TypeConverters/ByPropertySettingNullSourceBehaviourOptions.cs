@@ -1,4 +1,4 @@
-﻿namespace CompilableTypeConverter.TypeConverters
+﻿namespace ProductiveRage.CompilableTypeConverter.TypeConverters
 {
 	/// <summary>
 	/// These options are only applicable to by-property-setting conversions, 

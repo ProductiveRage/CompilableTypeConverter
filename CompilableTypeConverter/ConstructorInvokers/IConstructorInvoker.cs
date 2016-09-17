@@ -1,9 +1,8 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 
-namespace CompilableTypeConverter.ConstructorInvokers
+namespace ProductiveRage.CompilableTypeConverter.ConstructorInvokers
 {
-    public interface IConstructorInvoker<TDest>
+	public interface IConstructorInvoker<TDest>
     {
         /// <summary>
         /// This is the constructor that will be called to create the new instance - having access to this may be used to validate options passed

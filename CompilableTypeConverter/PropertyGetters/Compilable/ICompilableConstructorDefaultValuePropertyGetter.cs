@@ -1,4 +1,4 @@
-﻿namespace CompilableTypeConverter.PropertyGetters.Compilable
+﻿namespace ProductiveRage.CompilableTypeConverter.PropertyGetters.Compilable
 {
 	public interface ICompilableConstructorDefaultValuePropertyGetter : IConstructorDefaultValuePropertyGetter, ICompilablePropertyGetter { }
 }

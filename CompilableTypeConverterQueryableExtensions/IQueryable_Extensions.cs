@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CompilableTypeConverter.QueryableExtensions
+namespace ProductiveRage.CompilableTypeConverter.QueryableExtensions
 {
 	public static class IQueryable_Extensions
 	{

@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Reflection;
 
-namespace CompilableTypeConverter.QueryableExtensions.ProjectionConverterHelpers
+namespace ProductiveRage.CompilableTypeConverter.QueryableExtensions.ProjectionConverterHelpers
 {
 	/// <summary>
 	/// This may be used to include named properties in an AnonyousTypePropertyInfoSet such that a property will be included in the generated type

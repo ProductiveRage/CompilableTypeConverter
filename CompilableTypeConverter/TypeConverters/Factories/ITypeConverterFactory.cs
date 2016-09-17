@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace CompilableTypeConverter.TypeConverters.Factories
+﻿namespace ProductiveRage.CompilableTypeConverter.TypeConverters.Factories
 {
-    public interface ITypeConverterFactory
+	public interface ITypeConverterFactory
     {
         /// <summary>
         /// This will throw an exception if a converter could not be generated, it will never return null

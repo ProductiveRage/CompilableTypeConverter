@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using CompilableTypeConverter.Common;
-using CompilableTypeConverter.PropertyGetters.Compilable;
+using ProductiveRage.CompilableTypeConverter.Common;
+using ProductiveRage.CompilableTypeConverter.PropertyGetters.Compilable;
 
-namespace CompilableTypeConverter.TypeConverters
+namespace ProductiveRage.CompilableTypeConverter.TypeConverters
 {
-    /// <summary>
-    /// This will convert from one class to another by instantiating the target through a parameterless constructor and then setting individual properties. The
-    /// conversion process will be compiled using LINQ Expressions with the aim of the resulting code being comparable in speed to a hand-crafted version.
-    /// </summary>
-    public class CompilableTypeConverterByPropertySetting<TSource, TDest> : ICompilableTypeConverter<TSource, TDest> where TDest : new()
+	/// <summary>
+	/// This will convert from one class to another by instantiating the target through a parameterless constructor and then setting individual properties. The
+	/// conversion process will be compiled using LINQ Expressions with the aim of the resulting code being comparable in speed to a hand-crafted version.
+	/// </summary>
+	public class CompilableTypeConverterByPropertySetting<TSource, TDest> : ICompilableTypeConverter<TSource, TDest> where TDest : new()
     {
         private readonly IEnumerable<ICompilablePropertyGetter> _propertyGetters;
 		private readonly IEnumerable<PropertyInfo> _propertiesToSet;

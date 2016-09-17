@@ -8,8 +8,8 @@
     <ProjectGuid>{3D937713-35FE-4324-B0F6-E0DB413C9128}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CompilableTypeConverter</RootNamespace>
-    <AssemblyName>CompilableTypeConverter</AssemblyName>
+    <RootNamespace>ProductiveRage.CompilableTypeConverter</RootNamespace>
+    <AssemblyName>ProductiveRage.CompilableTypeConverter</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>

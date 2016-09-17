@@ -3,7 +3,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace CompilableTypeConverter.PropertyGetters.Compilable
+namespace ProductiveRage.CompilableTypeConverter.PropertyGetters.Compilable
 {
 	public class CompilableConstructorDefaultValuePropertyGetter<TSourceObject, TPropertyAsRetrieved> : ICompilableConstructorDefaultValuePropertyGetter
 	{

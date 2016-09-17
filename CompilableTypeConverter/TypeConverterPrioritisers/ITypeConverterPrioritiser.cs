@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using CompilableTypeConverter.TypeConverters;
+﻿using System.Collections.Generic;
+using ProductiveRage.CompilableTypeConverter.TypeConverters;
 
-namespace CompilableTypeConverter.ConstructorPrioritisers
+namespace ProductiveRage.CompilableTypeConverter.ConstructorPrioritisers
 {
-    public interface ITypeConverterPrioritiser<TSource, TDest>
+	public interface ITypeConverterPrioritiser<TSource, TDest>
     {
         /// <summary>
         /// Return the best matching ITypeConverterByConstructor reference with the most parameters - this will return null if no ITypeConverterByConstructors are

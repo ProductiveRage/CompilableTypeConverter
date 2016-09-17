@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using CompilableTypeConverter.ConverterWrapperHelpers;
-using CompilableTypeConverter.PropertyGetters.Compilable;
-using CompilableTypeConverter.TypeConverters;
+using ProductiveRage.CompilableTypeConverter.ConverterWrapperHelpers;
+using ProductiveRage.CompilableTypeConverter.PropertyGetters.Compilable;
+using ProductiveRage.CompilableTypeConverter.TypeConverters;
 
-namespace CompilableTypeConverter
+namespace ProductiveRage.CompilableTypeConverter
 {
 	/// <summary>
 	/// This static class is a further wrapper around the ConverterWrapper and is intended to make many of the most common use cases for the Type Converter to

@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using CompilableTypeConverter.ConstructorPrioritisers.Factories;
-using CompilableTypeConverter.NameMatchers;
-using CompilableTypeConverter.PropertyGetters.Factories;
-using CompilableTypeConverter.PropertyGetters.Compilable;
+using ProductiveRage.CompilableTypeConverter.ConstructorPrioritisers.Factories;
+using ProductiveRage.CompilableTypeConverter.NameMatchers;
+using ProductiveRage.CompilableTypeConverter.PropertyGetters.Compilable;
+using ProductiveRage.CompilableTypeConverter.PropertyGetters.Factories;
 
-namespace CompilableTypeConverter.TypeConverters.Factories
+namespace ProductiveRage.CompilableTypeConverter.TypeConverters.Factories
 {
-    /// <summary>
-    /// These are methods to try to remove one level of abstraction from ExtendableCompilableTypeConverterFactory for some common cases
-    /// </summary>
-    public static class ExtendableCompilableTypeConverterFactoryHelpers
+	/// <summary>
+	/// These are methods to try to remove one level of abstraction from ExtendableCompilableTypeConverterFactory for some common cases
+	/// </summary>
+	public static class ExtendableCompilableTypeConverterFactoryHelpers
     {
         /// <summary>
         /// This will return an ExtendableCompilableTypeConverterFactory that is based around the destination types being instantiated by constructor. Note

@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using CompilableTypeConverter;
-using CompilableTypeConverter.ConstructorPrioritisers.Factories;
-using CompilableTypeConverter.NameMatchers;
-using CompilableTypeConverter.PropertyGetters.Compilable;
-using CompilableTypeConverter.PropertyGetters.Factories;
-using CompilableTypeConverter.TypeConverters.Factories;
 using NUnit.Framework;
+using ProductiveRage.CompilableTypeConverter;
+using ProductiveRage.CompilableTypeConverter.ConstructorPrioritisers.Factories;
+using ProductiveRage.CompilableTypeConverter.NameMatchers;
+using ProductiveRage.CompilableTypeConverter.PropertyGetters.Compilable;
+using ProductiveRage.CompilableTypeConverter.PropertyGetters.Factories;
+using ProductiveRage.CompilableTypeConverter.TypeConverters.Factories;
 
 namespace UnitTesting.IntegrationTests
 {

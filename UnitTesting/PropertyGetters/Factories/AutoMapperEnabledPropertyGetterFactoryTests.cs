@@ -1,12 +1,12 @@
 ﻿using System;
 using AutoMapper;
-using CompilableTypeConverter.AutoMapperIntegration.PropertyGetters.Factories;
-using CompilableTypeConverter.NameMatchers;
 using NUnit.Framework;
+using ProductiveRage.CompilableTypeConverter.AutoMapperIntegration.PropertyGetters.Factories;
+using ProductiveRage.CompilableTypeConverter.NameMatchers;
 
 namespace UnitTesting.PropertyGetters.Factories
 {
-    [TestFixture]
+	[TestFixture]
     public class AutoMapperEnabledPropertyGetterFactoryTests
     {
         // ======================================================================================================================

@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("AutoMapperIntegration")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Comtek")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("AutoMapperIntegration")]
-[assembly: AssemblyCopyright("Copyright © Comtek 2012")]
+[assembly: AssemblyCopyright("Copyright © ProductiveRage 2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

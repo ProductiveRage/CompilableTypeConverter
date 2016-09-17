@@ -1,4 +1,4 @@
-﻿namespace CompilableTypeConverter.ConverterWrapperHelpers
+﻿namespace ProductiveRage.CompilableTypeConverter.ConverterWrapperHelpers
 {
 	public enum ConverterOverrideBehaviourOptions
 	{

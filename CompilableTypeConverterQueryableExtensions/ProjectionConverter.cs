@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using CompilableTypeConverter.ConverterWrapperHelpers;
-using CompilableTypeConverter.PropertyGetters.Compilable;
-using CompilableTypeConverter.QueryableExtensions.ProjectionConverterHelpers;
-using CompilableTypeConverter.TypeConverters;
+using ProductiveRage.CompilableTypeConverter.ConverterWrapperHelpers;
+using ProductiveRage.CompilableTypeConverter.PropertyGetters.Compilable;
+using ProductiveRage.CompilableTypeConverter.QueryableExtensions.ProjectionConverterHelpers;
+using ProductiveRage.CompilableTypeConverter.TypeConverters;
 
-namespace CompilableTypeConverter.QueryableExtensions
+namespace ProductiveRage.CompilableTypeConverter.QueryableExtensions
 {
 	/// <summary>
 	/// This is a variation on the static Converter class and is intended to make easy many of the common projections that may occur in IQueryable data sets.

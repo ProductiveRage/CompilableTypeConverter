@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CompilableTypeConverter.ConstructorPrioritisers.Factories;
-using CompilableTypeConverter.PropertyGetters.Compilable;
-using CompilableTypeConverter.PropertyGetters.Factories;
+using ProductiveRage.CompilableTypeConverter.ConstructorPrioritisers.Factories;
+using ProductiveRage.CompilableTypeConverter.PropertyGetters.Compilable;
+using ProductiveRage.CompilableTypeConverter.PropertyGetters.Factories;
 
-namespace CompilableTypeConverter.TypeConverters.Factories
+namespace ProductiveRage.CompilableTypeConverter.TypeConverters.Factories
 {
-    public class CompilableTypeConverterByConstructorFactory : ICompilableTypeConverterFactory
+	public class CompilableTypeConverterByConstructorFactory : ICompilableTypeConverterFactory
     {
         private readonly ITypeConverterPrioritiserFactory _constructorPrioritiserFactory;
         private readonly ICompilablePropertyGetterFactory _propertyGetterFactory;

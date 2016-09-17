@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
 
-namespace CompilableTypeConverter.QueryableExtensions.ProjectionConverterHelpers
+namespace ProductiveRage.CompilableTypeConverter.QueryableExtensions.ProjectionConverterHelpers
 {
 	public class AnonymousTypeCreator
 	{

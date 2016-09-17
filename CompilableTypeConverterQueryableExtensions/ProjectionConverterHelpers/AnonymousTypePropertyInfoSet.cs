@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 
-namespace CompilableTypeConverter.QueryableExtensions.ProjectionConverterHelpers
+namespace ProductiveRage.CompilableTypeConverter.QueryableExtensions.ProjectionConverterHelpers
 {
 	public class AnonymousTypePropertyInfoSet : IEnumerable<PropertyInfo>
 	{

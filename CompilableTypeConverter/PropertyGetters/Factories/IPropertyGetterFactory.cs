@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace CompilableTypeConverter.PropertyGetters.Factories
+namespace ProductiveRage.CompilableTypeConverter.PropertyGetters.Factories
 {
-    public interface IPropertyGetterFactory
+	public interface IPropertyGetterFactory
     {
         /// <summary>
         /// This will return null if unable to return an IPropertyGetter for the named property that will return a value as the requested type

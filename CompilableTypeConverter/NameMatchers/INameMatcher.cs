@@ -1,6 +1,6 @@
-﻿namespace CompilableTypeConverter.NameMatchers
+﻿namespace ProductiveRage.CompilableTypeConverter.NameMatchers
 {
-    public interface INameMatcher
+	public interface INameMatcher
     {
         /// <summary>
         /// Determine whether two property names can be considered equal for mappings (eg. allow may mapping "Name" to "name" or "_name")

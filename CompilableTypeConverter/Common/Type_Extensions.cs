@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection;
 
-namespace CompilableTypeConverter.Common
+namespace ProductiveRage.CompilableTypeConverter.Common
 {
 	public static class Type_Extensions
 	{

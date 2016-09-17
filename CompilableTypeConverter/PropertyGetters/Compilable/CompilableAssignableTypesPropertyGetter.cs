@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Reflection;
-using CompilableTypeConverter.Common;
+using ProductiveRage.CompilableTypeConverter.Common;
 
-namespace CompilableTypeConverter.PropertyGetters.Compilable
+namespace ProductiveRage.CompilableTypeConverter.PropertyGetters.Compilable
 {
-    /// <summary>
-    /// Retrieves property values for class, attempting conversion to typeparam TPropertyAsRetrieved by calling Convert.ChangeType - compilable using Linq Expressions
-    /// </summary>
-    /// <typeparam name="TSourceObject">This is the type of the target object, whose property is to be retrieved</typeparam>
-    /// <typeparam name="TPropertyAsRetrieved">This is the type that the property's value will be returned as</typeparam>
-    public class CompilableAssignableTypesPropertyGetter<TSourceObject, TPropertyAsRetrieved> : AbstractGenericCompilablePropertyGetter<TSourceObject, TPropertyAsRetrieved>
+	/// <summary>
+	/// Retrieves property values for class, attempting conversion to typeparam TPropertyAsRetrieved by calling Convert.ChangeType - compilable using Linq Expressions
+	/// </summary>
+	/// <typeparam name="TSourceObject">This is the type of the target object, whose property is to be retrieved</typeparam>
+	/// <typeparam name="TPropertyAsRetrieved">This is the type that the property's value will be returned as</typeparam>
+	public class CompilableAssignableTypesPropertyGetter<TSourceObject, TPropertyAsRetrieved> : AbstractGenericCompilablePropertyGetter<TSourceObject, TPropertyAsRetrieved>
     {
         private PropertyInfo _propertyInfo;
         public CompilableAssignableTypesPropertyGetter(PropertyInfo propertyInfo)

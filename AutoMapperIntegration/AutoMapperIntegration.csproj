@@ -8,8 +8,8 @@
     <ProjectGuid>{CC3627EE-ECFB-47C2-9BEF-C623A2103F85}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CompilableTypeConverter.AutoMapperIntegration</RootNamespace>
-    <AssemblyName>CompilableTypeConverter.AutoMapperIntegration</AssemblyName>
+    <RootNamespace>ProductiveRage.CompilableTypeConverter.AutoMapperIntegration</RootNamespace>
+    <AssemblyName>ProductiveRage.CompilableTypeConverter.AutoMapperIntegration</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

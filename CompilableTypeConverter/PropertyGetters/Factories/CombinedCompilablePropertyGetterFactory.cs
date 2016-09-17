@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using CompilableTypeConverter.PropertyGetters.Compilable;
+using ProductiveRage.CompilableTypeConverter.PropertyGetters.Compilable;
 
-namespace CompilableTypeConverter.PropertyGetters.Factories
+namespace ProductiveRage.CompilableTypeConverter.PropertyGetters.Factories
 {
-    /// <summary>
-    /// This considers multiple ICompilablePropertyGetterFactory implementations when trying to find a match - each will be tried in turn when the Get method is called
-    /// until one of them can return a non-null value. If all fail then Get will still return null.
-    /// </summary>
-    public class CombinedCompilablePropertyGetterFactory : ICompilablePropertyGetterFactory
+	/// <summary>
+	/// This considers multiple ICompilablePropertyGetterFactory implementations when trying to find a match - each will be tried in turn when the Get method is called
+	/// until one of them can return a non-null value. If all fail then Get will still return null.
+	/// </summary>
+	public class CombinedCompilablePropertyGetterFactory : ICompilablePropertyGetterFactory
     {
         private List<ICompilablePropertyGetterFactory> _propertyGetterFactories;
         public CombinedCompilablePropertyGetterFactory(IEnumerable<ICompilablePropertyGetterFactory> propertyGetterFactories)

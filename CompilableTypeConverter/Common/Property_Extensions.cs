@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace CompilableTypeConverter.Common
+namespace ProductiveRage.CompilableTypeConverter.Common
 {
 	public static class Property_Extensions
 	{

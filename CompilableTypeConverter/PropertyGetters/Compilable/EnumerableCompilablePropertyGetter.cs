@@ -3,21 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using CompilableTypeConverter.Common;
-using CompilableTypeConverter.TypeConverters;
+using ProductiveRage.CompilableTypeConverter.Common;
+using ProductiveRage.CompilableTypeConverter.TypeConverters;
 
-namespace CompilableTypeConverter.PropertyGetters.Compilable
+namespace ProductiveRage.CompilableTypeConverter.PropertyGetters.Compilable
 {
-    /// <summary>
-    /// Retrieve the property value of a specified object, converting the property value to another type using a particular compilable type converter - both the source
-    /// and destination values must be IEnumerable where the element of the source and destination IEnumerable types relate to the source and destination types of the
-    /// type converter
-    /// </summary>
-    /// <typeparam name="TSourceObject">This is the type of the target object, whose property is to be retrieved</typeparam>
-    /// <typeparam name="TPropertyOnSourceElement">The property on the source type (before any conversion occurs) will be IEnumerable with elements of this type</typeparam>
-    /// <typeparam name="TPropertyAsRetrievedElement">The type that the property will be retrieved as will be an IEnumerable with elements of this type</typeparam>
-    /// <typeparam name="TPropertyAsRetrieved">This is the type that the property's value will be returned as</typeparam>
-    public class EnumerableCompilablePropertyGetter<TSourceObject, TPropertyOnSourceElement, TPropertyAsRetrievedElement, TPropertyAsRetrieved>
+	/// <summary>
+	/// Retrieve the property value of a specified object, converting the property value to another type using a particular compilable type converter - both the source
+	/// and destination values must be IEnumerable where the element of the source and destination IEnumerable types relate to the source and destination types of the
+	/// type converter
+	/// </summary>
+	/// <typeparam name="TSourceObject">This is the type of the target object, whose property is to be retrieved</typeparam>
+	/// <typeparam name="TPropertyOnSourceElement">The property on the source type (before any conversion occurs) will be IEnumerable with elements of this type</typeparam>
+	/// <typeparam name="TPropertyAsRetrievedElement">The type that the property will be retrieved as will be an IEnumerable with elements of this type</typeparam>
+	/// <typeparam name="TPropertyAsRetrieved">This is the type that the property's value will be returned as</typeparam>
+	public class EnumerableCompilablePropertyGetter<TSourceObject, TPropertyOnSourceElement, TPropertyAsRetrievedElement, TPropertyAsRetrieved>
         : AbstractGenericCompilablePropertyGetter<TSourceObject, TPropertyAsRetrieved>
     {
         private readonly PropertyInfo _propertyInfo;

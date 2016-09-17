@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Reflection;
 
-namespace CompilableTypeConverter.TypeConverters
+namespace ProductiveRage.CompilableTypeConverter.TypeConverters
 {
-    public interface ITypeConverter<TSource, TDest>
+	public interface ITypeConverter<TSource, TDest>
     {
         /// <summary>
         /// Create a new target type instance from a source value - this will throw an exception if conversion fails

@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace CompilableTypeConverter.PropertyGetters.Compilable
+namespace ProductiveRage.CompilableTypeConverter.PropertyGetters.Compilable
 {
 	public interface IConstructorDefaultValuePropertyGetter : IPropertyGetter
 	{

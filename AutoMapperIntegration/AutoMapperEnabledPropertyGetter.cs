@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Reflection;
 using AutoMapper;
-using CompilableTypeConverter.Common;
-using CompilableTypeConverter.PropertyGetters;
+using ProductiveRage.CompilableTypeConverter.Common;
+using ProductiveRage.CompilableTypeConverter.PropertyGetters;
 
-namespace CompilableTypeConverter.AutoMapperIntegration.PropertyGetters
+namespace ProductiveRage.CompilableTypeConverter.AutoMapperIntegration.PropertyGetters
 {
-    /// <summary>
-    /// AbstractGenericPropertyGetter implementation using reflection to retrieve the specified property value from the source type and AutoMapper to translate the
-    /// value into the required type - if AutoMapper is not able to perform the property value mapping, an exception may be thrown from the GetValue method
-    /// </summary>
-    /// <typeparam name="TSourceObject">This is the type of the target object, whose property is to be retrieved</typeparam>
-    /// <typeparam name="TPropertyAsRetrieved">This is the type that the property's value will be returned as</typeparam>
-    public class AutoMapperEnabledPropertyGetter<TSourceObject, TPropertyAsRetrieved> : IPropertyGetter
+	/// <summary>
+	/// AbstractGenericPropertyGetter implementation using reflection to retrieve the specified property value from the source type and AutoMapper to translate the
+	/// value into the required type - if AutoMapper is not able to perform the property value mapping, an exception may be thrown from the GetValue method
+	/// </summary>
+	/// <typeparam name="TSourceObject">This is the type of the target object, whose property is to be retrieved</typeparam>
+	/// <typeparam name="TPropertyAsRetrieved">This is the type that the property's value will be returned as</typeparam>
+	public class AutoMapperEnabledPropertyGetter<TSourceObject, TPropertyAsRetrieved> : IPropertyGetter
     {
         private PropertyInfo _propertyInfo;
         private IMappingEngine _mappingEngine;

@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using CompilableTypeConverter.Common;
-using CompilableTypeConverter.NameMatchers;
+using ProductiveRage.CompilableTypeConverter.Common;
+using ProductiveRage.CompilableTypeConverter.NameMatchers;
 
-namespace CompilableTypeConverter.PropertyGetters.Compilable
+namespace ProductiveRage.CompilableTypeConverter.PropertyGetters.Compilable
 {
-    /// <summary>
-    /// Retrieves property values for class, converting from the property type on the source object to that of a destination - this property getter only supports enums
-    /// as the source and target property types, it attempts to translate by name for any matches and will default to straight Expression.Convert calls if no matches
-    /// are found. Note: This could result in unexpected behaviour if the value corresponding to an unmatched name on the source enum is in use on the destination
-    /// enum, or if the source is an uint enum while the destination is an int - some numeric wrapping can occur.
-    /// </summary>
-    /// <typeparam name="TSourceObject">This is the type of the target object, whose property is to be retrieved</typeparam>
-    /// <typeparam name="TPropertyAsRetrieved">This is the type that the property's value will be returned as</typeparam>
-    public class CompilableEnumConversionPropertyGetter<TSourceObject, TPropertyAsRetrieved> : AbstractGenericCompilablePropertyGetter<TSourceObject, TPropertyAsRetrieved>
+	/// <summary>
+	/// Retrieves property values for class, converting from the property type on the source object to that of a destination - this property getter only supports enums
+	/// as the source and target property types, it attempts to translate by name for any matches and will default to straight Expression.Convert calls if no matches
+	/// are found. Note: This could result in unexpected behaviour if the value corresponding to an unmatched name on the source enum is in use on the destination
+	/// enum, or if the source is an uint enum while the destination is an int - some numeric wrapping can occur.
+	/// </summary>
+	/// <typeparam name="TSourceObject">This is the type of the target object, whose property is to be retrieved</typeparam>
+	/// <typeparam name="TPropertyAsRetrieved">This is the type that the property's value will be returned as</typeparam>
+	public class CompilableEnumConversionPropertyGetter<TSourceObject, TPropertyAsRetrieved> : AbstractGenericCompilablePropertyGetter<TSourceObject, TPropertyAsRetrieved>
     {
         private PropertyInfo _propertyInfo;
         private INameMatcher _enumNameMatcher;

@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using CompilableTypeConverter.ConstructorPrioritisers.Factories;
-using CompilableTypeConverter.NameMatchers;
-using CompilableTypeConverter.PropertyGetters.Compilable;
-using CompilableTypeConverter.PropertyGetters.Factories;
-using CompilableTypeConverter.TypeConverters;
-using CompilableTypeConverter.TypeConverters.Factories;
+using ProductiveRage.CompilableTypeConverter.ConstructorPrioritisers.Factories;
+using ProductiveRage.CompilableTypeConverter.NameMatchers;
+using ProductiveRage.CompilableTypeConverter.PropertyGetters.Compilable;
+using ProductiveRage.CompilableTypeConverter.PropertyGetters.Factories;
+using ProductiveRage.CompilableTypeConverter.TypeConverters;
+using ProductiveRage.CompilableTypeConverter.TypeConverters.Factories;
 
-namespace CompilableTypeConverter.ConverterWrapperHelpers
+namespace ProductiveRage.CompilableTypeConverter.ConverterWrapperHelpers
 {
 	/// <summary>
 	/// This class is a configuration of the compilable type converter, intended for common cases. This class mutates its own state as new conversions become

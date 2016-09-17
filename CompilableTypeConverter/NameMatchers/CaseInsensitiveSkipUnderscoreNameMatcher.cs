@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CompilableTypeConverter.NameMatchers
+namespace ProductiveRage.CompilableTypeConverter.NameMatchers
 {
 	/// <summary>
 	/// Determine whether two property names can be considered equal for mappings (this ignores case and ignores any underscore but considers no other transformations)

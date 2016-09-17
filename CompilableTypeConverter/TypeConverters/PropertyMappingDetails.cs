@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Reflection;
 
-namespace CompilableTypeConverter.TypeConverters
+namespace ProductiveRage.CompilableTypeConverter.TypeConverters
 {
-    public class PropertyMappingDetails
+	public class PropertyMappingDetails
     {
 		public PropertyMappingDetails(PropertyInfo sourceProperty, string destinationName, Type destinationType)
 		{

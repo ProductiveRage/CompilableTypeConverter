@@ -2,19 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using CompilableTypeConverter.ConstructorInvokers;
-using CompilableTypeConverter.PropertyGetters;
-using CompilableTypeConverter.PropertyGetters.Compilable;
+using ProductiveRage.CompilableTypeConverter.ConstructorInvokers;
+using ProductiveRage.CompilableTypeConverter.PropertyGetters;
+using ProductiveRage.CompilableTypeConverter.PropertyGetters.Compilable;
 
-namespace CompilableTypeConverter.TypeConverters
+namespace ProductiveRage.CompilableTypeConverter.TypeConverters
 {
-    /// <summary>
-    /// A class capable of converting an instance of one type into another by calling a constructor on the target type - the manner in which the
-    /// data is retrieved (and converted, if required) from the source type is determined by the provided IPropertyGetter instances, the way in
-    /// which the target constructor is executed is determined by the specified IConstructorInvoker; eg. the constructor may have its Invoke
-    /// method called or IL code may be generated to call it)
-    /// </summary>
-    public class SimpleTypeConverterByConstructor<TSource, TDest> : ITypeConverterByConstructor<TSource, TDest>
+	/// <summary>
+	/// A class capable of converting an instance of one type into another by calling a constructor on the target type - the manner in which the
+	/// data is retrieved (and converted, if required) from the source type is determined by the provided IPropertyGetter instances, the way in
+	/// which the target constructor is executed is determined by the specified IConstructorInvoker; eg. the constructor may have its Invoke
+	/// method called or IL code may be generated to call it)
+	/// </summary>
+	public class SimpleTypeConverterByConstructor<TSource, TDest> : ITypeConverterByConstructor<TSource, TDest>
     {
         private readonly IConstructorInvoker<TDest> _constructorInvoker;
 		private readonly List<IPropertyGetter> _propertyGetters;

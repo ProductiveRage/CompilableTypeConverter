@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Reflection;
 
-namespace CompilableTypeConverter.ConstructorInvokers.Factories
+namespace ProductiveRage.CompilableTypeConverter.ConstructorInvokers.Factories
 {
-    public class SimpleConstructorInvokerFactory : IConstructorInvokerFactory
+	public class SimpleConstructorInvokerFactory : IConstructorInvokerFactory
     {
         /// <summary>
         /// This will throw an exception if unable to return an appropriate IConstructorInvoker, it should never return null

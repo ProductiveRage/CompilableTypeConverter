@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
-using CompilableTypeConverter.AutoMapperIntegration.PropertyGetters;
 using NUnit.Framework;
+using ProductiveRage.CompilableTypeConverter.AutoMapperIntegration.PropertyGetters;
 
 namespace UnitTesting.PropertyGetters.Compilable
 {
-    [TestFixture]
+	[TestFixture]
     public class AutoMapperEnabledPropertyGetterTests
     {
         // ======================================================================================================================

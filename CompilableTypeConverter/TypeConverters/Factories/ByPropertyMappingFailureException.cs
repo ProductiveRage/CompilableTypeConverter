@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Runtime.Serialization;
 
-namespace CompilableTypeConverter.TypeConverters.Factories
+namespace ProductiveRage.CompilableTypeConverter.TypeConverters.Factories
 {
 	[Serializable]
 	public class ByPropertyMappingFailureException : MappingFailureException
