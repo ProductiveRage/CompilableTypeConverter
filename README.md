@@ -4,7 +4,9 @@
 
 This project started life because, many moons ago, AutoMapper did not have good support for mapping to immutable types. It was very happy to read property values from a source type and map them onto properties on a destination type but it was very dumb when it came to having to call a constructor on the destination type (you would have to manually map each constructor argument).
 
-At some point (though I don't know when since I couldn't find anything in any release note), this changed and AutoMapper now does a fine job of calling constructors (and applying its magic to work out what property values are useful for providing particular constructor arguments). However, this project also mutated such that it was no longer simply an extension to AutoMapper - it could be used in isolation. It has less clever tricks than AutoMapper but it does have one big advantage, which is that it compiles is mappings down to LINQ expressions and so is very fast.
+At some point (though I don't know when since I couldn't find anything in any release note), this changed and AutoMapper now does a fine job of calling constructors (and applying its magic to work out what property values are useful for providing particular constructor arguments). However, this project also mutated such that it was no longer simply an extension to AutoMapper - it could be used in isolation. It has less clever tricks than AutoMapper but it does have one big advantage, which is that it compiles is mappings down to LINQ expressions and so is very fast\*.
+
+\* *(This isn't true any more - back in 2014, this library was about [100x faster than AutoMapper](https://www.productiverage.com/reflection-and-c-sharp-optional-constructor-arguments) but they closed the gap at some point significantly and this library is now just a curiosity, rather than a potential huge speed improvement).*
 
 ## An "in-memory" example
 
